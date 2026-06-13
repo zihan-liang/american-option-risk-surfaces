@@ -1,0 +1,7 @@
+{
+  "decision": "retain_if_better_than_plain",
+  "max_obstacle_violation": 0.0,
+  "model": "positive_premium_linear",
+  "premium_rmse": 0.016062056705031476,
+  "regime_price_rmse": 0.016062056705031476
+}

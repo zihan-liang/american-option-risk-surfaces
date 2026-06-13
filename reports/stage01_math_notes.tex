@@ -1,0 +1,43 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, geometry}
+\geometry{margin=1in}
+\title{Stage 1: Mathematical Formulation Notes}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 1: Mathematical Formulation Notes}
+\subsection{Purpose}
+Record the American option variational inequality and implementation notation before coding.
+
+\subsection{Method}
+Use time-to-maturity $\tau=T-t$ and normalize experiments to $K=1$ unless otherwise stated.
+
+\subsection{Mathematical Formulation}
+\[
+dS_t=(r-q)S_tdt+\sigma S_tdW_t,
+\quad
+\mathcal{L}U=\frac{1}{2}\sigma^2S^2U_{SS}+(r-q)SU_S-rU.
+\]
+\[
+U\ge \Phi,\quad U_\tau-\mathcal{L}U\ge0,\quad
+(U-\Phi)(U_\tau-\mathcal{L}U)=0.
+\]
+The continuation premium is $C=U-\Phi\ge0$.
+
+\subsection{Implementation Details}
+Inputs use $(\log(S/K),\tau/T,r,q,\sigma,T,1_{\mathrm{call}})$ for surrogate datasets.
+
+\subsection{Validation and Diagnostics}
+Check operator sign, payoff, boundary conventions, and Greek units before implementation.
+
+\subsection{Results}
+This stage produces notation and sign conventions only.
+
+\subsection{Failure Modes and Limitations}
+The main risks are mixing calendar time and time-to-maturity or reversing the LCP sign.
+
+\subsection{Conclusion and Next Step}
+Proceed to CN/PSOR implementation and validation.
+
+\end{document}

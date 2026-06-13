@@ -1,0 +1,6 @@
+{
+  "decision": "audit_required",
+  "max_obstacle_violation": 1.8388105212730625,
+  "model": "linear_price_baseline",
+  "regime_price_rmse": 0.7267118311933384
+}

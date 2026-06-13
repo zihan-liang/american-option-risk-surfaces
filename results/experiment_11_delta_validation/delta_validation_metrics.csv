@@ -1,0 +1,2 @@
+method,strict_delta_rmse,strict_delta_mae,decision
+price_model_finite_difference_delta,0.6206108701346508,0.40499394023441443,do_not_claim_price_model_as_greek_engine

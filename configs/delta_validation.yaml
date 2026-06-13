@@ -1,0 +1,2 @@
+dataset: data/processed/surrogate_dataset.npz
+price_model: results/models/selected_final_price_premium_linear.npz

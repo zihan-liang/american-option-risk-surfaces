@@ -1,0 +1,6 @@
+{
+  "decision": "do_not_claim_price_model_as_greek_engine",
+  "method": "price_model_finite_difference_delta",
+  "strict_delta_mae": 0.40499394023441443,
+  "strict_delta_rmse": 0.6206108701346508
+}

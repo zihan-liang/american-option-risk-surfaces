@@ -1,0 +1,14 @@
+k: 1.0
+s_max: 4.0
+m: 60
+n: 60
+omega: 1.25
+tol: 1.0e-8
+max_iter: 8000
+t_values: [0.5, 1.0]
+sigma_values: [0.2, 0.4]
+r_values: [0.01, 0.05]
+q_values: [0.0, 0.06]
+option_types: [put, call]
+test_fraction: 0.25
+seed: 7

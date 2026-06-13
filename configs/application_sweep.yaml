@@ -1,0 +1,13 @@
+k: 1.0
+s_max: 4.0
+m: 100
+n: 100
+omega: 1.25
+tol: 1.0e-9
+max_iter: 10000
+spots_min: 0.4
+spots_max: 1.8
+t_values: [0.25, 0.5, 1.0, 2.0]
+sigma_values: [0.2, 0.4, 0.6]
+r_values: [0.01, 0.05, 0.10]
+q_values: [0.0, 0.03, 0.06, 0.10]

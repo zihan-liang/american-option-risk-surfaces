@@ -1,0 +1,6 @@
+{
+  "max_delta_bound_violation": 0.0,
+  "model": "bounded_delta_linear",
+  "strict_delta_mae": 0.11716878399447651,
+  "strict_delta_rmse": 0.17478619567219658
+}

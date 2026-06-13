@@ -1,0 +1,6 @@
+{
+  "boundary_mae": 0.07684931397659957,
+  "boundary_rmse": 0.15976041962520626,
+  "decision": "scoped_call_diagnostic",
+  "model": "call_boundary_head_linear"
+}

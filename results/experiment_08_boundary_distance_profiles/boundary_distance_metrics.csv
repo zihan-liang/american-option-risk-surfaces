@@ -1,0 +1,3 @@
+band,price_rmse,samples
+near_boundary,0.006474762199884292,368
+away_boundary,0.014462364315132472,22080

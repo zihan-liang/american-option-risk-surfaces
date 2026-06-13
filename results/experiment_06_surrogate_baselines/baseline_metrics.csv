@@ -1,0 +1,2 @@
+model,regime_price_rmse,max_obstacle_violation,decision
+linear_price_baseline,0.7267118311933384,1.8388105212730625,audit_required

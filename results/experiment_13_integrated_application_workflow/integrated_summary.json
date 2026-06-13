@@ -1,0 +1,9 @@
+{
+  "boundary_mae": 0.2528367653701256,
+  "decision": "scenario_screening_with_psor_audit",
+  "max_delta_bound_violation": 0.0,
+  "max_price_obstacle_violation": 0.0,
+  "price_rmse": 0.016062056705031476,
+  "strict_delta_rmse": 0.17478619567219658,
+  "surrogate_eval_seconds": 0.007140300000173738
+}

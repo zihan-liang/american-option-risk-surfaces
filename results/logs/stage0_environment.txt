@@ -1,0 +1,11 @@
+Project repository scaffold created for american-option-risk-surfaces.
+
+Local verification commands used:
+- $env:PYTHONPATH='src'; python -m unittest discover -s tests
+- $env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"; python -m compileall -q src tests experiments
+- $env:PYTHONPATH='src'; $env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"; python experiments/01_solver_validation.py --config configs/solver_validation.yaml
+
+Notes:
+- The default local Python has NumPy available but not pytest, so tests are written in standard-library unittest while remaining pytest-compatible.
+- Git initialization was attempted, but Windows denied writing the partial .git config/lock file in this sandboxed session. Reinitialize Git after clearing the partial .git directory if needed.
+- Generated datasets, model artifacts, and plots are ignored by .gitignore by default.

@@ -1,0 +1,3 @@
+dataset: data/processed/surrogate_dataset.npz
+ridge: 1.0e-6
+model_out: results/models/call_boundary_head_linear.npz

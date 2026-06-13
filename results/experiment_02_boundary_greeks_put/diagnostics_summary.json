@@ -1,0 +1,8 @@
+{
+  "boundary_at_maturity": 0.8,
+  "complementarity_error": 4.0088005617245605e-12,
+  "convexity_violation": 2.220446049250313e-16,
+  "monotonicity_violation": 0.0,
+  "obstacle_violation": 0.0,
+  "option_type": "put"
+}

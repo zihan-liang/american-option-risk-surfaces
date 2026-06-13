@@ -1,0 +1,2 @@
+model,regime_price_rmse,premium_rmse,max_obstacle_violation,decision
+positive_premium_linear,0.016062056705031476,0.016062056705031476,0.0,retain_if_better_than_plain

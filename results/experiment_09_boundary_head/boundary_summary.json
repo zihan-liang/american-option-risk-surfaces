@@ -1,0 +1,5 @@
+{
+  "boundary_mae": 0.2528367653701256,
+  "boundary_rmse": 0.4568852037473761,
+  "model": "boundary_head_linear"
+}

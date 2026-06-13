@@ -1,0 +1,14 @@
+{
+  "american_put": {
+    "all_psor_converged": true,
+    "complementarity_error": 4.0088005617245605e-12,
+    "max_psor_iterations": 12,
+    "obstacle_violation": 0.0
+  },
+  "american_put_initial_boundary": 0.8,
+  "european_put": {
+    "max_error": 0.0002781746966190046,
+    "rmse": 7.140136855505373e-05
+  },
+  "no_dividend_call_max_error": 0.0002781740085198575
+}

@@ -1,0 +1,2 @@
+dataset: data/processed/surrogate_dataset.npz
+ridge: 1.0e-6

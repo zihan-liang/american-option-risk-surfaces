@@ -1,0 +1,4 @@
+grid,runtime_seconds,max_psor_iterations,obstacle_violation,initial_boundary
+40,0.035030600000027334,12,0.0,0.8
+80,0.11950340000021242,12,0.0,0.8
+120,0.25186810000013793,12,0.0,0.8

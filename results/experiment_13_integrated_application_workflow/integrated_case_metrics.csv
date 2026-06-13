@@ -1,0 +1,2 @@
+price_rmse,boundary_mae,strict_delta_rmse,max_price_obstacle_violation,max_delta_bound_violation,surrogate_eval_seconds,decision
+0.016062056705031476,0.2528367653701256,0.17478619567219658,0.0,0.0,0.007140300000173738,scenario_screening_with_psor_audit

@@ -1,0 +1,8 @@
+{
+  "boundary_at_maturity": 1.3333333333333333,
+  "complementarity_error": 5.2696412383000194e-12,
+  "convexity_violation": 4.503093443374844e-13,
+  "monotonicity_violation": 9.43769699250646e-14,
+  "obstacle_violation": 0.0,
+  "option_type": "call"
+}

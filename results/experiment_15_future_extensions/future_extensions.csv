@@ -1,0 +1,6 @@
+extension,required_validation
+larger_regime_envelope,solver diagnostics and held-out regime degradation
+active_learning,error reduction per added PSOR regime
+shape_constrained_models,architectural monotonicity/convexity audit
+uncertainty_quantification,calibrated intervals and PSOR spot-check trigger
+alternative_dynamics,new benchmark and boundary formulation

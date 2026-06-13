@@ -1,0 +1,3 @@
+dataset: data/processed/surrogate_dataset.npz
+ridge: 1.0e-6
+model_out: results/models/selected_final_price_premium_linear.npz

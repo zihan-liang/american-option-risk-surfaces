@@ -1,0 +1,4 @@
+check,max_error,rmse
+european_put_closed_form,0.0002781746966190046,7.140136855505373e-05
+no_dividend_american_call,0.0002781740085198575,7.14011473194394e-05
+american_put_lcp,0.0,4.0088005617245605e-12
