@@ -10,6 +10,13 @@ common:
   omega: 1.25
   tol: 1.0e-9
   max_iter: 10000
+  rannacher_steps: 0
+
+audit:
+  grids: [80, 120, 160, 240]
+  domains: [3.0, 4.0, 5.0]
+  region_min: 0.4
+  region_max: 1.8
 
 american_put:
   option_type: put
@@ -23,3 +30,8 @@ no_dividend_call:
   option_type: call
   american: true
   q: 0.0
+
+dividend_call:
+  option_type: call
+  american: true
+  q: 0.06

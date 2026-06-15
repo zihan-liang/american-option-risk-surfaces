@@ -1,0 +1,4 @@
+case,obstacle_violation,complementarity_error,monotonicity_violation,convexity_violation,max_psor_iterations,all_psor_converged
+american_put,0.0,4.0088005617245605e-12,0.0,2.220446049250313e-16,12,True
+no_dividend_american_call,0.0,3.134431327977175e-11,2.793375258473755e-17,4.034825806797926e-10,18,True
+dividend_american_call,0.0,5.2696412383000194e-12,9.43769699250646e-14,4.503093443374844e-13,13,True

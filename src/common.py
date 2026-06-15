@@ -34,7 +34,12 @@ def write_json(path: str | Path, data: dict[str, Any]) -> None:
 def write_csv(path: str | Path, rows: list[dict[str, Any]]) -> None:
     if not rows:
         return
+    fieldnames: list[str] = []
+    for row in rows:
+        for key in row:
+            if key not in fieldnames:
+                fieldnames.append(key)
     with open(path, "w", newline="", encoding="utf-8") as fh:
-        writer = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        writer = csv.DictWriter(fh, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)

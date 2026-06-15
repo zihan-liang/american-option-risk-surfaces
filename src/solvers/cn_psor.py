@@ -64,7 +64,15 @@ def _dense_tridiagonal(lower: np.ndarray, diag: np.ndarray, upper: np.ndarray) -
     return mat
 
 
-def _time_boundary_values(cfg: SolverConfig, tau: float) -> tuple[float, float]:
+def fd_operator_matrix(cfg: SolverConfig, spots: np.ndarray | None = None) -> np.ndarray:
+    """Return the interior finite-difference matrix for the Black-Scholes operator L."""
+    if spots is None:
+        spots = np.linspace(0.0, cfg.s_max, cfg.m + 1)
+    lower, diag, upper = _operator_coefficients(cfg, spots)
+    return _dense_tridiagonal(lower, diag, upper)
+
+
+def time_boundary_values(cfg: SolverConfig, tau: float) -> tuple[float, float]:
     if cfg.american:
         return boundary_values(cfg.option_type, tau, cfg.k, cfg.s_max, cfg.r, cfg.q)
     if cfg.option_type == "put":
@@ -113,7 +121,7 @@ def solve_option(cfg: SolverConfig) -> SolverResult:
     taus = np.linspace(0.0, cfg.t, cfg.n + 1)
     dt = taus[1] - taus[0]
     lower, diag, upper = _operator_coefficients(cfg, spots)
-    l_mat = _dense_tridiagonal(lower, diag, upper)
+    l_mat = fd_operator_matrix(cfg, spots)
     eye = np.eye(cfg.m - 1)
     a = eye - 0.5 * dt * l_mat
     b_mat = eye + 0.5 * dt * l_mat
@@ -127,8 +135,8 @@ def solve_option(cfg: SolverConfig) -> SolverResult:
     for step in range(cfg.n):
         tau_old = taus[step]
         tau_new = taus[step + 1]
-        left_old, right_old = _time_boundary_values(cfg, tau_old)
-        left_new, right_new = _time_boundary_values(cfg, tau_new)
+        left_old, right_old = time_boundary_values(cfg, tau_old)
+        left_new, right_new = time_boundary_values(cfg, tau_new)
         values[step, 0] = left_old
         values[step, -1] = right_old
 
@@ -165,6 +173,6 @@ def cn_matrices(cfg: SolverConfig) -> tuple[np.ndarray, np.ndarray, np.ndarray, 
     spots = np.linspace(0.0, cfg.s_max, cfg.m + 1)
     dt = cfg.t / cfg.n
     lower, diag, upper = _operator_coefficients(cfg, spots)
-    l_mat = _dense_tridiagonal(lower, diag, upper)
+    l_mat = fd_operator_matrix(cfg, spots)
     eye = np.eye(cfg.m - 1)
     return spots, lower, upper, eye - 0.5 * dt * l_mat, eye + 0.5 * dt * l_mat

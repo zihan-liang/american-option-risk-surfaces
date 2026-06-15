@@ -6,9 +6,33 @@
     "obstacle_violation": 0.0
   },
   "american_put_initial_boundary": 0.8,
+  "audit_domains": [
+    3.0,
+    4.0,
+    5.0
+  ],
+  "audit_grids": [
+    80,
+    120,
+    160,
+    240
+  ],
+  "dividend_call": {
+    "all_psor_converged": true,
+    "complementarity_error": 5.2696412383000194e-12,
+    "max_psor_iterations": 13,
+    "obstacle_violation": 0.0
+  },
+  "dividend_call_initial_boundary": 1.3333333333333333,
   "european_put": {
     "max_error": 0.0002781746966190046,
     "rmse": 7.140136855505373e-05
   },
-  "no_dividend_call_max_error": 0.0002781740085198575
+  "european_put_region": {
+    "region_max_error": 0.0002781746966190046,
+    "region_rmse": 0.00011977416787694053
+  },
+  "interpretation": "Smoke-grid errors are dominated by uniform-grid resolution near the payoff kink, finite-domain truncation, and second-order CN time stepping from nonsmooth terminal data. Rannacher smoothing is configured but not implemented in the current solver.",
+  "no_dividend_call_max_error": 0.0002781740085198575,
+  "no_dividend_call_region_max_error": 0.0002781740085198575
 }

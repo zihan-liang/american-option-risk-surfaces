@@ -1,0 +1,7 @@
+case,s_max,runtime_seconds,initial_boundary,obstacle_violation
+american_put,3.0,0.31243130000075325,0.8,0.0
+dividend_american_call,3.0,0.4483689000007871,1.35,0.0
+american_put,4.0,0.37453629999981786,0.8,0.0
+dividend_american_call,4.0,0.5606676000006701,1.3333333333333333,0.0
+american_put,5.0,0.37333639999997104,0.7916666666666666,0.0
+dividend_american_call,5.0,0.378729399999429,1.3333333333333333,0.0

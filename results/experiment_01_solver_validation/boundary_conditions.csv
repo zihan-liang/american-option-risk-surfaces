@@ -1,0 +1,4 @@
+case,tau,left_boundary,right_boundary,notes
+american_put,0.75,1.0,0.0,"American put uses K at S=0; calls use max(immediate, large-spot European asymptotic)."
+no_dividend_american_call,0.75,0.0,3.036805582279178,"American put uses K at S=0; calls use max(immediate, large-spot European asymptotic)."
+dividend_american_call,0.75,0.0,3.0,"American put uses K at S=0; calls use max(immediate, large-spot European asymptotic)."
