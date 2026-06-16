@@ -147,3 +147,21 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 7 passes as a baseline violation audit, not as a final surrogate or consistency claim.
 - Failure modes observed: direct-price baselines still violate the obstacle and shape diagnostics; obstacle penalties reduce neither all violations nor RMSE reliably; no baseline is a Greek engine or boundary solver.
 - Next step: introduce the positive continuation-premium price surrogate only after preserving this baseline-failure evidence.
+
+## 2026-06-16
+
+- Stage: Literature review integration and citation audit.
+- Inputs:
+  - Raw source material: `deep-research-report.md`.
+  - Cleaned project-facing review: `docs/literature_review.md`.
+  - Bibliography: `paper/references.bib`.
+- Key conclusions:
+  - Classical VI/LCP/free-boundary literature supports the mathematical and diagnostic framing.
+  - CN/PSOR is supported as an auditable benchmark, not as a novel solver.
+  - Gamma near payoff kinks and free boundaries must be reported cautiously with masks or restricted regions.
+  - Direct-price neural networks are not automatically obstacle- or shape-preserving.
+  - Positive continuation premium is literature-inspired and obstacle-preserving by construction, but its accuracy and robustness remain future experimental claims.
+  - Boundary and Delta heads should remain separate diagnostic tasks.
+- Decision: Stage 7.5 passes as a claim-support and citation-integration stage once the manuscript outline compiles with BibTeX and no raw Deep Research markers remain.
+- Failure modes observed: some Deep Research references support project claims only indirectly; those claims are now worded cautiously.
+- Next step: start the positive continuation-premium price surrogate stage without overstating literature support.

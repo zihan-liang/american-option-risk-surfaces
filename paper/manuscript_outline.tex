@@ -7,27 +7,36 @@
 \maketitle
 
 \section{Introduction}
-American option risk surfaces, Greeks, and early-exercise boundaries.
+American option risk surfaces, Greeks, and early-exercise boundaries. Position the project as a reproducible research-engineering study: a validated classical benchmark first, then diagnostic-aware neural surrogate components.
 
 \section{Literature Review}
-Classical free-boundary methods, optimal stopping, and scientific machine learning.
+Classical American option theory motivates the variational inequality, obstacle, and free-boundary formulation used throughout the project \cite{JailletLambertonLapeyre1990,HuangPang1998}. Early-exercise premium and boundary characterizations motivate treating the continuation premium and the free boundary as meaningful objects rather than incidental plots \cite{Kim1990,CarrJarrowMyneni1992,Peskir2005,ChenChadam2007,EvansKuskeKeller2002}.
+
+Finite-difference studies support the use of domain, grid, and payoff-smoothing diagnostics. Far-field truncation affects Black--Scholes PDE error \cite{KangroNicolaides2000}, and nonsmooth payoff data can harm convergence and hedging quantities unless treated carefully \cite{PooleyVetzalForsyth2003,GilesCarter2006}. Recent work on American-style Greeks further supports cautious Delta/Gamma reporting near free boundaries \cite{InTHout2024}.
+
+Neural option-pricing work supports surrogate modeling as an acceleration strategy, not as a replacement for benchmark generation \cite{HutchinsonLoPoggio1994,RufWang2020,LiuOosterleeBohte2019}. Constraint-aware and no-arbitrage neural-network papers motivate hard structural constraints and audits because ordinary networks do not automatically preserve financial shape properties \cite{DugasEtAl2009,YangZhengHospedales2017,CaoLiuZhai2021}.
+
+Derivative-aware and optimal-stopping machine-learning papers motivate modular treatment of price, boundary, and Delta tasks \cite{BeckerCheriditoJentzen2019,HugeSavine2020,FrandsenPedersenPoulsen2022}. Reproducible computational research guidance supports the project's use of configuration manifests, experiment matrices, and failure-regime reporting \cite{SandveEtAl2013,WilsonEtAl2014}.
 
 \section{Mathematical Formulation}
-Variational inequality and LCP formulation.
+Variational inequality and LCP formulation. Define the payoff, obstacle condition, continuation and exercise regions, complementarity residual, and early-exercise boundary. Emphasize that this formulation is standard and used to organize diagnostics.
 
 \section{Benchmark Method}
-Crank--Nicolson, PSOR, boundary extraction, Greeks, and diagnostics.
+Crank--Nicolson, PSOR, boundary extraction, Greeks, and diagnostics. Present CN/PSOR as the audited benchmark and label generator. Include solver validation, grid/domain/runtime sensitivity, obstacle and complementarity checks, and masked Delta/Gamma reporting.
 
 \section{Application Experiments}
-Stress-regime risk maps for American puts and dividend-paying American calls.
+Stress-regime risk maps for American puts and dividend-paying American calls. Separate American puts, dividend-paying calls, and no-dividend call controls. Report delicate regimes rather than filtering them out.
 
 \section{Neural Surrogate Workflow}
-Positive-premium price surrogate, direct boundary diagnostic head, bounded supervised Delta head.
+Positive-premium price surrogate, direct boundary diagnostic head, bounded supervised Delta head. The positive continuation-premium model should be described as a literature-inspired hard obstacle parameterization, not as an established standard architecture. Boundary and Delta heads should be scoped as separate diagnostic tasks.
 
 \section{Results}
 Price, boundary, Delta, violation, and runtime comparisons.
 
 \section{Limitations and Future Work}
 PSOR remains the audit standard. Extensions include larger regimes, active learning, uncertainty quantification, and richer dynamics.
+
+\bibliographystyle{plain}
+\bibliography{paper/references}
 
 \end{document}

@@ -121,3 +121,25 @@ Stage 7 output contract:
 - [x] `baseline_summary.json` records the selected validation baseline and sample caps.
 - [x] Model artifacts are written under `results/models/` and kept out of Git by ignore rules.
 - [x] Figures are generated under `results/figures/stage07_baseline_surrogates/`.
+
+## Stage 7.5 Literature Review Integration Commands
+
+```powershell
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m compileall -q src tests experiments
+python -m unittest discover -s tests
+Select-String -Path docs/literature_review.md,paper/manuscript_outline.tex -Pattern "turn[0-9]|TODO|TBD"
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage75 -output-directory=build paper/manuscript_outline.tex
+bibtex build/manuscript_outline_stage75
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage75 -output-directory=build paper/manuscript_outline.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage75 -output-directory=build paper/manuscript_outline.tex
+Copy-Item -LiteralPath build\manuscript_outline_stage75.pdf -Destination build\manuscript_outline.pdf -Force
+```
+
+Stage 7.5 output contract:
+
+- [x] `deep-research-report.md` is preserved as raw source material.
+- [x] `docs/literature_review.md` is English, cleaned, and free of Deep Research citation markers.
+- [x] `paper/references.bib` contains the core classical, ML, constraint-aware, and reproducibility references.
+- [x] `paper/manuscript_outline.tex` includes literature-backed citation anchors and a BibTeX bibliography.
+- [x] `docs/claim_audit.md` records cautious claim wording for positive continuation premium, boundary heads, and Delta heads.

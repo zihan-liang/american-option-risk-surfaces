@@ -8,4 +8,5 @@
 | 04 | `experiments/04_application_risk_surfaces.py` | Stress regimes create meaningful risk maps | Put/dividend-call/control regimes are separated; failures are reported and flagged |
 | 05 | `experiments/05_surrogate_dataset.py` | Dataset is traceable to validated PSOR labels | Clean regimes only; exclusions audited; regime split and masks exist |
 | 06 | `experiments/06_surrogate_baselines.py` | Ordinary direct-price baselines expose limitations | Regime-level evaluation includes obstacle, shape, boundary-band, and runtime violations |
-| 07-13 | Surrogate scripts | Modular acceleration is useful only if constraints hold | No obstacle/Delta-bound claims without metrics |
+| 07.5 | `docs/literature_review.md` | Literature supports cautious project positioning | Raw Deep Research markers removed; BibTeX compiles; claims are mapped to references |
+| 08-13 | Surrogate scripts | Modular acceleration is useful only if constraints hold | No obstacle/Delta-bound claims without metrics |
