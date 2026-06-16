@@ -1,0 +1,36 @@
+{
+  "k": 1.0,
+  "m": 120,
+  "max_iter": 10000,
+  "n": 120,
+  "omega": 1.25,
+  "q_values": [
+    0.0,
+    0.03,
+    0.06,
+    0.1
+  ],
+  "r_values": [
+    0.01,
+    0.05,
+    0.1
+  ],
+  "representative_limit": 12,
+  "representative_limit_per_regime": 4,
+  "s_max": 4.0,
+  "sigma_values": [
+    0.2,
+    0.4,
+    0.6
+  ],
+  "spots_max": 1.8,
+  "spots_min": 0.4,
+  "surface_run_id": "run_20260615_102826",
+  "t_values": [
+    0.25,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "tol": 1e-09
+}

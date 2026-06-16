@@ -1,0 +1,107 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry, graphicx}
+\geometry{margin=1in}
+\graphicspath{{./}{../}}
+\title{Stage 5: Application Risk-Surface Experiments}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 5: Application Risk-Surface Experiments}
+
+\subsection{Purpose}
+This stage generates audited American put and dividend-paying American call risk-surface studies after the grid/domain/runtime gate. The CN/PSOR solver remains the source of truth. No neural-network, surrogate-dataset, or model-training evidence is produced in this stage.
+
+\subsection{Method}
+The sweep uses $K=1$, $S_{\max}=4K$, $M=N=120$, PSOR tolerance $10^{-9}$, and $\omega=1.25$. The parameter grid is
+\[
+T\in\{0.25,0.5,1,2\},\quad
+\sigma\in\{0.2,0.4,0.6\},\quad
+r\in\{0.01,0.05,0.10\},\quad
+q\in\{0,0.03,0.06,0.10\}.
+\]
+American puts are run over the full grid. Calls with $q>0$ are reported as dividend-paying American calls. Calls with $q=0$ are reported separately as no-dividend control regimes and are not used as dividend-call evidence.
+
+\subsection{Mathematical Formulation}
+Each solved surface $U(S,\tau)$ is checked against the obstacle $\Phi(S)$ and the LCP complementarity condition. The exercise fraction is computed from nodes where $U-\Phi$ is within the obstacle tolerance. The early-exercise boundary is summarized only at time levels with status \texttt{boundary\_found}; no-dividend call controls with no genuine boundary therefore report no boundary samples.
+
+Delta and Gamma are finite-difference diagnostics from the validated solver surface:
+\[
+\Delta \approx U_S,\qquad \Gamma \approx U_{SS}.
+\]
+Greek summaries use the Stage 3 strict mask, excluding the payoff kink, free-boundary band, and near-zero spot region.
+
+\subsection{Implementation Details}
+The main workflow is \texttt{experiments/04\_application\_risk\_surfaces.py}. Reusable application summaries are implemented in \texttt{src/diagnostics/risk\_metrics.py}. The experiment writes:
+\begin{itemize}
+  \item \texttt{risk\_metrics.csv};
+  \item \texttt{boundary\_summary.csv};
+  \item \texttt{greek\_summary.csv};
+  \item \texttt{regime\_flags.csv};
+  \item \texttt{surface\_index.csv};
+  \item \texttt{application\_summary.json};
+  \item \texttt{application\_config\_manifest.json}.
+\end{itemize}
+Representative surfaces are stored under a run-specific folder. For this run, \texttt{surface\_run\_id} is \texttt{run\_20260615\_102826}. The current surface index records 12 saved surfaces: four put, four dividend-call, and four no-dividend call control surfaces.
+
+\subsection{Validation and Diagnostics}
+The sweep solved 288 regimes: 144 put regimes, 108 dividend-call regimes, and 36 no-dividend call controls.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lr}
+\toprule
+Diagnostic & Maximum observed value\\
+\midrule
+Obstacle violation & $0$\\
+Complementarity error & $1.6813\times10^{-9}$\\
+Monotonicity violation & $1.2280\times10^{-10}$\\
+Convexity violation & $6.9967\times10^{-3}$\\
+\bottomrule
+\end{tabular}
+\caption{Maximum diagnostics across the Stage 5 application sweep.}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+Regime & Cases & Delicate & Diagnostic failures & Max PSOR\\
+\midrule
+Put & 144 & 20 & 20 & 95\\
+Dividend call & 108 & 9 & 9 & 92\\
+No-dividend call control & 36 & 3 & 3 & 108\\
+\bottomrule
+\end{tabular}
+\caption{Regime counts and flags. Failures are retained in the output tables.}
+\end{table}
+
+\subsection{Results}
+The no-dividend call controls report zero genuine boundary samples, as expected. Dividend-paying calls have boundary curves at all 120 positive time levels, with average initial boundary about $2.1176K$ across the sweep. Puts also have boundary curves at all 120 positive time levels, with average initial boundary about $0.4731K$.
+
+The strict-mask Gamma maximum remains largest for put regimes, with maximum absolute strict Gamma about $7.7193$. Dividend-call regimes reach about $7.6131$, and no-dividend call controls reach about $7.5999$. These values support masked Greek reporting only; they do not justify unmasked Gamma claims.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\linewidth]{results/figures/stage05_application_risk_surfaces/put/initial_boundary_heatmap.png}
+\includegraphics[width=0.45\linewidth]{results/figures/stage05_application_risk_surfaces/dividend_call/initial_boundary_heatmap.png}
+\caption{Initial boundary heatmaps at $T=1$, $r=0.05$ for puts and dividend-paying calls.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\linewidth]{results/figures/stage05_application_risk_surfaces/put/gamma_strict_mean_abs_heatmap.png}
+\includegraphics[width=0.45\linewidth]{results/figures/stage05_application_risk_surfaces/dividend_call/gamma_strict_mean_abs_heatmap.png}
+\caption{Strict-mask Gamma mean-absolute heatmaps at $T=1$, $r=0.05$.}
+\end{figure}
+
+\subsection{Failure Modes and Limitations}
+The sweep found 32 diagnostic failures, all retained in \texttt{regime\_flags.csv}. The largest failures are convexity violations in long-maturity, high-volatility cases, especially $T=2$ and $\sigma=0.6$. Obstacle violation remains zero, so these are not obstacle failures. They are treated as numerical-shape warning regimes requiring finer grids, smoothing, or additional review before use as surrogate labels.
+
+Runtime is materially higher for no-dividend call controls in difficult cases, with maximum runtime about $3.9044$ seconds and maximum PSOR iterations 108. The representative `.npz` files are a curated subset; aggregate CSVs are the complete record for the sweep.
+
+\subsection{Conclusion and Next Step}
+Stage 5 passes as an audited application risk-surface generation stage because all regimes are solved, separated, diagnosed, and reported with failures included. It does not pass as an unrestricted surrogate-label gate. The next stage may construct surrogate datasets only from regimes that pass diagnostics or from refined reruns of the flagged high-stress cases.
+
+\end{document}

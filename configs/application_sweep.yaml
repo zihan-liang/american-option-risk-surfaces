@@ -1,10 +1,12 @@
 k: 1.0
 s_max: 4.0
-m: 100
-n: 100
+m: 120
+n: 120
 omega: 1.25
 tol: 1.0e-9
 max_iter: 10000
+representative_limit: 12
+representative_limit_per_regime: 4
 spots_min: 0.4
 spots_max: 1.8
 t_values: [0.25, 0.5, 1.0, 2.0]

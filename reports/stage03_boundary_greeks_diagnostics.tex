@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, graphicx, geometry}
+\geometry{margin=1in}
+\title{Stage 3: Boundary Extraction, Delta/Gamma, and Diagnostics}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 3: Boundary Extraction, Delta/Gamma, and Diagnostics}
+
+\subsection{Purpose}
+This stage extends the validated CN/PSOR benchmark with explicit early-exercise boundary extraction, finite-difference Delta and Gamma surfaces, Greek masks, and diagnostic tables for an American put and a dividend-paying American call. This is still a classical-solver stage and provides no neural-surrogate evidence.
+
+\subsection{Method}
+The experiment solves the base American put configuration and the base dividend-paying American call configuration on the default grid $M=N=120$. For each option type, it computes the continuation premium $P=U-\Phi$, extracts the boundary transition, computes Delta and Gamma from the price surface, builds named masks around delicate regions, and writes CSV, JSON, NPZ, and figure outputs.
+
+\subsection{Mathematical Formulation}
+The continuation premium is
+\[
+P(S,\tau)=U(S,\tau)-\Phi(S).
+\]
+For a put, the exercise region is the low-spot region and the boundary is the transition from $P=0$ to $P>0$. For a dividend-paying call, the exercise region may occur at high spot values and the boundary is the transition from continuation to high-spot exercise.
+
+The Greeks are computed by finite differences:
+\[
+\Delta_i^n \approx \frac{U_{i+1}^n-U_{i-1}^n}{2\Delta S},\qquad
+\Gamma_i^n \approx \frac{U_{i+1}^n-2U_i^n+U_{i-1}^n}{(\Delta S)^2}.
+\]
+Numerical Gamma can spike near the payoff kink and the free boundary. The report therefore separates all-grid summaries from strict-mask summaries.
+
+\subsection{Implementation Details}
+Boundary extraction now records a structured status for each time level:
+\[
+\texttt{boundary\_found},\quad \texttt{no\_exercise},\quad \texttt{all\_exercise}.
+\]
+The output CSV records boundary value, status, exercise node count, and continuation node count.
+
+Greek masks are:
+\begin{itemize}
+  \item \texttt{near\_kink}: nodes near $S=K$;
+  \item \texttt{near\_boundary}: nodes near the extracted free boundary;
+  \item \texttt{near\_zero\_spot}: nodes too close to zero spot for stable relative interpretation;
+  \item \texttt{strict}: nodes outside those delicate regions.
+\end{itemize}
+
+\subsection{Validation and Diagnostics}
+The stage writes \texttt{boundary\_curve.csv}, \texttt{greek\_summary.csv}, \texttt{mask\_summary.csv}, \texttt{diagnostics\_summary.json}, and \texttt{surface\_greeks.npz} for each option. It also saves price, Delta, Gamma, and boundary figures under \texttt{results/figures/stage03\_boundary\_greeks/}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+Case & Obstacle & Complementarity & Monotonicity & Convexity & Strict mask\\
+\midrule
+Put & 0 & $4.0088\times10^{-12}$ & 0 & $2.22\times10^{-16}$ & 0.9669\\
+Dividend call & 0 & $5.2696\times10^{-12}$ & $9.44\times10^{-14}$ & $4.50\times10^{-13}$ & 0.9670\\
+\bottomrule
+\end{tabular}
+\caption{Stage 3 diagnostics for the base put and dividend-paying call.}
+\end{table}
+
+\subsection{Results}
+The American put boundary at the final time level is $0.8K$ with status \texttt{boundary\_found}. The dividend-paying American call boundary at the final time level is $1.3333K$ with status \texttt{boundary\_found}.
+
+For the put, the all-grid Gamma maximum is $15.0$, while the strict-mask Gamma maximum is about $7.55$. Near the payoff kink the mean absolute Gamma is about $3.90$, and near the boundary it is about $1.63$. For the dividend-paying call, the all-grid Gamma maximum is also $15.0$, while the strict-mask Gamma maximum is about $7.50$. Near the kink the mean absolute Gamma is about $3.65$, and near the boundary it is about $0.45$.
+
+These results confirm that Gamma instability is localized near mathematically delicate regions rather than being hidden. The strict-mask summaries provide a cleaner diagnostic region for later risk-surface and surrogate-label work.
+
+\subsection{Failure Modes and Limitations}
+Boundary extraction is still grid-resolution limited, so boundary values move in grid increments unless interpolation is supported by a clear premium transition. The current Greeks are finite-difference diagnostics from the solver surface; they are not smoothed Greeks and should not be over-interpreted near the payoff kink or free boundary. Rannacher smoothing is still not active in the solver, so near-maturity Gamma remains especially delicate.
+
+\subsection{Conclusion and Next Step}
+The Stage 3 gate passes for producing classical boundary and Greek diagnostics from the validated CN/PSOR solver. The next stage should quantify grid/domain sensitivity and runtime for these boundary and Greek quantities before any surrogate dataset construction.
+
+\end{document}

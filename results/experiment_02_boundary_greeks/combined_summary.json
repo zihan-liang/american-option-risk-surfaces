@@ -1,0 +1,11 @@
+{
+  "cases": 2,
+  "max_complementarity_error": 5.2696412383000194e-12,
+  "max_convexity_violation": 4.503093443374844e-13,
+  "max_monotonicity_violation": 9.43769699250646e-14,
+  "max_obstacle_violation": 0.0,
+  "option_types": [
+    "put",
+    "call"
+  ]
+}

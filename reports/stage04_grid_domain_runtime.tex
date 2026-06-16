@@ -1,0 +1,114 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry, graphicx}
+\geometry{margin=1in}
+\graphicspath{{./}{../}}
+\title{Stage 4: Grid/Domain Sensitivity and Runtime}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 4: Grid/Domain Sensitivity and Runtime}
+
+\subsection{Purpose}
+This stage audits numerical stability before any surrogate dataset construction. It measures how grid refinement and domain truncation affect price, early-exercise boundary, Delta, Gamma, obstacle and complementarity diagnostics, shape diagnostics, PSOR iterations, and runtime for a base American put and a dividend-paying American call.
+
+\subsection{Method}
+The experiment runs both option cases from a shared convergence configuration. Grid refinement uses $M=N\in\{40,80,120,160,240\}$ on the reference domain $S_{\max}=4K$. The finest grid, $M=N=240$, is used as the stage reference. Domain sensitivity uses $S_{\max}\in\{3K,4K,5K\}$ at $M=N=120$ and compares the stable reporting region $S/K\in[0.4,1.8]$ against the same reference surface.
+
+Coarser price, Delta, and Gamma surfaces are interpolated onto the reference tensor-product grid before errors are computed. Boundary errors are computed only at time levels where both the candidate and reference curves have status \texttt{boundary\_found}. Delta and Gamma errors use the Stage 3 strict Greek mask, which excludes the payoff kink, free-boundary band, and near-zero spot region.
+
+\subsection{Mathematical Formulation}
+For a computed surface $U_h(S_i,\tau_n)$ and reference surface $U_{\mathrm{ref}}(S_i,\tau_n)$, the reported price error on the final time level is
+\[
+\mathrm{RMSE}(U_h,U_{\mathrm{ref}})=
+\left(\frac{1}{|\Omega|}\sum_{(i,n)\in\Omega}
+\left(U_h(S_i,\tau_n)-U_{\mathrm{ref}}(S_i,\tau_n)\right)^2\right)^{1/2},
+\]
+where $\Omega$ is either the final-time reporting region for price or the strict-mask region for Greeks. Boundary errors compare the extracted early-exercise boundary $B_h(\tau)$ against $B_{\mathrm{ref}}(\tau)$:
+\[
+\mathrm{MAE}(B_h,B_{\mathrm{ref}})=
+\frac{1}{|\mathcal{T}|}\sum_{\tau\in\mathcal{T}} |B_h(\tau)-B_{\mathrm{ref}}(\tau)|,
+\]
+with $\mathcal{T}$ restricted to shared \texttt{boundary\_found} levels.
+
+\subsection{Implementation Details}
+Reusable comparison helpers were added in \texttt{src/diagnostics/convergence.py}. The expanded experiment is \texttt{experiments/03\_convergence\_domain\_runtime.py}. It writes:
+\begin{itemize}
+  \item \texttt{grid\_convergence.csv};
+  \item \texttt{domain\_sensitivity.csv};
+  \item \texttt{runtime\_table.csv};
+  \item \texttt{diagnostics\_table.csv};
+  \item \texttt{convergence\_summary.json};
+  \item \texttt{convergence\_config\_manifest.json};
+  \item \texttt{reference\_surfaces.npz}.
+\end{itemize}
+
+Figures are saved under \texttt{results/figures/stage04\_convergence\_runtime/} for each option case.
+
+\subsection{Validation and Diagnostics}
+The full unit-test suite contains 25 tests, including Stage 4 checks for surface interpolation, boundary comparison, strict-mask Greek errors, and the experiment output contract. Source compilation also passes for \texttt{src}, \texttt{tests}, and \texttt{experiments}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+Diagnostic & Maximum observed value\\
+\midrule
+Obstacle violation & $0$\\
+Complementarity error & $6.1289\times10^{-12}$\\
+Monotonicity violation & $1.2989\times10^{-11}$\\
+Convexity violation & $2.5977\times10^{-11}$\\
+Maximum PSOR iterations & $14$\\
+\bottomrule
+\end{tabular}
+\caption{Maximum diagnostics across grid and domain runs.}
+\end{table}
+
+\subsection{Results}
+Price errors decrease clearly under grid refinement. At grid 40, the put final-time regional price RMSE is $8.0198\times10^{-4}$ and the dividend-call RMSE is $5.5487\times10^{-4}$. At grid 160, the corresponding errors fall to $4.7205\times10^{-5}$ and $3.7459\times10^{-5}$ before reaching zero by definition on the grid-240 reference.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llrrrr}
+\toprule
+Case & Grid & Price RMSE & Boundary MAE & Delta RMSE & Gamma RMSE\\
+\midrule
+Put & 40 & $8.0198\times10^{-4}$ & $8.7917\times10^{-2}$ & $9.9255\times10^{-3}$ & $2.6363\times10^{-1}$\\
+Put & 80 & $2.1236\times10^{-4}$ & $4.8958\times10^{-2}$ & $2.4807\times10^{-3}$ & $1.3018\times10^{-1}$\\
+Put & 120 & $1.0159\times10^{-4}$ & $3.0139\times10^{-2}$ & $7.5543\times10^{-4}$ & $7.9176\times10^{-2}$\\
+Put & 160 & $4.7205\times10^{-5}$ & $1.7552\times10^{-2}$ & $4.6139\times10^{-4}$ & $5.2110\times10^{-2}$\\
+Dividend call & 40 & $5.5487\times10^{-4}$ & $1.4333\times10^{-1}$ & $9.6044\times10^{-3}$ & $1.7339\times10^{-1}$\\
+Dividend call & 80 & $1.6033\times10^{-4}$ & $9.3542\times10^{-2}$ & $2.6271\times10^{-3}$ & $9.0479\times10^{-2}$\\
+Dividend call & 120 & $7.8662\times10^{-5}$ & $5.9722\times10^{-2}$ & $8.6250\times10^{-4}$ & $6.3808\times10^{-2}$\\
+Dividend call & 160 & $3.7459\times10^{-5}$ & $3.6823\times10^{-2}$ & $5.3932\times10^{-4}$ & $4.6166\times10^{-2}$\\
+\bottomrule
+\end{tabular}
+\caption{Grid convergence against the grid-240 reference. Greek errors use the strict mask.}
+\end{table}
+
+Runtime increases with grid size. The put runtime rises from $0.0341$ seconds at grid 40 to $0.8493$ seconds at grid 240. The dividend-paying call runtime rises from $0.0342$ seconds to $1.1688$ seconds. Mean PSOR iterations decrease mildly for the put as the grid refines and remain below 10 for the dividend-paying call at the finest grid.
+
+Domain sensitivity is modest on the reporting region. For the put, the domain-study price RMSE ranges from $4.7194\times10^{-5}$ to $1.1253\times10^{-4}$, with initial boundary values $0.8000K$, $0.8000K$, and $0.7917K$ for $S_{\max}=3K,4K,5K$. For the dividend-paying call, the price RMSE ranges from $3.7389\times10^{-5}$ to $9.1275\times10^{-5}$, with initial boundary values $1.3500K$, $1.3333K$, and $1.3333K$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\linewidth]{results/figures/stage04_convergence_runtime/put/price_error_vs_grid.png}
+\includegraphics[width=0.45\linewidth]{results/figures/stage04_convergence_runtime/dividend_call/price_error_vs_grid.png}
+\caption{Price error against grid refinement for the put and dividend-paying call.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\linewidth]{results/figures/stage04_convergence_runtime/put/runtime_vs_grid.png}
+\includegraphics[width=0.45\linewidth]{results/figures/stage04_convergence_runtime/dividend_call/runtime_vs_grid.png}
+\caption{Runtime against grid refinement for both option cases.}
+\end{figure}
+
+\subsection{Failure Modes and Limitations}
+Boundary error remains grid-limited because the extracted boundary is tied to the uniform spot mesh. Gamma is the weakest convergence quantity even under the strict mask, which is expected because second derivatives amplify interpolation and nonsmooth-payoff effects. This stage uses the grid-240 solution as an engineering reference, not an external high-resolution or analytic benchmark. Rannacher smoothing is still not active, so near-maturity Gamma should remain restricted in any claims.
+
+\subsection{Conclusion and Next Step}
+The Stage 4 gate passes for continuing classical application risk-surface experiments. The evidence supports using the current solver for engineering-scale American put and dividend-paying call studies, with attached diagnostics and explicit limitations. It does not support publication-grade convergence claims or unmasked Gamma claims.
+
+\end{document}

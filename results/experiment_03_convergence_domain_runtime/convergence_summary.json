@@ -1,4 +1,21 @@
 {
-  "selected_domain": 4.0,
-  "selected_grid": 120
+  "cases": 2,
+  "domains": [
+    3.0,
+    4.0,
+    5.0
+  ],
+  "grids": [
+    40,
+    80,
+    120,
+    160,
+    240
+  ],
+  "max_complementarity_error": 6.1288898628566304e-12,
+  "max_convexity_violation": 2.597745574939505e-11,
+  "max_monotonicity_violation": 1.2988727874697525e-11,
+  "max_obstacle_violation": 0.0,
+  "reference_domain": 4.0,
+  "reference_grid": 240
 }

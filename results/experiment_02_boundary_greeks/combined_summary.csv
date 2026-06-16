@@ -1,0 +1,3 @@
+option_type,obstacle_violation,complementarity_error,monotonicity_violation,convexity_violation,boundary_at_maturity,boundary_status_at_maturity,strict_mask_fraction,near_kink_fraction,near_boundary_fraction,near_zero_spot_fraction
+put,0.0,4.0088005617245605e-12,0.0,2.220446049250313e-16,0.8,boundary_found,0.9669421487603306,0.008264462809917356,0.008264462809917356,0.01652892561983471
+call,0.0,5.2696412383000194e-12,9.43769699250646e-14,4.503093443374844e-13,1.3333333333333333,boundary_found,0.9670104501058671,0.008264462809917356,0.008264462809917356,0.01652892561983471

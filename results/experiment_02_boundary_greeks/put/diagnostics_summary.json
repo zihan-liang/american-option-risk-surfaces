@@ -1,0 +1,13 @@
+{
+  "boundary_at_maturity": 0.8,
+  "boundary_status_at_maturity": "boundary_found",
+  "complementarity_error": 4.0088005617245605e-12,
+  "convexity_violation": 2.220446049250313e-16,
+  "monotonicity_violation": 0.0,
+  "near_boundary_fraction": 0.008264462809917356,
+  "near_kink_fraction": 0.008264462809917356,
+  "near_zero_spot_fraction": 0.01652892561983471,
+  "obstacle_violation": 0.0,
+  "option_type": "put",
+  "strict_mask_fraction": 0.9669421487603306
+}

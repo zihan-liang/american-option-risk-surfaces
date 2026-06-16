@@ -1,4 +1,17 @@
 {
-  "cases": 288,
-  "note": "Review failed or delicate regimes before paper claims."
+  "delicate_regimes": 32,
+  "diagnostic_failures": 32,
+  "max_complementarity_error": 1.6812843948429075e-09,
+  "max_convexity_violation": 0.006996739106769435,
+  "max_monotonicity_violation": 1.2279622587102262e-10,
+  "max_obstacle_violation": 0.0,
+  "note": "No neural surrogate evidence is produced by this stage.",
+  "regime_counts": {
+    "dividend_call": 108,
+    "no_dividend_call_control": 36,
+    "put": 144
+  },
+  "saved_surfaces": 12,
+  "surface_run_id": "run_20260615_102826",
+  "total_cases": 288
 }

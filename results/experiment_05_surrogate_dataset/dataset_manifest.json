@@ -1,6 +1,47 @@
 {
+  "clean_regimes": 223,
+  "dataset_path": "data/processed/surrogate_dataset.npz",
+  "excluded_regimes": 65,
+  "feature_names": [
+    "log_moneyness",
+    "tau_over_T",
+    "r",
+    "q",
+    "sigma",
+    "T",
+    "is_call"
+  ],
   "features": 7,
-  "samples": 119072,
-  "test_regimes": 8,
-  "train_regimes": 24
+  "label_names": [
+    "price_over_K",
+    "premium_over_K",
+    "payoff_over_K",
+    "delta",
+    "K_gamma"
+  ],
+  "labels": 5,
+  "samples": 3264943,
+  "seed": 7,
+  "solver_grid": {
+    "m": 120,
+    "n": 120,
+    "s_max": 4.0
+  },
+  "source_experiment_root": "results\\experiment_04_application_risk_surfaces",
+  "source_files": [
+    "results\\experiment_04_application_risk_surfaces\\risk_metrics.csv",
+    "results\\experiment_04_application_risk_surfaces\\regime_flags.csv",
+    "results\\experiment_04_application_risk_surfaces\\boundary_summary.csv"
+  ],
+  "source_stage": "stage05_application_risk_surfaces",
+  "split_regime_counts": {
+    "test": 34,
+    "train": 156,
+    "validation": 33
+  },
+  "split_sample_counts": {
+    "test": 497794,
+    "train": 2283996,
+    "validation": 483153
+  }
 }

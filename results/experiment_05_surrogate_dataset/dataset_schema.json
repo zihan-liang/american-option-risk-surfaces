@@ -1,0 +1,32 @@
+{
+  "feature_names": [
+    "log_moneyness",
+    "tau_over_T",
+    "r",
+    "q",
+    "sigma",
+    "T",
+    "is_call"
+  ],
+  "label_names": [
+    "price_over_K",
+    "premium_over_K",
+    "payoff_over_K",
+    "delta",
+    "K_gamma"
+  ],
+  "metadata_names": [
+    "boundary",
+    "exercise_indicator",
+    "strict_greek_mask",
+    "near_kink",
+    "near_boundary",
+    "near_zero_spot",
+    "regime_key",
+    "split",
+    "diagnostic_status",
+    "source_stage",
+    "solver_config_hash"
+  ],
+  "primary_split": "regime"
+}

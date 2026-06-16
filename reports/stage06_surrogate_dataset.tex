@@ -1,0 +1,108 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry, graphicx}
+\geometry{margin=1in}
+\graphicspath{{./}{../}}
+\title{Stage 6: Surrogate Dataset Construction}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 6: Surrogate Dataset Construction}
+
+\subsection{Purpose}
+This stage constructs a supervised dataset for later surrogate experiments using validated CN/PSOR labels. It is a data-engineering stage only. No neural-network model is trained, selected, or evaluated here.
+
+\subsection{Method}
+The dataset consumes the Stage 5 application outputs:
+\[
+\texttt{risk\_metrics.csv},\quad
+\texttt{regime\_flags.csv},\quad
+\texttt{boundary\_summary.csv}.
+\]
+Only American put and dividend-paying American call regimes with no diagnostic failure and no delicate-regime flag are included as clean labels. No-dividend American call controls and all flagged regimes are retained in \texttt{excluded\_regimes.csv} with explicit reasons.
+
+The primary split is regime-level, not pointwise. With seed 7, the 223 clean regimes are split into 156 train regimes, 33 validation regimes, and 34 test regimes. This prevents neighboring grid points from the same option regime from leaking across splits.
+
+\subsection{Mathematical Formulation}
+For each clean regime, the finite-difference solver produces a surface $U(S,\tau)$, payoff $\Phi(S)$, continuation premium
+\[
+P(S,\tau)=\max(U(S,\tau)-\Phi(S),0),
+\]
+finite-difference Delta, and finite-difference Gamma. Each node contributes the feature vector
+\[
+\left(\log(S/K),\;\tau/T,\;r,\;q,\;\sigma,\;T,\;\mathbf{1}_{\mathrm{call}}\right).
+\]
+The label vector is
+\[
+\left(U/K,\;P/K,\;\Phi/K,\;\Delta,\;K\Gamma\right).
+\]
+Greek labels are accompanied by strict masks and exclusion masks for the payoff kink, free-boundary band, and near-zero spot region.
+
+\subsection{Implementation Details}
+The main workflow is \texttt{experiments/05\_surrogate\_dataset.py}. Dataset sample construction is implemented in \texttt{src/data/dataset\_builder.py}. Regime-level train/validation/test splitting is implemented in \texttt{src/data/splits.py}.
+
+The generated dataset is \texttt{data/processed/surrogate\_dataset.npz}. It contains \texttt{features}, \texttt{labels}, \texttt{boundary}, \texttt{exercise\_indicator}, \texttt{strict\_greek\_mask}, \texttt{near\_kink}, \texttt{near\_boundary}, \texttt{near\_zero\_spot}, \texttt{regime\_key}, \texttt{split}, \texttt{diagnostic\_status}, \texttt{source\_stage}, and \texttt{solver\_config\_hash}.
+
+\subsection{Validation and Diagnostics}
+\begin{table}[h]
+\centering
+\begin{tabular}{lr}
+\toprule
+Quantity & Value\\
+\midrule
+Clean regimes & 223\\
+Excluded regimes & 65\\
+Total samples & 3,264,943\\
+Feature dimension & 7\\
+Label dimension & 5\\
+Train regimes & 156\\
+Validation regimes & 33\\
+Test regimes & 34\\
+\bottomrule
+\end{tabular}
+\caption{Dataset construction summary.}
+\end{table}
+
+The excluded regimes consist of 33 control-only regimes, 29 diagnostic-failure/delicate regimes, and 3 no-dividend control regimes that also carried diagnostic flags. No regime key appears in more than one split.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}
+\toprule
+Mask & Samples & Fraction\\
+\midrule
+Exercise indicator & 1,766,509 & 0.5411\\
+Strict Greek mask & 3,157,110 & 0.9670\\
+Near kink & 26,983 & 0.0083\\
+Near boundary & 26,983 & 0.0083\\
+Near zero spot & 53,966 & 0.0165\\
+\bottomrule
+\end{tabular}
+\caption{Mask coverage in the dataset.}
+\end{table}
+
+\subsection{Results}
+The dataset contains normalized price, nonnegative continuation premium, payoff, Delta, and $K\Gamma$ labels. The continuation premium ranges from 0 to about 0.2634. The strict Greek mask covers about 96.70\% of nodes, leaving explicit exclusions for delicate Greek zones.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\linewidth]{results/figures/stage06_surrogate_dataset/price_over_K_hist.png}
+\includegraphics[width=0.45\linewidth]{results/figures/stage06_surrogate_dataset/premium_over_K_hist.png}
+\caption{Price and continuation-premium label distributions.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\linewidth]{results/figures/stage06_surrogate_dataset/delta_hist.png}
+\includegraphics[width=0.45\linewidth]{results/figures/stage06_surrogate_dataset/K_gamma_hist.png}
+\caption{Delta and scaled-Gamma label distributions. Gamma remains a masked diagnostic label.}
+\end{figure}
+
+\subsection{Failure Modes and Limitations}
+This dataset excludes the 32 Stage 5 diagnostic-failure regimes rather than repairing them. It also excludes no-dividend call controls from the clean ML dataset. Therefore, later surrogate experiments must state that their training envelope is the clean, diagnostic-passing American put and dividend-paying call envelope. Gamma labels are included only with masks; the dataset does not imply that unmasked Gamma is stable.
+
+\subsection{Conclusion and Next Step}
+The Stage 6 gate passes for beginning baseline surrogate experiments on the clean dataset. It does not provide surrogate-performance evidence. The next stage should train baseline models and audit their obstacle, monotonicity, convexity, boundary, and Greek failures without hiding weak regimes.
+
+\end{document}

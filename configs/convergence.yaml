@@ -1,5 +1,11 @@
+cases:
+  - name: put
+    option_type: put
+    q: 0.0
+  - name: dividend_call
+    option_type: call
+    q: 0.06
 base:
-  option_type: put
   k: 1.0
   t: 1.0
   r: 0.05
@@ -14,7 +20,12 @@ grids:
   - 40
   - 80
   - 120
+  - 160
+  - 240
 domains:
   - 3.0
   - 4.0
   - 5.0
+region:
+  s_min: 0.4
+  s_max: 1.8
