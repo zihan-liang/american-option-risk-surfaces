@@ -189,3 +189,19 @@ Restricted wording:
 - Do not report Delta metrics without strict Greek mask qualification.
 - Do not claim near-boundary Delta performance from the capped strict-mask run because near-boundary strict samples are absent there.
 - Do not make Gamma or integrated-workflow claims from this stage.
+
+## Integrated Modular Workflow - 2026-06-16
+
+Allowed wording:
+
+- The modular workflow combines separate price, boundary, and Delta heads for scenario screening.
+- Integrated metrics are audited against regenerated PSOR labels on held-out test regimes.
+- The evaluated workflow has zero obstacle and Delta-bound violation on the six fresh audit cases.
+- PSOR remains the benchmark and audit mechanism for new regimes.
+
+Restricted wording:
+
+- Do not claim the integrated workflow replaces PSOR.
+- Do not claim one network solves price, boundary, and Greeks.
+- Do not claim Gamma support from the integrated workflow.
+- Do not hide that boundary estimates are the weakest integrated component.

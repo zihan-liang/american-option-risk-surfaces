@@ -1,0 +1,90 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry, graphicx, url}
+\geometry{margin=1in}
+\graphicspath{{./}{../}}
+\title{Stage 11: Integrated Modular Workflow With PSOR Audit}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 11: Integrated Modular Workflow With PSOR Audit}
+
+\subsection{Purpose}
+This stage evaluates the modular workflow formed by the separate price, boundary, and Delta heads. The purpose is scenario screening with PSOR audit, not replacement of the CN/PSOR benchmark and not a claim that one neural network solves price, free boundary, and Greeks.
+
+\subsection{Method}
+The workflow loads three selected artifacts: the positive-premium price model, the direct boundary diagnostic head, and the bounded supervised Delta head. Six held-out test regimes are selected from the Stage 6 split table: three puts and three dividend-paying calls. For each regime, fresh CN/PSOR labels are regenerated on the Stage 6 grid before evaluating the workflow.
+
+\subsection{Mathematical Formulation}
+The price component predicts nonnegative continuation premium,
+\[
+\widehat{U}=\Phi+\widehat{P}_{\theta}, \qquad \widehat{P}_{\theta}\geq 0.
+\]
+The boundary component predicts a separate supervised estimate $\widehat{B}/K$. The Delta component predicts a bounded supervised estimate,
+\[
+\widehat{\Delta}_{\mathrm{put}}\in[-1,0], \qquad
+\widehat{\Delta}_{\mathrm{call}}\in[0,1].
+\]
+These outputs are modular diagnostics evaluated against regenerated PSOR labels.
+
+\subsection{Implementation Details}
+The workflow loader is implemented in \path{src/workflow.py}. The integrated experiment is implemented in \path{experiments/13_integrated_application_workflow.py}. The experiment writes case metrics, by-regime metrics, violation tables, timing tables, fresh PSOR cases, and figures under the Stage 11 result directories.
+
+\subsection{Validation and Diagnostics}
+\begin{table}[h]
+\centering
+\begin{tabular}{llrrr}
+\toprule
+Case & Type & Price RMSE & Boundary MAE & Strict Delta RMSE\\
+\midrule
+put\_T0p25\_sig0p2\_r0p1\_q0p03 & Put & 0.0081 & 0.1100 & 0.0461\\
+put\_T0p25\_sig0p4\_r0p01\_q0 & Put & 0.0108 & 0.1455 & 0.0231\\
+put\_T0p25\_sig0p4\_r0p01\_q0p06 & Put & 0.0114 & 0.3270 & 0.0230\\
+call\_T0p25\_sig0p2\_r0p05\_q0p1 & Call & 0.0058 & 0.1229 & 0.0443\\
+call\_T0p25\_sig0p4\_r0p05\_q0p06 & Call & 0.0095 & 0.1296 & 0.0218\\
+call\_T0p25\_sig0p4\_r0p1\_q0p1 & Call & 0.0096 & 0.0884 & 0.0216\\
+\bottomrule
+\end{tabular}
+\caption{Integrated workflow metrics on six fresh PSOR audit regimes.}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lr}
+\toprule
+Metric & Value\\
+\midrule
+Mean price RMSE & 0.0092\\
+Mean boundary MAE & 0.1539\\
+Mean strict Delta RMSE & 0.0300\\
+Maximum obstacle violation & 0.0000\\
+Maximum Delta-bound violation & 0.0000\\
+Mean speedup & 87.52\\
+\bottomrule
+\end{tabular}
+\caption{Aggregate integrated workflow diagnostics. Speedup is PSOR generation time divided by workflow evaluation time.}
+\end{table}
+
+\subsection{Results}
+The integrated workflow preserves the hard obstacle and Delta-bound checks on the evaluated cases. Price and strict-mask Delta errors are moderate. Boundary remains the weakest component, especially for the put case with $T=0.25$, $\sigma=0.4$, $r=0.01$, and $q=0.06$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.78\linewidth]{results/figures/stage11_integrated_workflow/integrated_price_rmse.png}
+\caption{Integrated price RMSE by fresh PSOR audit case.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.78\linewidth]{results/figures/stage11_integrated_workflow/integrated_delta_rmse.png}
+\caption{Integrated strict-mask Delta RMSE by fresh PSOR audit case.}
+\end{figure}
+
+\subsection{Failure Modes and Limitations}
+The workflow is evaluated on six deterministic held-out regimes, so it is not a universal deployment study. Boundary estimates remain materially weaker than price and Delta estimates. PSOR remains required for audit, new regimes, and final label generation. This stage does not report Gamma and does not merge the three heads into one model.
+
+\subsection{Conclusion and Next Step}
+The Stage 11 gate passes for modular scenario screening with PSOR audit. The next stage should move to claim audit and final report preparation, preserving the restricted language around the boundary head, the price model, and Delta diagnostics.
+
+\end{document}

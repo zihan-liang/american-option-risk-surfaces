@@ -1,0 +1,7 @@
+case_id,option_type,samples,max_price_obstacle_violation,max_delta_bound_violation,boundary_samples,strict_delta_samples
+put_T0p25_sig0p2_r0p1_q0p03,put,14641,0.0,0.0,14641,14157
+put_T0p25_sig0p4_r0p01_q0,put,14641,0.0,0.0,14641,14157
+put_T0p25_sig0p4_r0p01_q0p06,put,14641,0.0,0.0,14641,14157
+call_T0p25_sig0p2_r0p05_q0p1,call,14641,0.0,0.0,14641,14158
+call_T0p25_sig0p4_r0p05_q0p06,call,14641,0.0,0.0,14641,14158
+call_T0p25_sig0p4_r0p1_q0p1,call,14641,0.0,0.0,14641,14158

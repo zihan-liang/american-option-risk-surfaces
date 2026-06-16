@@ -1,0 +1,17 @@
+{
+  "batch_size": 8192,
+  "boundary_model": "results/models/boundary_head_mlp.pt",
+  "cases_per_option_type": 3,
+  "dataset": "data/processed/surrogate_dataset.npz",
+  "delta_model": "results/models/bounded_delta_head_mlp.pt",
+  "device": "auto",
+  "k": 1.0,
+  "m": 120,
+  "max_iter": 20000,
+  "n": 120,
+  "omega": 1.25,
+  "price_model": "results/models/selected_final_price_premium.pt",
+  "s_max": 4.0,
+  "split_table": "results/experiment_05_surrogate_dataset/split_table.csv",
+  "tol": 1e-09
+}

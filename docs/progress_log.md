@@ -234,3 +234,21 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 10 passes as a bounded supervised Delta diagnostic stage, not as evidence that the price surrogate is a Greek engine.
 - Failure modes observed: price-model derivatives have nonzero Delta-bound violations; strict-mask capped metrics contain no near-boundary samples, so boundary-zone Delta remains a limitation.
 - Next step: build an integrated modular workflow with PSOR audit checks, keeping price, boundary, and Delta claims separate.
+
+## 2026-06-16
+
+- Stage: Integrated modular workflow with PSOR audit.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_integrated_workflow*.py"`
+  - `python experiments/13_integrated_application_workflow.py --config configs/integrated_workflow.yaml`
+- Key metrics:
+  - Fresh PSOR audit cases: `6`.
+  - Mean price RMSE: `0.009187410333670234`.
+  - Mean boundary MAE: `0.15389696844866121`.
+  - Mean strict Delta RMSE: `0.02998043947678844`.
+  - Maximum price obstacle violation: `0.0`.
+  - Maximum Delta-bound violation: `0.0`.
+  - Mean speedup: `87.52488631464541`.
+- Decision: Stage 11 passes as modular scenario screening with PSOR audit, not as a PSOR replacement.
+- Failure modes observed: boundary errors remain the weakest part of the integrated workflow; only six deterministic held-out regimes are evaluated; Gamma is not included.
+- Next step: perform final claim audit and report/manuscript preparation.

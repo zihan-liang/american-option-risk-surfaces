@@ -209,3 +209,23 @@ Stage 10 output contract:
 - [x] `delta_head_by_regime.csv` retains weak regimes.
 - [x] `delta_head_violation_table.csv` reports Delta-bound violations and mask-profile diagnostics.
 - [x] `bounded_delta_head_mlp.pt` stores the selected supervised Delta head under `results/models/`.
+
+## Stage 11 Integrated Workflow Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/13_integrated_application_workflow.py --config configs/integrated_workflow.yaml
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage11_integrated_workflow.tex
+```
+
+Stage 11 output contract:
+
+- [x] `integrated_case_metrics.csv` reports price, boundary, strict Delta, obstacle, and Delta-bound metrics.
+- [x] `integrated_by_regime.csv` keeps per-regime workflow errors.
+- [x] `integrated_violation_table.csv` records obstacle and Delta-bound checks.
+- [x] `integrated_timing.csv` records PSOR time, workflow time, and speedup.
+- [x] `integrated_summary.json` states `scenario_screening_with_psor_audit` and `claims_psor_replacement=false`.
+- [x] Fresh PSOR audit cases are saved under `results/experiment_13_integrated_application_workflow/fresh_cases/`.
