@@ -1,0 +1,115 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry, graphicx}
+\geometry{margin=1in}
+\graphicspath{{./}{../}}
+\title{Stage 7: Baseline Surrogate Models and Violation Audit}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 7: Baseline Surrogate Models and Violation Audit}
+
+\subsection{Purpose}
+This stage trains and audits simple direct-price surrogate baselines on the clean Stage 6 dataset. The purpose is to establish honest baseline evidence before introducing any obstacle-preserving continuation-premium architecture. This stage does not train boundary heads, Delta heads, or an integrated neural workflow.
+
+\subsection{Method}
+The clean Stage 6 dataset is loaded with the regime-level train/validation/test split created earlier. Three baseline families are evaluated:
+\[
+\text{ridge linear direct price},\qquad
+\text{plain MLP direct price},\qquad
+\text{MLP direct price with obstacle penalty}.
+\]
+The obstacle-penalty MLP uses penalty weights $\lambda\in\{1,10\}$, while the plain MLP is the $\lambda=0$ case. The penalty is an audit baseline, not a guarantee of obstacle consistency.
+
+Training uses capped deterministic samples: 250,000 train samples, 100,000 validation samples, and 250,000 test samples. Evaluation remains regime-split based rather than pointwise random splitting.
+
+\subsection{Mathematical Formulation}
+Each model predicts normalized direct price
+\[
+\widehat{u}_{\theta}(x)\approx U(S,\tau)/K,
+\]
+from the feature vector
+\[
+x=\left(\log(S/K),\;\tau/T,\;r,\;q,\;\sigma,\;T,\;\mathbf{1}_{\mathrm{call}}\right).
+\]
+For a direct-price model, the obstacle condition is checked after prediction:
+\[
+\max(\Phi/K-\widehat{u}_{\theta},0).
+\]
+The obstacle-penalty MLP minimizes a training loss of the form
+\[
+\frac{1}{n}\sum_i(\widehat{u}_{\theta}(x_i)-u_i)^2
++\lambda\,\frac{1}{n}\sum_i \max(\phi_i-\widehat{u}_{\theta}(x_i),0)^2.
+\]
+This soft penalty does not enforce $\widehat{u}_{\theta}\geq \Phi/K$ exactly, and it does not make the model a Greek engine.
+
+\subsection{Implementation Details}
+The workflow is implemented in \texttt{experiments/06\_surrogate\_baselines.py}. Training helpers are in \texttt{src/models/training.py}, including deterministic sample caps, seed control, PyTorch training, inference, and checkpoint writing. Metric helpers are in \texttt{src/models/metrics.py}.
+
+The configuration file is \texttt{configs/baseline\_surrogates.yaml}. The MLP uses hidden width 128, depth 3, batch size 8192, learning rate $10^{-3}$, at most 20 epochs, and early stopping patience 4. The run used CUDA when available and falls back to CPU otherwise.
+
+\subsection{Validation and Diagnostics}
+The required checks are written to the Stage 7 results folder. They include \texttt{baseline\_metrics.csv}, \texttt{baseline\_by\_regime.csv}, \texttt{violation\_table.csv}, and \texttt{training\_history.csv}.
+Obstacle, monotonicity, convexity, boundary-band error, and inference throughput are reported. Weak regimes are kept in the tables rather than filtered after evaluation.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+Model & Split & RMSE & MAE & Max obstacle\\
+\midrule
+Linear & Validation & 0.7272 & 0.5482 & 1.8469\\
+Linear & Test & 0.6653 & 0.4837 & 1.8467\\
+MLP direct & Validation & 0.0281 & 0.0209 & 0.1358\\
+MLP direct & Test & 0.0282 & 0.0207 & 0.1338\\
+MLP penalty 1 & Validation & 0.0391 & 0.0245 & 0.2104\\
+MLP penalty 1 & Test & 0.0376 & 0.0227 & 0.2148\\
+MLP penalty 10 & Validation & 0.0544 & 0.0313 & 0.1152\\
+MLP penalty 10 & Test & 0.0507 & 0.0290 & 0.1216\\
+\bottomrule
+\end{tabular}
+\caption{Direct-price baseline errors. All obstacle violations are measured as $\max(\Phi/K-\widehat{u},0)$.}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+Model & Split & Boundary RMSE & Monotonicity & Convexity\\
+\midrule
+Linear & Validation & 0.5327 & 0.7651 & 0.7610\\
+Linear & Test & 0.7336 & 0.7470 & 0.7443\\
+MLP direct & Validation & 0.0287 & 0.1896 & 0.9075\\
+MLP direct & Test & 0.0308 & 0.1678 & 0.3556\\
+MLP penalty 1 & Validation & 0.0416 & 0.4214 & 0.9195\\
+MLP penalty 1 & Test & 0.0431 & 0.4359 & 0.3667\\
+MLP penalty 10 & Validation & 0.0671 & 0.5864 & 0.9014\\
+MLP penalty 10 & Test & 0.0633 & 0.5600 & 0.3587\\
+\bottomrule
+\end{tabular}
+\caption{Violation audit summary. The shape metrics are finite-difference diagnostics on reconstructed regime slices where possible.}
+\end{table}
+
+\subsection{Results}
+The best validation RMSE is achieved by the plain direct-price MLP, with validation RMSE 0.0281 and test RMSE 0.0282. However, it still violates the obstacle by up to 0.1358 on validation and 0.1338 on test. The obstacle-penalty variants reduce the largest obstacle violation only partially in the $\lambda=10$ case, while worsening RMSE relative to the plain MLP. Therefore, the baseline evidence supports moving to an obstacle-preserving positive-premium model later, but does not itself justify a consistency claim.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.72\linewidth]{results/figures/stage07_baseline_surrogates/validation_rmse.png}
+\caption{Validation RMSE for direct-price baselines.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.72\linewidth]{results/figures/stage07_baseline_surrogates/test_obstacle_violation.png}
+\caption{Test obstacle violation audit. Direct-price baselines are not obstacle-guaranteed.}
+\end{figure}
+
+\subsection{Failure Modes and Limitations}
+The linear baseline is too weak for the nonlinear price surface. The plain MLP has much lower price error but still violates the obstacle and shape diagnostics. The obstacle-penalty MLP is not a hard constraint; in this run it did not remove obstacle violations and it worsened price RMSE. None of these baselines estimates early-exercise boundaries directly, validates Greeks, or replaces CN/PSOR audits for new regimes.
+
+\subsection{Conclusion and Next Step}
+The Stage 7 gate passes as a baseline audit: direct-price baselines were trained, evaluated on regime-level splits, and their violations were recorded. It does not pass as a final surrogate claim. The next stage should introduce the positive continuation-premium price surrogate and test whether it removes obstacle violations by construction while preserving held-out price accuracy.
+
+\end{document}

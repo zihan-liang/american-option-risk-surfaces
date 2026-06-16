@@ -100,3 +100,24 @@ Stage 6 output contract:
 - [x] `excluded_regimes.csv` records every control or diagnostic-failure regime excluded from clean labels.
 - [x] `dataset_schema.json`, `label_summary.csv`, `mask_summary.csv`, and `dataset_audit.json` are generated.
 - [x] Label-distribution figures are generated under `results/figures/stage06_surrogate_dataset/`.
+
+## Stage 7 Baseline Surrogate Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/06_surrogate_baselines.py --config configs/baseline_surrogates.yaml
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage07_baseline_surrogates.tex
+```
+
+Stage 7 output contract:
+
+- [x] `baseline_metrics.csv` reports RMSE, MAE, max error, and obstacle violation by split and option type.
+- [x] `baseline_by_regime.csv` keeps regime-level errors and does not hide weak regimes.
+- [x] `violation_table.csv` reports obstacle, boundary-band, monotonicity, convexity, train time, and inference throughput.
+- [x] `training_history.csv` records MLP training curves and penalty weights.
+- [x] `baseline_summary.json` records the selected validation baseline and sample caps.
+- [x] Model artifacts are written under `results/models/` and kept out of Git by ignore rules.
+- [x] Figures are generated under `results/figures/stage07_baseline_surrogates/`.

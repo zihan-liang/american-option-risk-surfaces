@@ -1,0 +1,29 @@
+{
+  "batch_size": 8192,
+  "dataset": "data/processed/surrogate_dataset.npz",
+  "depth": 3,
+  "device": "auto",
+  "epochs": 20,
+  "feature_names": [
+    "log_moneyness",
+    "tau_over_T",
+    "r",
+    "q",
+    "sigma",
+    "T",
+    "is_call"
+  ],
+  "hidden": 128,
+  "learning_rate": 0.001,
+  "patience": 4,
+  "penalty_weights": [
+    0.0,
+    1.0,
+    10.0
+  ],
+  "ridge": 1e-06,
+  "seed": 7,
+  "test_cap": 250000,
+  "train_cap": 250000,
+  "validation_cap": 100000
+}

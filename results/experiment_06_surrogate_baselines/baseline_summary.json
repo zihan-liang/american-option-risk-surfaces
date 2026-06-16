@@ -1,6 +1,10 @@
 {
-  "decision": "audit_required",
-  "max_obstacle_violation": 1.8388105212730625,
-  "model": "linear_price_baseline",
-  "regime_price_rmse": 0.7267118311933384
+  "best_validation_model": "mlp_direct_price",
+  "best_validation_rmse": 0.028088274965102702,
+  "device": "cuda",
+  "models": 4,
+  "note": "Direct-price baselines are not obstacle-guaranteed and are not Greek engines.",
+  "test_samples": 250000,
+  "train_samples": 250000,
+  "validation_samples": 100000
 }

@@ -124,3 +124,26 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 6 passes for beginning baseline surrogate experiments on clean, diagnostic-passing regimes.
 - Failure modes observed: 65 regimes are excluded from clean labels, including no-dividend controls and Stage 5 diagnostic-warning regimes; Gamma remains mask-dependent.
 - Next step: train baseline surrogate models and report failures honestly before introducing positive-premium architectures.
+
+## 2026-06-16
+
+- Stage: Baseline surrogate models and violation audit.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_*baseline*.py"`
+  - `python experiments/06_surrogate_baselines.py --config configs/baseline_surrogates.yaml`
+- Key metrics:
+  - Models evaluated: `4`.
+  - Train/validation/test sample caps: `250000/100000/250000`.
+  - Best validation model: `mlp_direct_price`.
+  - Best validation RMSE: `0.028088274965102702`.
+  - Direct MLP test RMSE: `0.02821120011211636`.
+  - Direct MLP test max obstacle violation: `0.13376212120056152`.
+  - Penalty-1 MLP test RMSE: `0.037631195606665294`.
+  - Penalty-1 MLP test max obstacle violation: `0.21475380659103394`.
+  - Penalty-10 MLP test RMSE: `0.05071797117236048`.
+  - Penalty-10 MLP test max obstacle violation: `0.12164252996444702`.
+  - Linear baseline test RMSE: `0.6652961027440175`.
+  - Linear baseline test max obstacle violation: `1.8467483822943174`.
+- Decision: Stage 7 passes as a baseline violation audit, not as a final surrogate or consistency claim.
+- Failure modes observed: direct-price baselines still violate the obstacle and shape diagnostics; obstacle penalties reduce neither all violations nor RMSE reliably; no baseline is a Greek engine or boundary solver.
+- Next step: introduce the positive continuation-premium price surrogate only after preserving this baseline-failure evidence.

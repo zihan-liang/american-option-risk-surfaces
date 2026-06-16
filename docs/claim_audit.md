@@ -23,6 +23,7 @@
 | Grid/domain/runtime stability | `03_convergence_domain_runtime.py` | Passed for engineering-scale classical experiments | Price, boundary, strict-mask Delta/Gamma, runtime, PSOR iterations, and shape diagnostics are generated for both option cases. Grid-240 is an internal reference, not publication-grade final evidence. |
 | Application risk surfaces | `04_application_risk_surfaces.py` | Passed with restrictions | 288 regimes solved and reported. 32 high-stress regimes are flagged by diagnostics and must not be hidden or used as clean labels without refinement. |
 | Surrogate dataset construction | `05_surrogate_dataset.py` | Passed for clean-label dataset construction | Clean dataset includes 223 diagnostic-passing put/dividend-call regimes. 65 control or flagged regimes are excluded and audited. No model-performance claim yet. |
+| Baseline direct-price surrogates | `06_surrogate_baselines.py` | Passed as violation audit only | Plain MLP has best validation RMSE but still violates the obstacle and shape diagnostics. Penalty baselines are not hard constraints and do not justify consistency claims. |
 | Price/premium surrogate | `07_positive_premium_tuning.py` | Pending run | Requires zero obstacle violation |
 | Boundary diagnostics | `09_boundary_head.py` | Pending run | Scope to tested regimes |
 | Delta diagnostics | `12_supervised_delta_head.py` | Pending run | Separate bounded head only |
@@ -104,3 +105,19 @@ Restricted wording:
 - Do not claim the dataset covers the excluded high-stress regimes.
 - Do not train or evaluate on no-dividend call controls as dividend-call labels.
 - Do not report Gamma performance later without strict-mask qualification.
+
+## Baseline Surrogate Models - 2026-06-16
+
+Allowed wording:
+
+- Direct-price baseline models were trained and audited on the clean Stage 6 regime-level splits.
+- The plain direct-price MLP achieved the lowest validation RMSE among tested baselines, with validation RMSE about `0.0281` and test RMSE about `0.0282`.
+- All direct-price baselines still showed obstacle and shape-diagnostic violations.
+- Obstacle-penalty baselines are useful negative evidence but are not hard obstacle constraints.
+
+Restricted wording:
+
+- Do not claim the baseline MLP is obstacle-consistent.
+- Do not claim the obstacle penalty guarantees `V >= Phi`.
+- Do not claim any baseline estimates free boundaries or Greeks.
+- Do not use this stage as evidence for the later positive-premium architecture before that architecture is trained and audited.
