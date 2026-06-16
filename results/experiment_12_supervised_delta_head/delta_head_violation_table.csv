@@ -1,0 +1,5 @@
+model,split,samples,max_delta_bound_violation,train_seconds,inference_seconds,near_boundary_delta_samples,near_boundary_delta_rmse,near_boundary_delta_mae,near_boundary_delta_max_error,near_kink_delta_samples,near_kink_delta_rmse,near_kink_delta_mae,near_kink_delta_max_error,near_zero_spot_delta_samples,near_zero_spot_delta_rmse,near_zero_spot_delta_mae,near_zero_spot_delta_max_error
+bounded_delta_linear,validation,75000,0.0,0.011476300001959316,0.012766399999236455,0,nan,nan,nan,0,nan,nan,nan,0,nan,nan,nan
+bounded_delta_linear,test,150000,0.0,0.011476300001959316,0.012766399999236455,0,nan,nan,nan,0,nan,nan,nan,0,nan,nan,nan
+bounded_delta_head_mlp,validation,75000,0.0,3.292022800000268,0.019052100000408245,0,nan,nan,nan,0,nan,nan,nan,0,nan,nan,nan
+bounded_delta_head_mlp,test,150000,0.0,3.292022800000268,0.019052100000408245,0,nan,nan,nan,0,nan,nan,nan,0,nan,nan,nan

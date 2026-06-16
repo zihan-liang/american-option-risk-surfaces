@@ -12,4 +12,6 @@
 | 08 | `experiments/07_positive_premium_tuning.py` | Positive-premium price surrogate enforces obstacle consistency | Zero obstacle violation; validation/test price and premium errors reported; no Greek or boundary claim |
 | 09 | `experiments/09_boundary_head.py` | Direct boundary heads provide scoped diagnostic boundary estimates | Finite boundary labels only; put/call metrics reported separately; no price-threshold proxy |
 | 10 | `experiments/10_option_specific_call_boundary_refinement.py` | Dividend-call boundary refinement is useful only if tested separately | Call-only labels counted; no-boundary/control cases not fabricated; weak regimes retained |
-| 11-13 | Remaining surrogate scripts | Modular acceleration is useful only if constraints hold | No Delta-bound or integrated-workflow claims without metrics |
+| 11 | `experiments/11_delta_validation.py` | Price surrogate is not automatically a Greek engine | Autograd and finite-difference Delta audited under strict Greek masks; no final Delta claim from price model |
+| 12 | `experiments/12_supervised_delta_head.py` | Bounded supervised Delta head provides scoped Delta diagnostics | Strict-mask put/call metrics reported; Delta-bound violation is zero or numerical roundoff |
+| 13 | `experiments/13_integrated_application_workflow.py` | Modular workflow is useful only with PSOR audit checks | Fresh PSOR cases, price/boundary/Delta metrics, speed, and violations reported together |

@@ -23,6 +23,8 @@ def max_obstacle_violation(price: np.ndarray, payoff: np.ndarray) -> float:
 
 
 def delta_bound_violation(delta: np.ndarray, is_call: np.ndarray) -> float:
+    if len(delta) == 0:
+        return float("nan")
     lower = np.where(is_call > 0.5, 0.0, -1.0)
     upper = np.where(is_call > 0.5, 1.0, 0.0)
     return float(np.max(np.maximum(lower - delta, 0.0) + np.maximum(delta - upper, 0.0)))
@@ -177,6 +179,41 @@ def grouped_boundary_metrics(
             if lower is not None and upper is not None:
                 row.update(prediction_range_diagnostics(prediction[mask], lower=lower, upper=upper))
             rows.append(row)
+    return rows
+
+
+def grouped_delta_metrics(
+    *,
+    prediction: np.ndarray,
+    target: np.ndarray,
+    splits: np.ndarray,
+    is_call: np.ndarray,
+    model_name: str,
+) -> list[dict[str, float | int | str]]:
+    rows: list[dict[str, float | int | str]] = []
+    split_values = _to_str_array(splits)
+    option_values = np.where(is_call > 0.5, "call", "put")
+    for split in sorted(set(split_values)):
+        for option_type in ["all", "put", "call"]:
+            if option_type == "all":
+                mask = split_values == split
+            else:
+                mask = (split_values == split) & (option_values == option_type)
+            if not np.any(mask):
+                continue
+            metrics = error_metrics(prediction[mask], target[mask])
+            rows.append(
+                {
+                    "model": model_name,
+                    "split": split,
+                    "option_type": option_type,
+                    "samples": int(np.count_nonzero(mask)),
+                    "delta_rmse": metrics["rmse"],
+                    "delta_mae": metrics["mae"],
+                    "delta_max_error": metrics["max_error"],
+                    "max_delta_bound_violation": delta_bound_violation(prediction[mask], is_call[mask]),
+                }
+            )
     return rows
 
 

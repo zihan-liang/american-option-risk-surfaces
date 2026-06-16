@@ -187,3 +187,25 @@ Stage 9 output contract:
 - [x] `call_boundary_metrics.csv` compares pooled linear, call-only linear, and call-only MLP call-boundary diagnostics.
 - [x] No boundary is inferred from the positive-premium price surrogate.
 - [x] Figures are generated under `results/figures/stage09_boundary_head/`.
+
+## Stage 10 Delta Validation and Head Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/11_delta_validation.py --config configs/delta_validation.yaml
+python experiments/12_supervised_delta_head.py --config configs/delta_head.yaml
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage10_delta_validation_head.tex
+```
+
+Stage 10 output contract:
+
+- [x] `delta_validation_metrics.csv` reports price-model autograd and finite-difference Delta errors.
+- [x] `delta_validation_by_regime.csv` retains regime-level price-derivative Delta errors.
+- [x] `delta_validation_summary.json` records the `do_not_claim_price_model_as_greek_engine` decision.
+- [x] `delta_head_metrics.csv` reports bounded supervised Delta errors by split and option type.
+- [x] `delta_head_by_regime.csv` retains weak regimes.
+- [x] `delta_head_violation_table.csv` reports Delta-bound violations and mask-profile diagnostics.
+- [x] `bounded_delta_head_mlp.pt` stores the selected supervised Delta head under `results/models/`.

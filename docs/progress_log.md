@@ -212,3 +212,25 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 9 passes as a scoped diagnostic boundary-estimation audit, not as an exact free-boundary solver.
 - Failure modes observed: call-only MLP validation performance does not translate into better test RMSE than the call-only linear baseline; boundary labels are repeated across grid nodes and should not be interpreted as independent regime-level observations.
 - Next step: validate Delta separately and consider a bounded supervised Delta head only after recording price-autograd limitations.
+
+## 2026-06-16
+
+- Stage: Delta validation and bounded supervised Delta head.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_delta*.py"`
+  - `python experiments/11_delta_validation.py --config configs/delta_validation.yaml`
+  - `python experiments/12_supervised_delta_head.py --config configs/delta_head.yaml`
+- Key metrics:
+  - Strict Greek mask samples: `3157110`.
+  - Price-model autograd Delta test RMSE: `0.09770389345203662`.
+  - Price-model autograd Delta test MAE: `0.03618789399536279`.
+  - Price-model finite-difference Delta test RMSE: `0.09771959227659963`.
+  - Price-model derivative max Delta-bound violation: about `0.0595`.
+  - Bounded linear Delta test RMSE: `0.1682303771492566`.
+  - Bounded supervised MLP Delta validation RMSE: `0.032378324958276646`.
+  - Bounded supervised MLP Delta test RMSE: `0.033240113189454475`.
+  - Bounded supervised MLP Delta test MAE: `0.014036984504667716`.
+  - Bounded supervised MLP max Delta-bound violation: `0.0`.
+- Decision: Stage 10 passes as a bounded supervised Delta diagnostic stage, not as evidence that the price surrogate is a Greek engine.
+- Failure modes observed: price-model derivatives have nonzero Delta-bound violations; strict-mask capped metrics contain no near-boundary samples, so boundary-zone Delta remains a limitation.
+- Next step: build an integrated modular workflow with PSOR audit checks, keeping price, boundary, and Delta claims separate.

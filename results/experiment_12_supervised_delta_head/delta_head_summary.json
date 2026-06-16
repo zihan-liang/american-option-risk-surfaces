@@ -1,6 +1,14 @@
 {
-  "max_delta_bound_violation": 0.0,
-  "model": "bounded_delta_linear",
-  "strict_delta_mae": 0.11716878399447651,
-  "strict_delta_rmse": 0.17478619567219658
+  "decision": "bounded_supervised_delta_diagnostic",
+  "device": "cuda",
+  "note": "Delta head is supervised and bounded; it is separate from price, boundary, and Gamma models.",
+  "selected_max_delta_bound_violation": 0.0,
+  "selected_model": "bounded_delta_head_mlp",
+  "selected_test_delta_mae": 0.014036984504667716,
+  "selected_test_delta_rmse": 0.033240113189454475,
+  "strict_samples": 3157110,
+  "test_samples": 150000,
+  "train_samples": 150000,
+  "uses_strict_greek_mask": true,
+  "validation_samples": 75000
 }

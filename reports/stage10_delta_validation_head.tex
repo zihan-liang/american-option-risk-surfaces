@@ -1,0 +1,92 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry, graphicx, url}
+\geometry{margin=1in}
+\graphicspath{{./}{../}}
+\title{Stage 10: Delta Validation and Bounded Supervised Delta Head}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 10: Delta Validation and Bounded Supervised Delta Head}
+
+\subsection{Purpose}
+This stage audits Delta separately from price and boundary models. First, the Stage 8 positive-premium price surrogate is differentiated to test whether it behaves as a Greek engine. Second, a separate bounded supervised Delta head is trained on strict-mask CN/PSOR Delta labels. This stage makes no Gamma claim and does not add an integrated workflow.
+
+\subsection{Method}
+All primary Delta metrics use the Stage 6 clean dataset with \texttt{strict\_greek\_mask=True}. The price-surrogate audit loads \path{results/models/selected_final_price_premium.pt} and computes both autograd and finite-difference Delta. The supervised Delta stage trains a clipped linear sanity baseline and a bounded MLP head.
+
+\subsection{Mathematical Formulation}
+The model inputs use normalized log-moneyness $x_0=\log(S/K)$ and normalized price $U/K$. For a price model,
+\[
+\Delta = \frac{\partial U}{\partial S}
+       = \frac{\partial (U/K)}{\partial \log(S/K)} \frac{1}{S/K}.
+\]
+The bounded Delta head maps raw MLP output to option-specific ranges:
+\[
+\widehat{\Delta}_{\mathrm{put}}\in[-1,0], \qquad
+\widehat{\Delta}_{\mathrm{call}}\in[0,1].
+\]
+These bounds are supervised diagnostic constraints, not a replacement for finite-difference Greek validation.
+
+\subsection{Implementation Details}
+The bounded Delta model is implemented in \path{src/models/delta_head.py}. Delta metric grouping is implemented in \path{src/models/metrics.py}. The price-model Delta audit is implemented in \path{experiments/11_delta_validation.py}, and the supervised bounded Delta head is implemented in \path{experiments/12_supervised_delta_head.py}.
+
+The run used deterministic caps of 150,000 training samples, 75,000 validation samples, and 150,000 test samples for the supervised Delta head. The strict-mask dataset contains 3,157,110 samples.
+
+\subsection{Validation and Diagnostics}
+\begin{table}[h]
+\centering
+\begin{tabular}{llrrr}
+\toprule
+Method & Type & RMSE & MAE & Max bound violation\\
+\midrule
+Price autograd Delta & All & 0.0977 & 0.0362 & 0.0550\\
+Price finite-difference Delta & All & 0.0977 & 0.0362 & 0.0595\\
+Price autograd Delta & Put & 0.0934 & 0.0336 & 0.0550\\
+Price autograd Delta & Call & 0.1035 & 0.0398 & 0.0370\\
+\bottomrule
+\end{tabular}
+\caption{Price-model derivative Delta audit on strict-mask test samples. This evidence does not justify calling the price surrogate a Greek engine.}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllrrr}
+\toprule
+Model & Split & Type & RMSE & MAE & Max bound violation\\
+\midrule
+Linear bounded & Test & All & 0.1682 & 0.1123 & 0.0000\\
+MLP bounded & Validation & All & 0.0324 & 0.0135 & 0.0000\\
+MLP bounded & Test & All & 0.0332 & 0.0140 & 0.0000\\
+MLP bounded & Test & Put & 0.0319 & 0.0131 & 0.0000\\
+MLP bounded & Test & Call & 0.0351 & 0.0153 & 0.0000\\
+\bottomrule
+\end{tabular}
+\caption{Bounded supervised Delta-head metrics. Errors use strict Greek masks.}
+\end{table}
+
+\subsection{Results}
+The differentiated price model has strict-mask test RMSE about 0.0977 and nonzero Delta-bound violations. This supports the restricted claim that the positive-premium price surrogate is not automatically a Greek engine.
+
+The bounded supervised MLP improves over the bounded linear sanity baseline and has zero Delta-bound violation. The selected bounded MLP has test RMSE 0.0332 and test MAE 0.0140 on strict-mask samples.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.78\linewidth]{results/figures/stage10_delta_head/test_delta_mae_by_option.png}
+\caption{Test Delta MAE by option type for bounded Delta heads.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.70\linewidth]{results/figures/stage10_delta_head/test_delta_bound_violation.png}
+\caption{Test Delta bound violation. The bounded supervised Delta heads have zero violation in the evaluated nodes.}
+\end{figure}
+
+\subsection{Failure Modes and Limitations}
+The price-model derivative audit is diagnostic only and is not used as the final Delta claim. The strict-mask capped run contains no near-boundary samples, so near-boundary Delta behavior remains outside the primary metric table. The supervised Delta head is not a price model, not a boundary model, not a Gamma model, and not a PSOR replacement.
+
+\subsection{Conclusion and Next Step}
+The Stage 10 gate passes for a bounded supervised Delta diagnostic head within the clean Stage 6 regime envelope. The next stage should assemble an integrated workflow only if it keeps PSOR audit checks and preserves the modular separation between price, boundary, and Delta heads.
+
+\end{document}

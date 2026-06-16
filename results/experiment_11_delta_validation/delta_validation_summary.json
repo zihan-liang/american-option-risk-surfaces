@@ -1,6 +1,12 @@
 {
+  "autograd_delta_mae": 0.03618789399536279,
+  "autograd_delta_rmse": 0.09770389345203662,
   "decision": "do_not_claim_price_model_as_greek_engine",
-  "method": "price_model_finite_difference_delta",
-  "strict_delta_mae": 0.40499394023441443,
-  "strict_delta_rmse": 0.6206108701346508
+  "device": "cuda",
+  "finite_difference_delta_mae": 0.036243679925953697,
+  "finite_difference_delta_rmse": 0.09771959227659963,
+  "note": "Price-model derivative diagnostics are separate evidence and are not used as the final Delta claim.",
+  "price_model": "results/models/selected_final_price_premium.pt",
+  "test_samples": 150000,
+  "uses_strict_greek_mask": true
 }

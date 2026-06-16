@@ -1,2 +1,7 @@
 dataset: data/processed/surrogate_dataset.npz
-price_model: results/models/selected_final_price_premium_linear.npz
+price_model: results/models/selected_final_price_premium.pt
+seed: 7
+test_cap: 150000
+batch_size: 8192
+finite_difference_eps: 1.0e-4
+device: auto

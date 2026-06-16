@@ -26,8 +26,9 @@
 | Baseline direct-price surrogates | `06_surrogate_baselines.py` | Passed as violation audit only | Plain MLP has best validation RMSE but still violates the obstacle and shape diagnostics. Penalty baselines are not hard constraints and do not justify consistency claims. |
 | Literature review integration | `docs/literature_review.md` | Passed as claim-support evidence | Literature supports the classical benchmark, diagnostics, cautious Greek reporting, and modular constraint-aware ML framing. Positive premium support is indirect and must be tested. |
 | Price/premium surrogate | `07_positive_premium_tuning.py` | Passed with restrictions | Positive-premium models have zero obstacle violation. Linear sanity baseline has lower aggregate validation RMSE; neural MLP is retained as selected softplus artifact and has better boundary-band RMSE. |
-| Boundary diagnostics | `09_boundary_head.py` | Pending run | Scope to tested regimes |
-| Delta diagnostics | `12_supervised_delta_head.py` | Pending run | Separate bounded head only |
+| Boundary diagnostics | `09_boundary_head.py` | Passed with restrictions | Direct boundary heads are scoped diagnostic estimators. Pooled MLP improves over pooled linear, but call-only MLP does not beat call-only linear on test RMSE. |
+| Delta validation | `11_delta_validation.py` | Passed as negative price-derivative audit | Price-model autograd and finite-difference Deltas are reported separately and do not justify a Greek-engine claim. |
+| Delta diagnostics | `12_supervised_delta_head.py` | Passed with restrictions | Bounded supervised Delta MLP reports strict-mask put/call metrics and zero Delta-bound violation. |
 
 ## Solver Validation Audit - 2026-06-13
 
@@ -172,3 +173,19 @@ Restricted wording:
 - Do not fabricate no-boundary or control cases as positive boundary labels.
 - Do not claim the call-only MLP is a repaired universal call-boundary solution; its test RMSE is weaker than the call-only linear baseline in this run.
 - Do not use this stage as Delta or Gamma evidence.
+
+## Delta Validation and Bounded Delta Head - 2026-06-16
+
+Allowed wording:
+
+- The Stage 8 price surrogate was audited with autograd and finite-difference Delta diagnostics.
+- The price-model derivative audit supports the claim that the price surrogate is not automatically a Greek engine.
+- A separate bounded supervised Delta head provides scoped Delta diagnostics on strict-mask Stage 6 labels.
+- The bounded Delta MLP has zero Delta-bound violation in the evaluated strict-mask samples.
+
+Restricted wording:
+
+- Do not claim price-model derivatives are the final Delta model.
+- Do not report Delta metrics without strict Greek mask qualification.
+- Do not claim near-boundary Delta performance from the capped strict-mask run because near-boundary strict samples are absent there.
+- Do not make Gamma or integrated-workflow claims from this stage.

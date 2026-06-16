@@ -1,2 +1,9 @@
-method,strict_delta_rmse,strict_delta_mae,decision
-price_model_finite_difference_delta,0.6206108701346508,0.40499394023441443,do_not_claim_price_model_as_greek_engine
+model,split,option_type,samples,delta_rmse,delta_mae,delta_max_error,max_delta_bound_violation,near_boundary_delta_samples,near_boundary_delta_rmse,near_boundary_delta_mae,near_boundary_delta_max_error,near_kink_delta_samples,near_kink_delta_rmse,near_kink_delta_mae,near_kink_delta_max_error,near_zero_spot_delta_samples,near_zero_spot_delta_rmse,near_zero_spot_delta_mae,near_zero_spot_delta_max_error
+price_model_autograd_delta,test,all,150000,0.09770389345203662,0.03618789399536279,0.6389078548490943,0.05503702163696289,,,,,,,,,,,,
+price_model_autograd_delta,test,put,88063,0.09341680165846367,0.03364594976532266,0.6159591972827911,0.05503702163696289,,,,,,,,,,,,
+price_model_autograd_delta,test,call,61937,0.1034940495604935,0.03980207025075175,0.6389078548490943,0.03700298070907593,,,,,,,,,,,,
+price_model_finite_difference_delta,test,all,150000,0.09771959227659963,0.036243679925953697,0.6389074212493142,0.05947268009185791,,,,,,,,,,,,
+price_model_finite_difference_delta,test,put,88063,0.09343656752362364,0.03367021065077822,0.6160760223865509,0.05947268009185791,,,,,,,,,,,,
+price_model_finite_difference_delta,test,call,61937,0.10350457482949996,0.03990267898596268,0.6389074212493142,0.03708992525935173,,,,,,,,,,,,
+price_model_autograd_delta,test,mask_profiles,,,,,,0,nan,nan,nan,0,nan,nan,nan,0,nan,nan,nan
+price_model_finite_difference_delta,test,mask_profiles,,,,,,0,nan,nan,nan,0,nan,nan,nan,0,nan,nan,nan
