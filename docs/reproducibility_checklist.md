@@ -143,3 +143,25 @@ Stage 7.5 output contract:
 - [x] `paper/references.bib` contains the core classical, ML, constraint-aware, and reproducibility references.
 - [x] `paper/manuscript_outline.tex` includes literature-backed citation anchors and a BibTeX bibliography.
 - [x] `docs/claim_audit.md` records cautious claim wording for positive continuation premium, boundary heads, and Delta heads.
+
+## Stage 8 Positive Premium Surrogate Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/07_positive_premium_tuning.py --config configs/positive_premium.yaml
+python experiments/08_boundary_distance_profiles.py --config configs/boundary_distance_profiles.yaml
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage08_positive_premium_surrogate.tex
+```
+
+Stage 8 output contract:
+
+- [x] `positive_premium_metrics.csv` reports validation/test price and premium errors by split and option type.
+- [x] `positive_premium_by_regime.csv` retains regime-level errors.
+- [x] `positive_premium_violation_table.csv` records zero obstacle violation plus boundary-band and strict-mask errors.
+- [x] `positive_premium_training_history.csv` records MLP training history and linear sanity baseline row.
+- [x] `positive_premium_summary.json` records the best aggregate validation model and selected neural artifact.
+- [x] `boundary_distance_metrics.csv` reports near-boundary, away-boundary, near-kink, and strict-mask price errors.
+- [x] `results/models/selected_final_price_premium.pt` stores the selected neural positive-premium model.

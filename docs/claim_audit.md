@@ -25,7 +25,7 @@
 | Surrogate dataset construction | `05_surrogate_dataset.py` | Passed for clean-label dataset construction | Clean dataset includes 223 diagnostic-passing put/dividend-call regimes. 65 control or flagged regimes are excluded and audited. No model-performance claim yet. |
 | Baseline direct-price surrogates | `06_surrogate_baselines.py` | Passed as violation audit only | Plain MLP has best validation RMSE but still violates the obstacle and shape diagnostics. Penalty baselines are not hard constraints and do not justify consistency claims. |
 | Literature review integration | `docs/literature_review.md` | Passed as claim-support evidence | Literature supports the classical benchmark, diagnostics, cautious Greek reporting, and modular constraint-aware ML framing. Positive premium support is indirect and must be tested. |
-| Price/premium surrogate | `07_positive_premium_tuning.py` | Pending run | Requires zero obstacle violation |
+| Price/premium surrogate | `07_positive_premium_tuning.py` | Passed with restrictions | Positive-premium models have zero obstacle violation. Linear sanity baseline has lower aggregate validation RMSE; neural MLP is retained as selected softplus artifact and has better boundary-band RMSE. |
 | Boundary diagnostics | `09_boundary_head.py` | Pending run | Scope to tested regimes |
 | Delta diagnostics | `12_supervised_delta_head.py` | Pending run | Separate bounded head only |
 
@@ -139,3 +139,19 @@ Restricted wording:
 - Do not cite the raw Deep Research file as a final source.
 - Do not leave Deep Research internal citation markers in paper-facing text.
 - Do not use literature support as a substitute for Stage 8 surrogate evidence.
+
+## Positive Premium Price Surrogate - 2026-06-16
+
+Allowed wording:
+
+- Positive continuation-premium models enforce `price >= payoff` by construction on evaluated nodes.
+- The selected neural MLP is an obstacle-consistent price/premium surrogate within the clean Stage 6 regime envelope.
+- Boundary-distance diagnostics are reported as price-error profiles only.
+- The linear positive-premium sanity baseline has lower aggregate validation RMSE in this run and must be reported.
+
+Restricted wording:
+
+- Do not claim the neural MLP dominates all positive-premium baselines.
+- Do not claim this price surrogate is a Greek engine.
+- Do not infer early-exercise boundaries from the price surrogate in this stage.
+- Do not claim this model replaces PSOR or validates excluded regimes.

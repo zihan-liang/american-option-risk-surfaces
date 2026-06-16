@@ -9,4 +9,5 @@
 | 05 | `experiments/05_surrogate_dataset.py` | Dataset is traceable to validated PSOR labels | Clean regimes only; exclusions audited; regime split and masks exist |
 | 06 | `experiments/06_surrogate_baselines.py` | Ordinary direct-price baselines expose limitations | Regime-level evaluation includes obstacle, shape, boundary-band, and runtime violations |
 | 07.5 | `docs/literature_review.md` | Literature supports cautious project positioning | Raw Deep Research markers removed; BibTeX compiles; claims are mapped to references |
-| 08-13 | Surrogate scripts | Modular acceleration is useful only if constraints hold | No obstacle/Delta-bound claims without metrics |
+| 08 | `experiments/07_positive_premium_tuning.py` | Positive-premium price surrogate enforces obstacle consistency | Zero obstacle violation; validation/test price and premium errors reported; no Greek or boundary claim |
+| 09-13 | Surrogate scripts | Modular acceleration is useful only if constraints hold | No obstacle/Delta-bound claims without metrics |

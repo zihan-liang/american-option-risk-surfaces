@@ -1,2 +1,4 @@
 dataset: data/processed/surrogate_dataset.npz
-model: results/models/selected_final_price_premium_linear.npz
+model: results/models/selected_final_price_premium.pt
+batch_size: 8192
+device: auto

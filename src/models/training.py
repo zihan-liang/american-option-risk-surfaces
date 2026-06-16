@@ -146,6 +146,72 @@ def train_torch_price_model(
     return model, history
 
 
+def train_torch_premium_model(
+    model,
+    train_x: np.ndarray,
+    train_premium: np.ndarray,
+    val_x: np.ndarray,
+    val_premium: np.ndarray,
+    *,
+    epochs: int,
+    batch_size: int,
+    learning_rate: float,
+    patience: int,
+    device: str,
+    model_name: str,
+) -> tuple[object, list[dict[str, float | int | str]]]:
+    import torch
+    import torch.nn.functional as F
+
+    model = model.to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    x_train = torch.as_tensor(train_x, dtype=torch.float32)
+    y_train = torch.as_tensor(train_premium[:, None], dtype=torch.float32)
+    x_val = torch.as_tensor(val_x, dtype=torch.float32, device=device)
+    y_val = torch.as_tensor(val_premium[:, None], dtype=torch.float32, device=device)
+    best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+    best_val = float("inf")
+    stale = 0
+    history: list[dict[str, float | int | str]] = []
+    n = len(x_train)
+    for epoch in range(1, epochs + 1):
+        order = torch.randperm(n)
+        total_loss = 0.0
+        model.train()
+        for start in range(0, n, batch_size):
+            idx = order[start : start + batch_size]
+            xb = x_train[idx].to(device)
+            yb = y_train[idx].to(device)
+            pred = model(xb)
+            loss = F.mse_loss(pred, yb)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            total_loss += float(loss.detach().cpu()) * len(idx)
+        model.eval()
+        with torch.no_grad():
+            val_pred = model(x_val)
+            val_rmse = torch.sqrt(F.mse_loss(val_pred, y_val)).item()
+        history.append(
+            {
+                "model": model_name,
+                "epoch": epoch,
+                "train_loss": total_loss / n,
+                "validation_premium_rmse": val_rmse,
+            }
+        )
+        if val_rmse < best_val:
+            best_val = val_rmse
+            stale = 0
+            best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+        else:
+            stale += 1
+            if stale >= patience:
+                break
+    model.load_state_dict(best_state)
+    return model, history
+
+
 def predict_torch_model(model, features: np.ndarray, *, batch_size: int, device: str) -> np.ndarray:
     import torch
 

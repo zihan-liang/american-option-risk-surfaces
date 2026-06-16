@@ -1,7 +1,14 @@
 {
-  "decision": "retain_if_better_than_plain",
+  "best_validation_model": "positive_premium_linear",
+  "best_validation_rmse": 0.018758900679095955,
+  "device": "cuda",
   "max_obstacle_violation": 0.0,
-  "model": "positive_premium_linear",
-  "premium_rmse": 0.016062056705031476,
-  "regime_price_rmse": 0.016062056705031476
+  "models": 2,
+  "note": "Positive continuation-premium model is price/premium only; it is not a boundary or Greek engine.",
+  "selected_model": "positive_premium_mlp",
+  "selected_model_path": "results\\models\\selected_final_price_premium.pt",
+  "selected_validation_rmse": 0.019988299678999184,
+  "test_samples": 250000,
+  "train_samples": 250000,
+  "validation_samples": 100000
 }

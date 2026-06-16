@@ -1,3 +1,5 @@
 {
-  "bands": 2
+  "bands": 4,
+  "infers_boundary": false,
+  "note": "This diagnostic uses Stage 6 masks/boundaries only; it does not infer a boundary from the price surrogate."
 }

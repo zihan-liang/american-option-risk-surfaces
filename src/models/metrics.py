@@ -90,6 +90,55 @@ def grouped_price_metrics(
     return rows
 
 
+def grouped_premium_metrics(
+    *,
+    prediction: np.ndarray,
+    target: np.ndarray,
+    splits: np.ndarray,
+    is_call: np.ndarray,
+    model_name: str,
+) -> list[dict[str, float | int | str]]:
+    rows: list[dict[str, float | int | str]] = []
+    split_values = _to_str_array(splits)
+    option_values = np.where(is_call > 0.5, "call", "put")
+    for split in sorted(set(split_values)):
+        for option_type in ["put", "call"]:
+            mask = (split_values == split) & (option_values == option_type)
+            if not np.any(mask):
+                continue
+            metrics = error_metrics(prediction[mask], target[mask])
+            rows.append(
+                {
+                    "model": model_name,
+                    "split": split,
+                    "option_type": option_type,
+                    "samples": int(np.count_nonzero(mask)),
+                    **{f"premium_{key}": value for key, value in metrics.items()},
+                }
+            )
+    return rows
+
+
+def masked_error_metrics(
+    prediction: np.ndarray,
+    target: np.ndarray,
+    mask: np.ndarray,
+    *,
+    prefix: str,
+) -> dict[str, float | int]:
+    valid = np.asarray(mask, dtype=bool)
+    samples = int(np.count_nonzero(valid))
+    if samples == 0:
+        return {f"{prefix}_samples": 0, f"{prefix}_rmse": float("nan"), f"{prefix}_mae": float("nan"), f"{prefix}_max_error": float("nan")}
+    metrics = error_metrics(prediction[valid], target[valid])
+    return {
+        f"{prefix}_samples": samples,
+        f"{prefix}_rmse": metrics["rmse"],
+        f"{prefix}_mae": metrics["mae"],
+        f"{prefix}_max_error": metrics["max_error"],
+    }
+
+
 def _to_str_array(values: np.ndarray) -> np.ndarray:
     if values.dtype.kind == "S":
         return values.astype(str)

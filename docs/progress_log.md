@@ -165,3 +165,26 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 7.5 passes as a claim-support and citation-integration stage once the manuscript outline compiles with BibTeX and no raw Deep Research markers remain.
 - Failure modes observed: some Deep Research references support project claims only indirectly; those claims are now worded cautiously.
 - Next step: start the positive continuation-premium price surrogate stage without overstating literature support.
+
+## 2026-06-16
+
+- Stage: Positive continuation-premium price surrogate.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_positive_premium*.py"`
+  - `python -m unittest discover -s tests -p "test_boundary_distance_profiles_outputs.py"`
+  - `python experiments/07_positive_premium_tuning.py --config configs/positive_premium.yaml`
+  - `python experiments/08_boundary_distance_profiles.py --config configs/boundary_distance_profiles.yaml`
+- Key metrics:
+  - Models evaluated: `2`.
+  - Best aggregate validation model: `positive_premium_linear`.
+  - Best aggregate validation RMSE: `0.018758900679095955`.
+  - Selected neural model: `positive_premium_mlp`.
+  - Selected neural validation RMSE: `0.019988299678999184`.
+  - Selected neural test RMSE: `0.021800903980790293`.
+  - Maximum obstacle violation: `0.0`.
+  - MLP test boundary-band RMSE: `0.006198628647556628`.
+  - MLP test strict-mask RMSE: `0.02068613786457916`.
+  - MLP near-kink test RMSE: `0.08439293712841753`.
+- Decision: Stage 8 passes for obstacle-consistent price/premium modeling, with explicit limitation that the neural MLP does not beat the linear sanity baseline on aggregate RMSE.
+- Failure modes observed: near-kink error is large; the price/premium model is not a boundary, Delta, or Gamma model.
+- Next step: train and audit a direct boundary diagnostic head separately.
