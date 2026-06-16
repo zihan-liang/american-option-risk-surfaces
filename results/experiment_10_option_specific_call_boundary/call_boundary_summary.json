@@ -1,6 +1,17 @@
 {
-  "boundary_mae": 0.07684931397659957,
-  "boundary_rmse": 0.15976041962520626,
-  "decision": "scoped_call_diagnostic",
-  "model": "call_boundary_head_linear"
+  "call_test_samples": 150000,
+  "call_train_samples": 150000,
+  "call_validation_samples": 75000,
+  "comparison_models": [
+    "call_boundary_head_linear",
+    "call_boundary_head_mlp",
+    "pooled_boundary_head_linear_on_calls"
+  ],
+  "decision": "scoped_call_boundary_diagnostic",
+  "device": "cuda",
+  "finite_call_boundary_samples": 1449459,
+  "note": "Call refinement uses only finite dividend-call boundary labels; no-boundary cases are counted, not relabeled.",
+  "selected_model": "call_boundary_head_mlp",
+  "selected_test_boundary_mae": 0.48529042241692544,
+  "selected_test_boundary_rmse": 0.6382774801816014
 }

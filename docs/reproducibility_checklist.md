@@ -165,3 +165,25 @@ Stage 8 output contract:
 - [x] `positive_premium_summary.json` records the best aggregate validation model and selected neural artifact.
 - [x] `boundary_distance_metrics.csv` reports near-boundary, away-boundary, near-kink, and strict-mask price errors.
 - [x] `results/models/selected_final_price_premium.pt` stores the selected neural positive-premium model.
+
+## Stage 9 Boundary Diagnostic Head Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/09_boundary_head.py --config configs/boundary_head.yaml
+python experiments/10_option_specific_call_boundary_refinement.py --config configs/call_boundary_refinement.yaml
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage09_boundary_head.tex
+```
+
+Stage 9 output contract:
+
+- [x] `boundary_metrics.csv` reports boundary RMSE, MAE, max error, and prediction-range diagnostics by split and option type.
+- [x] `boundary_by_regime.csv` retains regime-level boundary errors.
+- [x] `boundary_training_history.csv` records MLP boundary training history and the linear baseline row.
+- [x] `boundary_summary.json` records finite-label counts, sample caps, selected model, and scope note.
+- [x] `call_boundary_metrics.csv` compares pooled linear, call-only linear, and call-only MLP call-boundary diagnostics.
+- [x] No boundary is inferred from the positive-premium price surrogate.
+- [x] Figures are generated under `results/figures/stage09_boundary_head/`.

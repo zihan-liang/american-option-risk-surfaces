@@ -1,0 +1,96 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry, graphicx, url}
+\geometry{margin=1in}
+\graphicspath{{./}{../}}
+\title{Stage 9: Direct Boundary Diagnostic Head}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Stage 9: Direct Boundary Diagnostic Head}
+
+\subsection{Purpose}
+This stage trains direct supervised early-exercise boundary diagnostic heads from the clean Stage 6 CN/PSOR dataset. The goal is to test whether a modular model can estimate boundary labels within the tested regime envelope. This stage does not infer boundaries from the Stage 8 price surrogate, does not solve the free-boundary problem exactly, and does not introduce Delta or Gamma heads.
+
+\subsection{Method}
+The dataset feature vector is
+\[
+x=(\log(S/K),\tau/T,r,q,\sigma,T,\mathbb{1}_{\mathrm{call}}).
+\]
+The target is the normalized boundary label $B/K$ stored in the Stage 6 dataset. Only finite boundary labels are used for training and evaluation. Models are evaluated on the existing regime-level validation and test splits.
+
+Two pooled models are audited: a ridge linear sanity baseline and an MLP boundary regressor. A separate dividend-call refinement script compares pooled linear call performance, call-only linear performance, and a call-only MLP. No no-boundary label is fabricated.
+
+\subsection{Mathematical Formulation}
+For a fixed parameter regime and time-to-maturity $\tau$, the early-exercise boundary is represented as $B(\tau)/K$. The supervised diagnostic problem is
+\[
+\widehat{B}_{\theta}(x)\approx B(\tau)/K.
+\]
+For the MLP boundary heads, the raw network output is optionally mapped through a scaled sigmoid,
+\[
+\widehat{B}_{\theta}(x)=B_{\min}+(B_{\max}-B_{\min})\sigma(f_{\theta}(x)),
+\]
+where $B_{\min}$ and $B_{\max}$ are the finite training-label range. This bound is a plausibility constraint on predictions, not a mathematical free-boundary guarantee.
+
+\subsection{Implementation Details}
+The boundary model factory is implemented in \path{src/models/boundary_head.py}. Boundary metric helpers are implemented in \path{src/models/metrics.py}. The pooled workflow is implemented in \path{experiments/09_boundary_head.py}. The call-only refinement workflow is implemented in \path{experiments/10_option_specific_call_boundary_refinement.py}.
+
+The run used deterministic caps of 150,000 training samples, 75,000 validation samples, and 150,000 test samples. The clean Stage 6 dataset contains 3,264,943 finite boundary-labelled samples. The call-only subset contains 1,449,459 finite dividend-call boundary-labelled samples.
+
+\subsection{Validation and Diagnostics}
+\begin{table}[h]
+\centering
+\begin{tabular}{lllrrr}
+\toprule
+Model & Split & Type & RMSE & MAE & Out-of-range\\
+\midrule
+Linear pooled & Validation & All & 0.4272 & 0.2665 & 0.0000\\
+Linear pooled & Test & All & 0.5830 & 0.3449 & 0.0592\\
+MLP pooled & Validation & All & 0.2986 & 0.1726 & 0.0000\\
+MLP pooled & Test & All & 0.3513 & 0.2087 & 0.0000\\
+\bottomrule
+\end{tabular}
+\caption{Pooled direct boundary diagnostic metrics. Errors are in normalized boundary units $B/K$.}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllrr}
+\toprule
+Model & Split & Type & RMSE & MAE\\
+\midrule
+MLP pooled & Test & Put & 0.3421 & 0.1737\\
+MLP pooled & Test & Call & 0.3640 & 0.2586\\
+Call linear & Test & Call & 0.5813 & 0.4552\\
+Call MLP & Validation & Call & 0.3886 & 0.2872\\
+Call MLP & Test & Call & 0.6383 & 0.4853\\
+\bottomrule
+\end{tabular}
+\caption{Option-specific boundary metrics. The call-only MLP is validation-selected but does not improve test RMSE over the call-only linear baseline in this run.}
+\end{table}
+
+\subsection{Results}
+The pooled MLP improves substantially over the pooled linear sanity baseline on both validation and test metrics. Its test boundary RMSE is 0.3513 and test boundary MAE is 0.2087. The pooled MLP also keeps predictions within the observed training-label range by construction.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.78\linewidth]{results/figures/stage09_boundary_head/test_boundary_mae_by_option.png}
+\caption{Test boundary MAE by option type for pooled boundary heads.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.72\linewidth]{results/figures/stage09_boundary_head/call_boundary_refinement_mae.png}
+\caption{Dividend-call boundary refinement comparison.}
+\end{figure}
+
+The call-specific refinement is mixed. The call MLP has better validation RMSE than the call linear baseline, but its test RMSE is worse. This should be treated as weak generalization evidence for call-only boundary heads rather than as a repaired universal boundary claim.
+
+\subsection{Failure Modes and Limitations}
+Boundary labels are repeated across grid points for each regime and time level, so pointwise sample counts are not independent observations. Boundary errors remain large enough that the model should be described as a diagnostic estimator only. The call-only refinement does not clearly improve test performance, so dividend-call boundary claims must remain scoped and cautious. The model does not use the obstacle, complementarity system, or PSOR iterations internally, and it does not produce prices or Greeks.
+
+\subsection{Conclusion and Next Step}
+The Stage 9 gate passes as a scoped boundary diagnostic audit because finite boundary labels are filtered and counted, put and dividend-call metrics are reported separately, no-boundary cases are not fabricated, and weak call-only results are retained. The next stage should validate Delta separately and, only if justified, train a bounded supervised Delta head.
+
+\end{document}

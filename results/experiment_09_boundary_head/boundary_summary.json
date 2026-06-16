@@ -1,5 +1,14 @@
 {
-  "boundary_mae": 0.2528367653701256,
-  "boundary_rmse": 0.4568852037473761,
-  "model": "boundary_head_linear"
+  "boundary_label_max_train": 4.0,
+  "boundary_label_min_train": 0.0,
+  "decision": "scoped_boundary_diagnostic",
+  "device": "cuda",
+  "finite_boundary_samples": 3264943,
+  "note": "Boundary labels come from validated PSOR dataset artifacts; no price-threshold proxy is used.",
+  "selected_model": "boundary_head_mlp",
+  "selected_test_boundary_mae": 0.20874504246145487,
+  "selected_test_boundary_rmse": 0.3513049808491616,
+  "test_samples": 150000,
+  "train_samples": 150000,
+  "validation_samples": 75000
 }

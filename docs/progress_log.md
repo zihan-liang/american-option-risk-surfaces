@@ -188,3 +188,27 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 8 passes for obstacle-consistent price/premium modeling, with explicit limitation that the neural MLP does not beat the linear sanity baseline on aggregate RMSE.
 - Failure modes observed: near-kink error is large; the price/premium model is not a boundary, Delta, or Gamma model.
 - Next step: train and audit a direct boundary diagnostic head separately.
+
+## 2026-06-16
+
+- Stage: Direct boundary diagnostic head.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_boundary_head*.py"`
+  - `python -m unittest discover -s tests -p "test_call_boundary_refinement_outputs.py"`
+  - `python experiments/09_boundary_head.py --config configs/boundary_head.yaml`
+  - `python experiments/10_option_specific_call_boundary_refinement.py --config configs/call_boundary_refinement.yaml`
+- Key metrics:
+  - Finite boundary-labelled samples: `3264943`.
+  - Pooled train/validation/test caps: `150000/75000/150000`.
+  - Pooled MLP validation boundary RMSE: `0.29858054314764565`.
+  - Pooled MLP test boundary RMSE: `0.3513049808491616`.
+  - Pooled MLP test boundary MAE: `0.20874504246145487`.
+  - Pooled MLP test put boundary RMSE: `0.34210722137234034`.
+  - Pooled MLP test call boundary RMSE: `0.36400930907931744`.
+  - Finite call boundary-labelled samples: `1449459`.
+  - Call-only MLP validation boundary RMSE: `0.3885842951998814`.
+  - Call-only MLP test boundary RMSE: `0.6382774801816014`.
+  - Call-only linear test boundary RMSE: `0.5812933595799677`.
+- Decision: Stage 9 passes as a scoped diagnostic boundary-estimation audit, not as an exact free-boundary solver.
+- Failure modes observed: call-only MLP validation performance does not translate into better test RMSE than the call-only linear baseline; boundary labels are repeated across grid nodes and should not be interpreted as independent regime-level observations.
+- Next step: validate Delta separately and consider a bounded supervised Delta head only after recording price-autograd limitations.

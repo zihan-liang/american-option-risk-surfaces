@@ -155,3 +155,20 @@ Restricted wording:
 - Do not claim this price surrogate is a Greek engine.
 - Do not infer early-exercise boundaries from the price surrogate in this stage.
 - Do not claim this model replaces PSOR or validates excluded regimes.
+
+## Direct Boundary Diagnostic Head - 2026-06-16
+
+Allowed wording:
+
+- Direct boundary heads provide scoped supervised diagnostic estimates of $B/K$ within the clean Stage 6 regime envelope.
+- Boundary labels are taken from validated CN/PSOR dataset artifacts, and finite-label coverage is counted explicitly.
+- Put and dividend-call boundary errors are reported separately.
+- The pooled MLP improves over the pooled linear sanity baseline in this run.
+
+Restricted wording:
+
+- Do not claim the boundary head solves the free-boundary problem.
+- Do not claim the Stage 8 price surrogate implies or recovers the boundary.
+- Do not fabricate no-boundary or control cases as positive boundary labels.
+- Do not claim the call-only MLP is a repaired universal call-boundary solution; its test RMSE is weaker than the call-only linear baseline in this run.
+- Do not use this stage as Delta or Gamma evidence.

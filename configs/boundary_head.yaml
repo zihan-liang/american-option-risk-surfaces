@@ -1,3 +1,21 @@
 dataset: data/processed/surrogate_dataset.npz
+seed: 7
 ridge: 1.0e-6
-model_out: results/models/boundary_head_linear.npz
+train_cap: 150000
+validation_cap: 75000
+test_cap: 150000
+hidden: 128
+depth: 3
+batch_size: 8192
+epochs: 30
+learning_rate: 1.0e-3
+patience: 5
+device: auto
+feature_names:
+  - log_moneyness
+  - tau_over_T
+  - r
+  - q
+  - sigma
+  - T
+  - is_call

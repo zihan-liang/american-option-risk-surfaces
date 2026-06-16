@@ -139,6 +139,66 @@ def masked_error_metrics(
     }
 
 
+def finite_boundary_mask(boundary: np.ndarray) -> np.ndarray:
+    return np.isfinite(np.asarray(boundary, dtype=float))
+
+
+def grouped_boundary_metrics(
+    *,
+    prediction: np.ndarray,
+    target: np.ndarray,
+    splits: np.ndarray,
+    is_call: np.ndarray,
+    model_name: str,
+    lower: float | None = None,
+    upper: float | None = None,
+) -> list[dict[str, float | int | str]]:
+    rows: list[dict[str, float | int | str]] = []
+    split_values = _to_str_array(splits)
+    option_values = np.where(is_call > 0.5, "call", "put")
+    for split in sorted(set(split_values)):
+        for option_type in ["all", "put", "call"]:
+            if option_type == "all":
+                mask = split_values == split
+            else:
+                mask = (split_values == split) & (option_values == option_type)
+            if not np.any(mask):
+                continue
+            metrics = error_metrics(prediction[mask], target[mask])
+            row = {
+                "model": model_name,
+                "split": split,
+                "option_type": option_type,
+                "samples": int(np.count_nonzero(mask)),
+                "boundary_rmse": metrics["rmse"],
+                "boundary_mae": metrics["mae"],
+                "boundary_max_error": metrics["max_error"],
+            }
+            if lower is not None and upper is not None:
+                row.update(prediction_range_diagnostics(prediction[mask], lower=lower, upper=upper))
+            rows.append(row)
+    return rows
+
+
+def prediction_range_diagnostics(prediction: np.ndarray, *, lower: float, upper: float) -> dict[str, float | int]:
+    values = np.asarray(prediction, dtype=float)
+    samples = int(values.size)
+    if samples == 0:
+        return {
+            "samples": 0,
+            "prediction_min": float("nan"),
+            "prediction_max": float("nan"),
+            "out_of_training_range_fraction": float("nan"),
+        }
+    outside = (values < lower) | (values > upper)
+    return {
+        "samples": samples,
+        "prediction_min": float(np.min(values)),
+        "prediction_max": float(np.max(values)),
+        "out_of_training_range_fraction": float(np.mean(outside)),
+    }
+
+
 def _to_str_array(values: np.ndarray) -> np.ndarray:
     if values.dtype.kind == "S":
         return values.astype(str)
