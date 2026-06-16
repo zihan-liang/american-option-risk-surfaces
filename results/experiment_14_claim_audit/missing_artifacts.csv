@@ -1,0 +1,14 @@
+artifact,status,bytes
+results\experiment_01_solver_validation\validation_summary.json,present,1196
+results\experiment_03_convergence_domain_runtime\convergence_summary.json,present,390
+results\experiment_04_application_risk_surfaces\application_summary.json,present,529
+results\experiment_05_surrogate_dataset\dataset_manifest.json,present,1096
+results\experiment_06_surrogate_baselines\baseline_summary.json,present,317
+results\experiment_07_positive_premium_tuning\positive_premium_summary.json,present,553
+results\experiment_09_boundary_head\boundary_summary.json,present,525
+results\experiment_11_delta_validation\delta_validation_summary.json,present,532
+results\experiment_12_supervised_delta_head\delta_head_summary.json,present,535
+results\experiment_13_integrated_application_workflow\integrated_summary.json,present,650
+reports\final_report.tex,present,5237
+paper\manuscript_outline.tex,present,5580
+paper\references.bib,present,7450

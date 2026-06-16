@@ -1,0 +1,163 @@
+output_dir: results/experiment_14_claim_audit
+final_claim_matrix: results/tables/final_claim_matrix.csv
+
+forbidden_phrases:
+  - one network solves price boundary and Greeks
+  - one neural network solves price boundary and Greeks
+  - price surrogate is a Greek engine
+  - workflow replaces PSOR
+  - surrogate replaces PSOR
+  - Gamma surrogate
+  - publication-grade convergence
+
+scan_files:
+  - reports/final_report.tex
+  - paper/manuscript_outline.tex
+
+required_artifacts:
+  - results/experiment_01_solver_validation/validation_summary.json
+  - results/experiment_03_convergence_domain_runtime/convergence_summary.json
+  - results/experiment_04_application_risk_surfaces/application_summary.json
+  - results/experiment_05_surrogate_dataset/dataset_manifest.json
+  - results/experiment_06_surrogate_baselines/baseline_summary.json
+  - results/experiment_07_positive_premium_tuning/positive_premium_summary.json
+  - results/experiment_09_boundary_head/boundary_summary.json
+  - results/experiment_11_delta_validation/delta_validation_summary.json
+  - results/experiment_12_supervised_delta_head/delta_head_summary.json
+  - results/experiment_13_integrated_application_workflow/integrated_summary.json
+  - reports/final_report.tex
+  - paper/manuscript_outline.tex
+  - paper/references.bib
+
+claims:
+  - claim_id: cn_psor_benchmark
+    claim: Validated CN/PSOR benchmark generates audited American option risk-surface labels within tested regimes.
+    evidence: results/experiment_01_solver_validation/validation_summary.json
+    status: scoped_allowed
+    allowed_wording: CN/PSOR is the audited benchmark and label generator for tested put and dividend-call regimes.
+    restricted_wording: Do not call the solver publication-grade across all regimes.
+    limitations: Smoke-grid errors reflect grid resolution, finite-domain truncation, and nonsmooth payoff time stepping.
+    metrics:
+      european_put_max_error: european_put.max_error
+      no_dividend_call_max_error: no_dividend_call_max_error
+      american_put_obstacle_violation: american_put.obstacle_violation
+      american_put_complementarity_error: american_put.complementarity_error
+
+  - claim_id: grid_domain_runtime
+    claim: Grid, domain, runtime, and shape diagnostics support engineering-scale solver use.
+    evidence: results/experiment_03_convergence_domain_runtime/convergence_summary.json
+    status: scoped_allowed
+    allowed_wording: Engineering-scale stability is supported for the tested base put and dividend-call cases.
+    restricted_wording: Do not claim analytic-reference or unmasked Gamma convergence.
+    limitations: Grid-240 is an internal numerical reference, not an analytic benchmark.
+    metrics:
+      reference_grid: reference_grid
+      max_obstacle_violation: max_obstacle_violation
+      max_complementarity_error: max_complementarity_error
+      max_convexity_violation: max_convexity_violation
+
+  - claim_id: application_surfaces
+    claim: Application sweep produced audited American put, dividend-call, and no-dividend control risk surfaces.
+    evidence: results/experiment_04_application_risk_surfaces/application_summary.json
+    status: scoped_allowed
+    allowed_wording: Application surfaces are reported with diagnostics and flagged delicate regimes.
+    restricted_wording: Do not hide diagnostic failures or use no-dividend controls as dividend-call evidence.
+    limitations: Thirty-two diagnostic-failure regimes remain audit records and are not clean surrogate labels.
+    metrics:
+      total_cases: total_cases
+      diagnostic_failures: diagnostic_failures
+      delicate_regimes: delicate_regimes
+      max_obstacle_violation: max_obstacle_violation
+
+  - claim_id: surrogate_dataset
+    claim: Clean supervised dataset is traceable to diagnostic-passing PSOR regimes with leakage-safe splits.
+    evidence: results/experiment_05_surrogate_dataset/dataset_manifest.json
+    status: scoped_allowed
+    allowed_wording: Dataset uses regime-level train/validation/test splits and strict Greek masks.
+    restricted_wording: Do not claim surrogate performance from dataset construction alone.
+    limitations: Excluded controls and diagnostic-failure regimes are outside the clean-label envelope.
+    metrics:
+      samples: samples
+      clean_regimes: clean_regimes
+      excluded_regimes: excluded_regimes
+      train_regimes: split_regime_counts.train
+      test_regimes: split_regime_counts.test
+
+  - claim_id: direct_price_baselines
+    claim: Ordinary direct-price baselines are useful negative evidence and are not obstacle-guaranteed.
+    evidence: results/experiment_06_surrogate_baselines/baseline_summary.json
+    status: rejected_as_final_model
+    allowed_wording: Direct-price baselines expose obstacle and shape limitations.
+    restricted_wording: Do not call baseline direct-price MLP obstacle-consistent or a Greek engine.
+    limitations: Baselines are retained for comparison and violation audit, not final claims.
+    metrics:
+      best_validation_model: best_validation_model
+      best_validation_rmse: best_validation_rmse
+      models: models
+
+  - claim_id: positive_premium_price
+    claim: Positive continuation-premium model enforces obstacle consistency for price/premium prediction.
+    evidence: results/experiment_07_positive_premium_tuning/positive_premium_summary.json
+    status: scoped_allowed
+    allowed_wording: Positive-premium price surrogate is obstacle-consistent within the clean Stage 6 regime envelope.
+    restricted_wording: Do not claim this price model estimates boundaries, Greeks, or replaces PSOR.
+    limitations: Linear sanity baseline has lower aggregate validation RMSE in this run; near-kink error remains larger.
+    metrics:
+      selected_model: selected_model
+      selected_validation_rmse: selected_validation_rmse
+      best_validation_model: best_validation_model
+      max_obstacle_violation: max_obstacle_violation
+
+  - claim_id: boundary_head
+    claim: Direct boundary heads provide scoped supervised boundary diagnostics.
+    evidence: results/experiment_09_boundary_head/boundary_summary.json
+    status: scoped_allowed
+    allowed_wording: Boundary heads estimate PSOR boundary labels as a separate diagnostic task.
+    restricted_wording: Do not claim exact free-boundary solving or infer boundaries from the price surrogate.
+    limitations: Boundary estimates are weaker than price and Delta, especially for call-only generalization.
+    metrics:
+      selected_test_boundary_rmse: selected_test_boundary_rmse
+      selected_test_boundary_mae: selected_test_boundary_mae
+      finite_boundary_samples: finite_boundary_samples
+
+  - claim_id: price_delta_audit
+    claim: Price-model derivatives are diagnostic only and do not make the price surrogate a Greek engine.
+    evidence: results/experiment_11_delta_validation/delta_validation_summary.json
+    status: restricted_evidence
+    allowed_wording: Price-model Delta audit motivates using a separate supervised Delta head.
+    restricted_wording: Do not use price autograd Delta as final Delta evidence.
+    limitations: Price-model derivative has materially larger RMSE than the bounded supervised Delta head.
+    metrics:
+      decision: decision
+      autograd_delta_rmse: autograd_delta_rmse
+      finite_difference_delta_rmse: finite_difference_delta_rmse
+      uses_strict_greek_mask: uses_strict_greek_mask
+
+  - claim_id: bounded_delta_head
+    claim: Separate bounded supervised Delta head provides scoped strict-mask Delta diagnostics.
+    evidence: results/experiment_12_supervised_delta_head/delta_head_summary.json
+    status: scoped_allowed
+    allowed_wording: Bounded Delta head is a separate diagnostic head with zero bound violation in evaluated samples.
+    restricted_wording: Do not claim Gamma support or near-boundary Delta coverage beyond the strict-mask audit.
+    limitations: Near-boundary strict samples are absent in the capped Stage 10 run.
+    metrics:
+      selected_test_delta_rmse: selected_test_delta_rmse
+      selected_test_delta_mae: selected_test_delta_mae
+      selected_max_delta_bound_violation: selected_max_delta_bound_violation
+      strict_samples: strict_samples
+
+  - claim_id: integrated_workflow
+    claim: Integrated modular workflow supports scenario screening with PSOR audit.
+    evidence: results/experiment_13_integrated_application_workflow/integrated_summary.json
+    status: scoped_allowed
+    allowed_wording: Separate price, boundary, and Delta heads can screen scenarios when audited against PSOR.
+    restricted_wording: Do not claim the integrated workflow replaces PSOR or includes Gamma.
+    limitations: Six fresh held-out PSOR cases are evaluated; boundary remains the weakest component.
+    metrics:
+      cases: cases
+      mean_price_rmse: mean_price_rmse
+      mean_boundary_mae: mean_boundary_mae
+      mean_strict_delta_rmse: mean_strict_delta_rmse
+      max_price_obstacle_violation: max_price_obstacle_violation
+      max_delta_bound_violation: max_delta_bound_violation
+      mean_speedup: mean_speedup

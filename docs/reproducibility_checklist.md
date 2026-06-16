@@ -229,3 +229,37 @@ Stage 11 output contract:
 - [x] `integrated_timing.csv` records PSOR time, workflow time, and speedup.
 - [x] `integrated_summary.json` states `scenario_screening_with_psor_audit` and `claims_psor_replacement=false`.
 - [x] Fresh PSOR audit cases are saved under `results/experiment_13_integrated_application_workflow/fresh_cases/`.
+
+## Stage 12 Final Claim Audit Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/14_claim_audit.py --config configs/claim_audit.yaml
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/final_report.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build paper/manuscript_outline.tex
+bibtex build/manuscript_outline
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build paper/manuscript_outline.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build paper/manuscript_outline.tex
+```
+
+If stale local manuscript auxiliary files cause undefined-citation warnings, use the clean job-name build:
+
+```powershell
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage12 -output-directory=build paper/manuscript_outline.tex
+bibtex build/manuscript_outline_stage12
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage12 -output-directory=build paper/manuscript_outline.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage12 -output-directory=build paper/manuscript_outline.tex
+Copy-Item -LiteralPath build\manuscript_outline_stage12.pdf -Destination build\manuscript_outline.pdf -Force
+```
+
+Stage 12 output contract:
+
+- [x] `results/tables/final_claim_matrix.csv` maps each final claim to evidence, metrics, allowed wording, restricted wording, and limitations.
+- [x] `claim_audit_summary.json` reports `manuscript_safe_claims_only`, zero forbidden-language violations, and zero missing required artifacts.
+- [x] `forbidden_language_scan.csv` records the paper-facing claim-language scan.
+- [x] `missing_artifacts.csv` records required evidence artifacts and report inputs.
+- [x] `reports/final_report.tex` summarizes the final evidence without adding new experimental claims.
+- [x] No Stage 12 command trains models, regenerates datasets, or reruns PSOR experiments.

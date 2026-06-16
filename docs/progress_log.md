@@ -252,3 +252,26 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 11 passes as modular scenario screening with PSOR audit, not as a PSOR replacement.
 - Failure modes observed: boundary errors remain the weakest part of the integrated workflow; only six deterministic held-out regimes are evaluated; Gamma is not included.
 - Next step: perform final claim audit and report/manuscript preparation.
+
+## 2026-06-16
+
+- Stage: Final claim audit, report, and manuscript preparation.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_claim_*.py"`
+  - `python -m unittest discover -s tests -p "test_final_report_assets.py"`
+  - `python experiments/14_claim_audit.py --config configs/claim_audit.yaml`
+- Key outputs:
+  - `results/tables/final_claim_matrix.csv`
+  - `results/experiment_14_claim_audit/claim_matrix.csv`
+  - `results/experiment_14_claim_audit/claim_audit_summary.json`
+  - `results/experiment_14_claim_audit/forbidden_language_scan.csv`
+  - `results/experiment_14_claim_audit/missing_artifacts.csv`
+  - `reports/final_report.tex`
+- Key metrics:
+  - Claims audited: `10`.
+  - Forbidden-language violations: `0`.
+  - Missing required artifacts: `0`.
+  - Decision: `manuscript_safe_claims_only`.
+- Decision: Stage 12 passes as evidence synthesis and final-report preparation, with no new solver runs, dataset generation, or model training.
+- Failure modes retained: solver evidence remains engineering-scale, Gamma is not part of the surrogate workflow, boundary estimates remain weakest, and integrated workflow evidence covers six fresh PSOR audit cases.
+- Next step: document future extensions separately without mixing speculative extensions into completed project claims.

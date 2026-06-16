@@ -15,3 +15,4 @@
 | 11 | `experiments/11_delta_validation.py` | Price surrogate is not automatically a Greek engine | Autograd and finite-difference Delta audited under strict Greek masks; no final Delta claim from price model |
 | 12 | `experiments/12_supervised_delta_head.py` | Bounded supervised Delta head provides scoped Delta diagnostics | Strict-mask put/call metrics reported; Delta-bound violation is zero or numerical roundoff |
 | 13 | `experiments/13_integrated_application_workflow.py` | Modular workflow is useful only with PSOR audit checks | Fresh PSOR cases, price/boundary/Delta metrics, speed, and violations reported together |
+| 14 | `experiments/14_claim_audit.py` | Final claims are manuscript-safe and evidence-backed | Claim matrix maps each claim to artifacts and metrics; forbidden-language scan and artifact checks pass |

@@ -205,3 +205,20 @@ Restricted wording:
 - Do not claim one network solves price, boundary, and Greeks.
 - Do not claim Gamma support from the integrated workflow.
 - Do not hide that boundary estimates are the weakest integrated component.
+
+## Final Claim Audit and Report Preparation - 2026-06-16
+
+Allowed wording:
+
+- The final claim matrix maps `10` project claims to concrete experiment artifacts, metrics, allowed wording, restricted wording, and limitations.
+- The final report may describe the project as a reproducible computational-finance workflow with validated CN/PSOR labels, obstacle-consistent price/premium modeling, scoped boundary diagnostics, bounded Delta diagnostics, and integrated scenario screening with PSOR audit.
+- The manuscript outline may include the integrated workflow metrics: mean price RMSE about `0.00919`, mean boundary MAE about `0.1539`, mean strict Delta RMSE about `0.0300`, zero obstacle violation, zero Delta-bound violation, and mean speedup about `87.5` on six fresh PSOR audit cases.
+- The claim-language scan reports `0` forbidden-language violations and the artifact audit reports `0` missing required artifacts.
+
+Restricted wording:
+
+- Do not convert the final report into stronger claims than the claim matrix permits.
+- Do not describe the integrated workflow as replacing the CN/PSOR benchmark.
+- Do not describe the price surrogate as a boundary, Delta, or Gamma model.
+- Do not present boundary-head results as exact free-boundary solutions.
+- Do not remove the limitations around engineering-scale solver evidence, masked Greeks, weak boundary estimates, and six-case integrated audit coverage.
