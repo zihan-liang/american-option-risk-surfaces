@@ -1,0 +1,6 @@
+stage,check,value,status
+stage12_claim_audit,forbidden_language_violations,0,pass
+stage12_claim_audit,missing_artifacts,0,pass
+stage13_future_extensions,invalid_extensions,0,pass
+stage13_future_extensions,language_violations,0,pass
+stage13_future_extensions,claim_status,future_work_only,pass

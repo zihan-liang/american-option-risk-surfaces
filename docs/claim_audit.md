@@ -237,3 +237,17 @@ Restricted wording:
 - Do not describe active learning, uncertainty quantification, shape-constrained models, Gamma surrogates, alternative dynamics, or market calibration as completed project results.
 - Do not use future-extension design notes as evidence for the current claim matrix.
 - Do not weaken the Stage 12 restrictions around PSOR audit, boundary weakness, masked Greeks, or engineering-scale validation.
+
+## Release Freeze and Reproducibility Handoff - 2026-06-17
+
+Allowed wording:
+
+- The release handoff documents how to verify the repository, rebuild reports, and continue future work without changing completed project claims.
+- The release verifier checks required source artifacts, Stage 12 claim-audit hygiene, Stage 13 future-work hygiene, and stale tracked generated manuscript files.
+- Local `.pt`, `.npz`, generated figures, and build PDFs are reproducible local outputs rather than source artifacts.
+
+Restricted wording:
+
+- Do not claim release verification passes while stale tracked generated manuscript artifacts remain tracked.
+- Do not treat build PDFs as source artifacts.
+- Do not use release packaging as new scientific evidence.

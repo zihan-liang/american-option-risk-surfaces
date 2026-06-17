@@ -1,0 +1,12 @@
+path,status
+README.md,present
+docs/release_handoff.md,present
+docs/artifact_manifest.md,present
+docs/claim_audit.md,present
+docs/reproducibility_checklist.md,present
+reports/final_report.tex,present
+reports/stage13_future_extensions.tex,present
+paper/manuscript_outline.tex,present
+paper/references.bib,present
+results/experiment_14_claim_audit/claim_audit_summary.json,present
+results/experiment_15_future_extensions/future_extensions_summary.json,present

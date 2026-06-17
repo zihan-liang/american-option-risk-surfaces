@@ -288,3 +288,35 @@ Stage 13 output contract:
 - [x] `future_extensions_summary.json` reports zero invalid rows and zero language violations.
 - [x] `docs/future_extensions.md` and design notes keep roadmap ideas separate from completed claims.
 - [x] No Stage 13 command trains models, regenerates labels, or reruns PSOR experiments.
+
+## Stage 14 Release Freeze Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/14_claim_audit.py --config configs/claim_audit.yaml
+python experiments/15_future_extensions_manifest.py --config configs/future_extensions.yaml
+python experiments/16_release_verification.py
+```
+
+Build release PDFs:
+
+```powershell
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/final_report.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage13_future_extensions.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_release -output-directory=build paper/manuscript_outline.tex
+bibtex build/manuscript_outline_release
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_release -output-directory=build paper/manuscript_outline.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_release -output-directory=build paper/manuscript_outline.tex
+Copy-Item -LiteralPath build\manuscript_outline_release.pdf -Destination build\manuscript_outline.pdf -Force
+```
+
+Stage 14 output contract:
+
+- [x] `README.md` states final project status, claim boundaries, PSOR audit requirement, and release verification command.
+- [x] `docs/release_handoff.md` explains what is complete, what is not claimed, how to verify, and how to continue.
+- [x] `docs/artifact_manifest.md` separates source-controlled artifacts from ignored local `.pt`, `.npz`, generated figures, and build PDF outputs.
+- [x] `experiments/16_release_verification.py` checks required files, claim-audit summaries, future-work summaries, and stale tracked generated artifacts.
+- [ ] Final release gate passes only after stale tracked generated manuscript artifacts are removed locally from Git tracking.

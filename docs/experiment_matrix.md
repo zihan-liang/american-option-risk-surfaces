@@ -17,3 +17,4 @@
 | 13 | `experiments/13_integrated_application_workflow.py` | Modular workflow is useful only with PSOR audit checks | Fresh PSOR cases, price/boundary/Delta metrics, speed, and violations reported together |
 | 14 | `experiments/14_claim_audit.py` | Final claims are manuscript-safe and evidence-backed | Claim matrix maps each claim to artifacts and metrics; forbidden-language scan and artifact checks pass |
 | 15 | `experiments/15_future_extensions_manifest.py` | Future work is separated from completed claims | Every extension is `future_work_only`; validation requirements and language scan are recorded |
+| 16 | `experiments/16_release_verification.py` | Repository handoff is reproducible and packaging-safe | Required files, claim summaries, future-work summaries, and stale tracked generated artifacts are checked |

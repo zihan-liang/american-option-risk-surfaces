@@ -300,3 +300,24 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 13 passes as a roadmap-only stage. No future extension is treated as current project evidence.
 - Failure modes retained: every extension requires a new validation gate before it can affect the claim matrix.
 - Next step: future implementation should begin with a new project plan for the selected extension.
+
+## 2026-06-17
+
+- Stage: Final repository freeze and reproducibility handoff.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_release_verification.py"`
+  - `python -m unittest discover -s tests -p "test_readme_release_handoff.py"`
+  - `python -m unittest discover -s tests -p "test_artifact_manifest.py"`
+- Key outputs:
+  - `README.md`
+  - `docs/release_handoff.md`
+  - `docs/artifact_manifest.md`
+  - `experiments/16_release_verification.py`
+  - `results/experiment_16_release_verification/release_verification_summary.json`
+- Decision: Stage 14 adds the release-handoff machinery. The final release gate remains blocked until stale tracked generated manuscript artifacts are removed locally from Git tracking.
+- Failure modes retained:
+  - `manuscript_outline.aux`
+  - `manuscript_outline.log`
+  - `manuscript_outline.pdf`
+  - `paper/manuscript_outline.pdf`
+- Next step: remove the stale tracked generated files locally, rerun `python experiments/16_release_verification.py`, and commit the release freeze.
