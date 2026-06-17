@@ -222,3 +222,18 @@ Restricted wording:
 - Do not describe the price surrogate as a boundary, Delta, or Gamma model.
 - Do not present boundary-head results as exact free-boundary solutions.
 - Do not remove the limitations around engineering-scale solver evidence, masked Greeks, weak boundary estimates, and six-case integrated audit coverage.
+
+## Future Extensions Roadmap - 2026-06-17
+
+Allowed wording:
+
+- Future extensions are documented as roadmap items only.
+- The roadmap includes larger regime envelopes, active learning, uncertainty quantification, shape-constrained models, improved Gamma treatment, Rannacher/payoff-smoothing refinement, alternative dynamics, and market calibration.
+- Each extension has `future_work_only` status and lists required validation before any claim.
+- The future-extension language scan reports `0` violations.
+
+Restricted wording:
+
+- Do not describe active learning, uncertainty quantification, shape-constrained models, Gamma surrogates, alternative dynamics, or market calibration as completed project results.
+- Do not use future-extension design notes as evidence for the current claim matrix.
+- Do not weaken the Stage 12 restrictions around PSOR audit, boundary weakness, masked Greeks, or engineering-scale validation.

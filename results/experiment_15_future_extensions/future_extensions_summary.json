@@ -1,4 +1,8 @@
 {
   "claim_status": "future_work_only",
-  "extensions": 5
+  "extensions": 8,
+  "invalid_extensions": 0,
+  "language_violations": 0,
+  "no_completed_extension_claims": true,
+  "output_dir": "results\\experiment_15_future_extensions"
 }

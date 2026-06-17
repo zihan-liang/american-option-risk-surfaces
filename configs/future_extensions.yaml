@@ -1,0 +1,86 @@
+output_dir: results/experiment_15_future_extensions
+scan_files:
+  - docs/future_extensions.md
+  - paper/manuscript_outline.tex
+  - reports/stage13_future_extensions.tex
+
+extensions:
+  - extension_id: larger_regime_envelope
+    extension_name: Larger regime envelope
+    motivation: Test whether solver diagnostics and surrogate components remain reliable outside the current engineering sweep.
+    current_limitation_addressed: Current labels exclude diagnostic-failure regimes and cover a limited grid of maturities, volatilities, rates, and dividends.
+    required_new_data_or_solver_work: Add new PSOR sweeps with explicit grid, domain, obstacle, complementarity, shape, runtime, and failure-regime audits.
+    required_validation: Compare old and new regime errors by option type, stress level, boundary band, and strict Greek mask before adding labels to training.
+    expected_outputs: Expanded experiment matrix, excluded-regime table, convergence appendix, and updated claim audit.
+    risk_level: medium
+    claim_status: future_work_only
+
+  - extension_id: active_learning
+    extension_name: Active learning for PSOR label selection
+    motivation: Reduce expensive PSOR labeling by selecting regimes where surrogate uncertainty, disagreement, or diagnostic stress is highest.
+    current_limitation_addressed: Current dataset uses a predefined sweep rather than an adaptive label-selection policy.
+    required_new_data_or_solver_work: Define an acquisition score, run PSOR on selected candidate regimes, and log every accepted and rejected label.
+    required_validation: Measure error reduction per added PSOR regime against a matched random-sampling baseline and retain failed acquisitions.
+    expected_outputs: Acquisition log, label-efficiency curve, fresh PSOR audit cases, and active-learning report section.
+    risk_level: medium
+    claim_status: future_work_only
+
+  - extension_id: uncertainty_quantification
+    extension_name: Uncertainty quantification
+    motivation: Attach uncertainty estimates to price, boundary, and Delta diagnostics so PSOR spot checks can be triggered by risk.
+    current_limitation_addressed: Current surrogate outputs are point estimates and do not quantify confidence.
+    required_new_data_or_solver_work: Build calibration splits and evaluate ensembles, conformal intervals, or Bayesian approximations against fresh PSOR cases.
+    required_validation: Report empirical coverage, interval width, calibration error, and PSOR-audit trigger precision by option type and regime.
+    expected_outputs: Coverage tables, calibration plots, uncertainty-trigger policy, and failure-case audit.
+    risk_level: medium
+    claim_status: future_work_only
+
+  - extension_id: shape_constrained_models
+    extension_name: Shape-constrained and no-arbitrage-aware models
+    motivation: Improve financial consistency beyond penalty-only training by using structural constraints where possible.
+    current_limitation_addressed: Direct-price baselines showed obstacle and shape violations; current positive-premium model enforces only the obstacle.
+    required_new_data_or_solver_work: Design constrained architectures or post-training certificates for monotonicity, convexity, and option-specific Delta bounds.
+    required_validation: Audit obstacle, monotonicity, convexity, Delta bounds, boundary-band errors, and held-out regime performance against PSOR labels.
+    expected_outputs: Constraint audit table, architecture notes, violation comparison with baseline and positive-premium models.
+    risk_level: high
+    claim_status: future_work_only
+
+  - extension_id: improved_gamma_treatment
+    extension_name: Improved Gamma treatment near kinks and free boundaries
+    motivation: Gamma is numerically delicate near payoff kinks and free boundaries and should not be treated as a routine surrogate output.
+    current_limitation_addressed: Current workflow reports finite-difference Gamma with masks but does not train or validate a Gamma head.
+    required_new_data_or_solver_work: Add finer grids, Rannacher smoothing, boundary-aware masks, and high-resolution reference comparisons before any Gamma model.
+    required_validation: Compare masked and unmasked Gamma errors, near-boundary behavior, grid convergence, and smoothing sensitivity.
+    expected_outputs: Gamma stability appendix, mask policy update, and explicit retain-or-reject decision for any Gamma surrogate.
+    risk_level: high
+    claim_status: future_work_only
+
+  - extension_id: rannacher_smoothing_refinement
+    extension_name: Rannacher and payoff-smoothing refinement
+    motivation: Reduce near-maturity and kink-related numerical artifacts before making stronger Greek or convergence statements.
+    current_limitation_addressed: Current solver notes identify nonsmooth terminal payoff and uniform-grid resolution as error sources.
+    required_new_data_or_solver_work: Implement and audit active Rannacher startup steps or payoff averaging while preserving obstacle enforcement.
+    required_validation: Re-run analytic checks, grid convergence, complementarity, boundary stability, and Delta/Gamma comparisons against current CN/PSOR outputs.
+    expected_outputs: Solver-refinement report, before-after convergence tables, and updated validation gate.
+    risk_level: medium
+    claim_status: future_work_only
+
+  - extension_id: alternative_dynamics
+    extension_name: Alternative dynamics
+    motivation: Extend beyond Black-Scholes dynamics toward local volatility, stochastic volatility, jump diffusion, or rough volatility settings.
+    current_limitation_addressed: Current mathematical formulation and solver are one-factor Black-Scholes American option models.
+    required_new_data_or_solver_work: Derive the new VI or optimal-stopping formulation and implement an appropriate benchmark solver before any surrogate labels.
+    required_validation: Establish new analytic, theorem, convergence, obstacle, complementarity, and boundary diagnostics for each model class.
+    expected_outputs: New methodology note, benchmark solver, validation report, and claim audit before surrogate experiments.
+    risk_level: high
+    claim_status: future_work_only
+
+  - extension_id: market_calibration_empirical_validation
+    extension_name: Market calibration and empirical validation
+    motivation: Test whether the workflow remains useful when parameters are estimated from market data rather than synthetic sweeps.
+    current_limitation_addressed: Current experiments use controlled synthetic regimes rather than calibrated market surfaces.
+    required_new_data_or_solver_work: Add data ingestion, calibration routines, data licensing notes, and PSOR audits on calibrated parameter sets.
+    required_validation: Report calibration error, out-of-sample pricing diagnostics, boundary plausibility, and reproducible data provenance.
+    expected_outputs: Calibration manifest, empirical validation report, data provenance checklist, and revised limitations section.
+    risk_level: high
+    claim_status: future_work_only

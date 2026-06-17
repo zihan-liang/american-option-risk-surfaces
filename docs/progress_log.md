@@ -275,3 +275,28 @@ Use this file to record dated progress, commands, metrics, and decisions.
 - Decision: Stage 12 passes as evidence synthesis and final-report preparation, with no new solver runs, dataset generation, or model training.
 - Failure modes retained: solver evidence remains engineering-scale, Gamma is not part of the surrogate workflow, boundary estimates remain weakest, and integrated workflow evidence covers six fresh PSOR audit cases.
 - Next step: document future extensions separately without mixing speculative extensions into completed project claims.
+
+## 2026-06-17
+
+- Stage: Future extensions manifest and non-claim roadmap.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_future_extensions*.py"`
+  - `python experiments/15_future_extensions_manifest.py --config configs/future_extensions.yaml`
+- Key outputs:
+  - `docs/future_extensions.md`
+  - `docs/active_learning_design.md`
+  - `docs/uq_design.md`
+  - `docs/shape_constrained_models_design.md`
+  - `results/experiment_15_future_extensions/future_extensions.csv`
+  - `results/experiment_15_future_extensions/future_extension_validation_matrix.csv`
+  - `results/experiment_15_future_extensions/future_extension_language_scan.csv`
+  - `results/experiment_15_future_extensions/future_extensions_summary.json`
+  - `reports/stage13_future_extensions.tex`
+- Key metrics:
+  - Future extensions documented: `8`.
+  - Invalid extension rows: `0`.
+  - Language violations: `0`.
+  - Claim status: `future_work_only`.
+- Decision: Stage 13 passes as a roadmap-only stage. No future extension is treated as current project evidence.
+- Failure modes retained: every extension requires a new validation gate before it can affect the claim matrix.
+- Next step: future implementation should begin with a new project plan for the selected extension.

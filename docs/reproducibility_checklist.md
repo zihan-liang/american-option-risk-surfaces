@@ -263,3 +263,28 @@ Stage 12 output contract:
 - [x] `missing_artifacts.csv` records required evidence artifacts and report inputs.
 - [x] `reports/final_report.tex` summarizes the final evidence without adding new experimental claims.
 - [x] No Stage 12 command trains models, regenerates datasets, or reruns PSOR experiments.
+
+## Stage 13 Future Extensions Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/15_future_extensions_manifest.py --config configs/future_extensions.yaml
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage13_future_extensions.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage13 -output-directory=build paper/manuscript_outline.tex
+bibtex build/manuscript_outline_stage13
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage13 -output-directory=build paper/manuscript_outline.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript_outline_stage13 -output-directory=build paper/manuscript_outline.tex
+Copy-Item -LiteralPath build\manuscript_outline_stage13.pdf -Destination build\manuscript_outline.pdf -Force
+```
+
+Stage 13 output contract:
+
+- [x] `future_extensions.csv` lists roadmap items with `future_work_only` status.
+- [x] `future_extension_validation_matrix.csv` records required validation for each extension.
+- [x] `future_extension_language_scan.csv` records completed-claim language checks.
+- [x] `future_extensions_summary.json` reports zero invalid rows and zero language violations.
+- [x] `docs/future_extensions.md` and design notes keep roadmap ideas separate from completed claims.
+- [x] No Stage 13 command trains models, regenerates labels, or reruns PSOR experiments.

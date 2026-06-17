@@ -1,0 +1,49 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, booktabs, geometry}
+\geometry{margin=1in}
+\title{Stage 13: Future Extensions and Non-Claim Roadmap}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Stage 13: Future Extensions and Non-Claim Roadmap}
+
+\subsection{Purpose}
+This stage documents credible future extensions without mixing them into the completed project claims. The stage is a roadmap and validation plan only. It does not train models, regenerate labels, rerun PSOR experiments, or add new current-results claims.
+
+\subsection{Method}
+The future-extension manifest is generated from \texttt{configs/future\_extensions.yaml}. Each extension is required to include a motivation, current limitation addressed, required new solver or data work, validation requirements, expected outputs, risk level, and \texttt{future\_work\_only} claim status.
+
+\subsection{Mathematical Formulation}
+No new mathematical formulation is implemented in this stage. Extensions involving alternative dynamics would require a new variational inequality or optimal-stopping formulation before any solver or surrogate claim could be made.
+
+\subsection{Implementation Details}
+The manifest generator writes \texttt{future\_extensions.csv}, \texttt{future\_extension\_validation\_matrix.csv}, \texttt{future\_extension\_language\_scan.csv}, and \texttt{future\_extensions\_summary.json}. The language scan flags completed-result wording unless it appears in an explicitly future-work context.
+
+\subsection{Validation and Diagnostics}
+The acceptance check is claim hygiene rather than numerical accuracy. Every extension must remain future work only, every extension must specify required validation, and paper-facing text must not imply completed active learning, uncertainty quantification, shape-constrained modeling, Gamma surrogates, alternative dynamics, or market calibration.
+
+\subsection{Results}
+\begin{tabular}{p{0.28\linewidth}p{0.28\linewidth}p{0.32\linewidth}}
+\toprule
+Extension & Current limitation addressed & Required validation before claim \\
+\midrule
+Larger regime envelope & Limited synthetic sweep and excluded regimes & Full PSOR diagnostics and held-out degradation audit \\
+Active learning & Fixed label sweep & Error reduction per added PSOR regime against random sampling \\
+Uncertainty quantification & Point estimates only & Coverage, interval width, calibration error, and PSOR-trigger quality \\
+Shape-constrained models & Shape violations in direct baselines & Obstacle, monotonicity, convexity, and Delta-bound audits \\
+Improved Gamma treatment & Gamma instability near kinks and boundaries & Masked/unmasked Gamma convergence and smoothing sensitivity \\
+Rannacher/payoff smoothing & Nonsmooth terminal payoff artifacts & Before-after solver and Greek validation \\
+Alternative dynamics & Black--Scholes-only formulation & New formulation, benchmark, and diagnostics \\
+Market calibration & Synthetic regimes only & Data provenance, calibration error, and out-of-sample PSOR audit \\
+\bottomrule
+\end{tabular}
+
+\subsection{Failure Modes and Limitations}
+The main failure mode is overclaiming. These extensions are not implemented, not validated, and not part of the completed evidence matrix. Alternative dynamics and market calibration are especially high risk because they require new mathematical formulation, new data governance, and new benchmark validation.
+
+\subsection{Conclusion and Next Step}
+Stage 13 closes the current project by documenting future research directions as non-claims. Any future extension should start with a new plan, a new validation gate, and an updated claim audit before it appears in the manuscript as evidence.
+
+\end{document}

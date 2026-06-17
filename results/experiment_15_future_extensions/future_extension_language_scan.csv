@@ -1,0 +1,5 @@
+file,line,phrase,status,text
+docs\future_extensions.md,37,achieves,allowed_future_context,"- avoid ""achieves"""
+docs\future_extensions.md,38,solves,allowed_future_context,"- avoid ""solves"""
+docs\future_extensions.md,39,is validated,allowed_future_context,"- avoid ""is validated"""
+reports\stage13_future_extensions.tex,19,is implemented,allowed_future_context,No new mathematical formulation is implemented in this stage. Extensions involving alternative dynamics would require a new variational inequality or optimal-stopping formulation before any solver or surrogate claim could be made.

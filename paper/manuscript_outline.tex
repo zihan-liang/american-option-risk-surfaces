@@ -38,7 +38,9 @@ Price, boundary, Delta, violation, and runtime comparisons. The integrated workf
 Claim wording should remain conservative: the workflow supports scenario screening with PSOR audit. It should not be described as a replacement for the benchmark solver, as a Gamma model, or as a single network for all risk quantities.
 
 \section{Limitations and Future Work}
-PSOR remains the audit standard. Current limits include engineering-scale rather than final publication-grade solver evidence, masked rather than universal Greek stability, weak boundary generalization, and only six fresh integrated audit cases. Extensions include larger regimes, active learning, uncertainty quantification, shape-constrained models, and richer dynamics.
+PSOR remains the audit standard. Current limits include engineering-scale rather than final publication-grade solver evidence, masked rather than universal Greek stability, weak boundary generalization, and only six fresh integrated audit cases.
+
+Future work should remain separate from the completed claim matrix. A larger regime envelope would require new PSOR sweeps, domain and grid audits, and explicit reporting of failed regimes. Active learning could be investigated as a PSOR label-selection policy, but it would require comparison against random sampling and retention of failed acquisitions before any claim. Uncertainty quantification could support PSOR spot-check triggers, but it would require coverage, interval-width, and calibration diagnostics. Shape-constrained and no-arbitrage-aware models would require architectural or certificate-based audits for obstacle, monotonicity, convexity, and Delta-bound behavior. Gamma modeling would require finer references, boundary-aware masks, and smoothing sensitivity studies. Alternative dynamics and market calibration would require new mathematical formulation, new benchmark solvers, data provenance, and a new claim audit before being treated as evidence.
 
 \bibliographystyle{plain}
 \bibliography{paper/references}
