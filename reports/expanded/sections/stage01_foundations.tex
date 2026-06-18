@@ -1,0 +1,206 @@
+\section{Stage 1: Mathematical Foundations}
+
+\subsection{Purpose}
+This stage defines the financial problem and the notation used throughout the
+project. The objective is not to introduce a new option-pricing theory. It is
+to explain why early exercise changes a familiar Black--Scholes equation into
+an inequality problem with an unknown boundary.
+
+\subsection{Method}
+Let \(S>0\) denote the current asset price, \(K>0\) the strike, \(T\) the
+maturity date, \(t\in[0,T]\) calendar time, \(r\) the continuously compounded
+risk-free rate, \(q\) the continuous dividend yield, and \(\sigma>0\) the
+volatility. The project studies American puts and American calls. Their
+immediate-exercise payoffs are
+\[
+  \payoff_{\mathrm{put}}(S)=\max(K-S,0),
+  \qquad
+  \payoff_{\mathrm{call}}(S)=\max(S-K,0).
+\]
+The American value \(V(S,t)\) is the best discounted expected payoff available
+when the holder may choose an exercise time \(\theta\) between \(t\) and \(T\):
+\[
+  V(S,t)
+  =
+  \sup_{\theta\in[t,T]}
+  \mathbb{E}^{\mathbb{Q}}\!
+  \left[
+    e^{-r(\theta-t)}\payoff(S_\theta)
+    \,\middle|\,S_t=S
+  \right].
+\]
+The expectation is under the risk-neutral measure \(\mathbb{Q}\).
+
+\begin{readerintuition}
+A European holder has one allowed exercise date. An American holder repeatedly
+compares two actions: exercise now for \(\payoff(S)\), or retain the contract.
+The option value must therefore be at least the immediate payoff.
+\end{readerintuition}
+
+\subsection{Mathematical Formulation}
+\subsubsection{Time to maturity}
+The numerical solver uses
+\[
+  \tau=T-t,
+  \qquad
+  U(S,\tau)=V(S,T-\tau).
+\]
+Thus \(\tau=0\) is maturity and \(\tau=T\) is the initial valuation date. This
+change converts a terminal-value problem in \(t\) into an initial-value problem
+in \(\tau\):
+\[
+  U(S,0)=\payoff(S).
+\]
+
+\begin{commonconfusion}
+Increasing \(t\) moves forward in calendar time, but increasing \(\tau\) moves
+away from maturity. The code begins with the payoff at \(\tau=0\) and advances
+through \(\tau_1,\tau_2,\ldots,\tau_N=T\).
+\end{commonconfusion}
+
+\subsubsection{Risk-neutral dynamics and the Black--Scholes operator}
+Under the model used in the project,
+\[
+  dS_t=(r-q)S_t\,dt+\sigma S_t\,dW_t.
+\]
+In a region where exercise is not optimal, standard replication and
+risk-neutral valuation give
+\[
+  U_\tau=\mathcal{L}U,
+\]
+where
+\[
+  \mathcal{L}U
+  =
+  \frac12\sigma^2S^2U_{SS}
+  +(r-q)SU_S-rU.
+\]
+The three terms have separate meanings:
+\begin{itemize}
+  \item \(\tfrac12\sigma^2S^2U_{SS}\) is the diffusion or curvature term;
+  \item \((r-q)SU_S\) is the risk-neutral drift term;
+  \item \(-rU\) is the discount term.
+\end{itemize}
+
+\subsubsection{From a PDE to a variational inequality}
+Immediate exercise is always available, so
+\[
+  U(S,\tau)\geq\Phi(S).
+\]
+If \(U(S,\tau)>\payoff(S)\), retaining the option is more valuable and the
+continuation PDE applies:
+\[
+  U_\tau-\mathcal{L}U=0.
+\]
+If \(U(S,\tau)=\payoff(S)\), the holder exercises. At such a point the PDE
+equality need not hold, but delaying exercise cannot produce a locally better
+value. The combined problem is
+\[
+  U(S,\tau)\geq\payoff(S),
+  \qquad
+  U_\tau-\mathcal{L}U\geq0,
+  \qquad
+  \bigl(U-\payoff\bigr)
+  \bigl(U_\tau-\mathcal{L}U\bigr)=0.
+\]
+
+\begin{readerintuition}
+The product condition says that at least one factor is zero. In continuation,
+\(U-\payoff>0\), so the PDE residual must be zero. In exercise,
+\(U-\payoff=0\), while the residual may be positive. This is why American
+pricing is an inequality or complementarity problem rather than only a linear
+PDE solve.
+\end{readerintuition}
+
+\subsubsection{Exercise region, continuation region, and free boundary}
+Define
+\[
+  \mathcal{E}
+  =
+  \{(S,\tau):U(S,\tau)=\payoff(S)\},
+  \qquad
+  \mathcal{C}
+  =
+  \{(S,\tau):U(S,\tau)>\payoff(S)\}.
+\]
+The interface between \(\mathcal{E}\) and \(\mathcal{C}\) is the free boundary
+\(B(\tau)\). It is ``free'' because its location is not prescribed as an input;
+it must be discovered together with the option value.
+
+For a put, exercise generally occupies the low-spot side:
+\[
+  S\lesssim B_{\mathrm{put}}(\tau)
+  \quad\Longrightarrow\quad
+  \text{exercise}.
+\]
+For a dividend-paying call, exercise---when it occurs---generally occupies the
+high-spot side:
+\[
+  S\gtrsim B_{\mathrm{call}}(\tau)
+  \quad\Longrightarrow\quad
+  \text{exercise}.
+\]
+A no-dividend American call is retained as a control because, under the
+standard assumptions, early exercise is not optimal.
+
+\subsubsection{Continuation premium}
+The continuation premium is
+\[
+  C(S,\tau)=U(S,\tau)-\Phi(S).
+\]
+The obstacle condition immediately gives
+\[
+  C(S,\tau)\geq0.
+\]
+Moreover,
+\[
+  C=0 \quad\text{in the exercise region},
+  \qquad
+  C>0 \quad\text{in the continuation region}.
+\]
+
+\begin{readerintuition}
+\(C\) is the extra value of keeping the option alive instead of exercising
+immediately. It is therefore both a financial quantity and a useful numerical
+indicator of the exercise boundary.
+\end{readerintuition}
+
+\begin{commonconfusion}
+Nonnegative continuation premium is only the payoff-obstacle requirement. It
+does not by itself guarantee monotonicity, convexity, a correct free boundary,
+or accurate Delta and Gamma.
+\end{commonconfusion}
+
+\subsection{Implementation Details}
+The solver stores spot along one array axis and time to maturity along the
+other. Reports use normalized quantities such as \(S/K\), \(U/K\), and \(B/K\)
+where useful, but the mathematical obstacle remains \(U\geq\payoff\).
+Later neural features include
+\[
+  x=
+  \bigl(
+    \log(S/K),\tau/T,r,q,\sigma,T,
+    \mathbf{1}_{\mathrm{call}}
+  \bigr).
+\]
+
+\subsection{Validation and Diagnostics}
+Before discretization, the notation is checked for the direction of time, the
+sign of \(U_\tau-\mathcal{L}U\), put/call payoff orientation, and the units of
+\(\Delta=U_S\) and \(\Gamma=U_{SS}\). A sign error can yield stable-looking
+arrays while solving the wrong problem.
+
+\subsection{Results}
+Stage 1 produces a consistent mathematical contract. It introduces no new
+numerical results and makes no model-performance claim.
+
+\subsection{Failure Modes and Limitations}
+The formulation assumes the Black--Scholes diffusion with constant parameters.
+It does not include jumps, stochastic volatility, transaction costs, or market
+calibration. These omissions delimit the project rather than invalidate its
+within-model numerical study.
+
+\subsection{Conclusion and Next Step}
+The continuous problem is an obstacle-constrained PDE. Stage 2 converts its
+spatial operator into a tridiagonal matrix, applies Crank--Nicolson in time, and
+solves the resulting linear complementarity problem with PSOR.

@@ -1,0 +1,309 @@
+\section{Stage 3: Boundary Extraction and Greeks}
+
+\subsection{Purpose and Method}
+Once the CN/PSOR surface is available, Stage 3 derives secondary quantities
+without pretending that they are as numerically stable as price. For every time
+level, compute
+\[
+  C_i^n=U_i^n-\Phi(S_i).
+\]
+Nodes with \(C_i^n\) at or below a small tolerance are classified as exercise
+nodes; larger premiums indicate continuation.
+
+\subsection{Boundary orientation and status}
+For a put, the exercise set begins at low spot. The algorithm finds the first
+continuation node and interpolates between it and the preceding exercise node.
+For a dividend-paying call, exercise is on the high-spot side. The algorithm
+finds the last continuation node and interpolates toward the next exercise
+node. These directions are deliberately different.
+
+The output records one of three statuses:
+\begin{itemize}
+  \item \texttt{boundary\_found}: both exercise and continuation nodes exist;
+  \item \texttt{no\_exercise}: no exercise node appears on the truncated grid;
+  \item \texttt{all\_exercise}: every grid node is classified as exercise.
+\end{itemize}
+If no boundary exists, the code records a missing value rather than fabricating
+a threshold.
+
+\begin{commonconfusion}
+A no-dividend American call control should generally have no early-exercise
+boundary. Replacing its missing boundary with zero or \(S_{\max}\) would turn a
+valid theorem-based control into a false supervised label.
+\end{commonconfusion}
+
+\subsection{Delta, Gamma, and strict masks}
+For interior nodes, the teaching approximations are
+\[
+  \Delta_i^n
+  \approx
+  \frac{U_{i+1}^n-U_{i-1}^n}{2\Delta S},
+\]
+\[
+  \Gamma_i^n
+  \approx
+  \frac{U_{i+1}^n-2U_i^n+U_{i-1}^n}{(\Delta S)^2}.
+\]
+Delta is a first derivative; Gamma is a second derivative. Differentiation
+amplifies grid and interpolation error, and the second derivative amplifies it
+again. The payoff kink at \(S=K\) and the exercise transition at \(S=B(\tau)\)
+are therefore delicate regions.
+
+The strict Greek mask excludes nodes near zero spot, the payoff kink, and a
+finite band around the free boundary. The mask does not make Gamma exact. It
+defines a less singular region in which comparisons are more meaningful.
+
+\begin{readerintuition}
+Price can look smooth and accurate while Gamma oscillates, because many nearby
+price errors cancel in the level but become magnified by repeated
+differencing.
+\end{readerintuition}
+
+\section{Stage 4: Grid, Domain, and Runtime}
+
+\subsection{Why resolution matters}
+A finite-difference answer depends on \(\Delta S\), \(\Delta\tau\), and
+\(S_{\max}\). Refining the grid reduces discretization error but increases
+matrix size and the number of time steps. Boundary locations are especially
+grid-limited because the exercise transition is first detected between
+neighboring spot nodes.
+
+The grid-240 solution is used as an internal numerical reference. It is not an
+analytic truth surface. If \(Q_h\) is a quantity computed on grid \(h\), the
+reported comparison has the form
+\[
+  \mathrm{RMSE}(Q_h,Q_{\mathrm{ref}})
+  =
+  \left(
+    \frac{1}{|\Omega|}
+    \sum_{(i,n)\in\Omega}
+    \left(Q_{h,i}^n-Q_{\mathrm{ref},i}^n\right)^2
+  \right)^{1/2},
+\]
+after interpolation where required. For Greeks, \(\Omega\) is restricted by
+the strict mask.
+
+\subsection{Domain truncation}
+The true Black--Scholes spot domain is unbounded, whereas the computation stops
+at \(S_{\max}\). If \(S_{\max}\) is too small, the imposed upper boundary can
+affect economically relevant interior nodes. Comparing several multiples of
+\(K\) tests this sensitivity but does not prove domain independence for every
+future parameter regime.
+
+\subsection{Convergence and runtime interpretation}
+Price generally converges more smoothly than the free boundary, Delta, or
+Gamma. Gamma converges most slowly because it is a second derivative and is
+sensitive to nonsmooth initial data. Runtime rises with the number of time
+steps, the number of spatial unknowns, and the PSOR sweeps required at each
+step. The project reports runtime together with iteration counts so that speed
+is not separated from solver convergence.
+
+\begin{commonconfusion}
+A small error relative to grid 240 means agreement with a finer internal
+calculation. It does not mean agreement with an exact American-option formula,
+because no such general closed form is being used as the reference.
+\end{commonconfusion}
+
+\section{Stages 5--6: Risk Surfaces and Dataset Governance}
+
+\subsection{What a risk surface represents}
+A risk surface evaluates price or a diagnostic over many spot, time, and model
+parameter combinations rather than at one contract point. This reveals how
+early exercise and sensitivities vary across regimes.
+
+The application sweep separates:
+\begin{itemize}
+  \item American puts, whose exercise region is on the low-spot side;
+  \item dividend-paying American calls, which may exercise on the high-spot
+        side;
+  \item no-dividend American call controls, which test the no-early-exercise
+        theorem rather than provide dividend-call boundary evidence.
+\end{itemize}
+The verified application set contains 288 regimes: 144 puts, 108
+dividend-paying calls, and 36 no-dividend controls. Thirty-two regimes carry
+diagnostic failures and remain visible in the audit.
+
+\subsection{Audit data versus clean labels}
+Audit retention and model-label eligibility serve different purposes. A failed
+or delicate regime remains scientifically important because it shows where the
+solver diagnostics or domain assumptions need attention. It is excluded from
+the clean machine-learning labels because training on a questionable target
+would transfer numerical failure into the surrogate.
+
+After controls and flagged regimes are excluded, the clean dataset contains
+223 regimes and 3,264,943 samples. The 65 excluded regimes are recorded rather
+than deleted from the project history.
+
+\subsection{Why the split is by regime}
+All spot-time nodes generated from one parameter tuple share the same option
+surface. A pointwise random split could place neighboring points from the same
+surface in both training and test sets. The model could then appear to
+generalize while mostly interpolating within a regime it has already seen.
+
+A regime-level split assigns the entire surface to one partition. The verified
+split contains 156 training regimes, 33 validation regimes, and 34 test
+regimes.
+
+\begin{readerintuition}
+Treat one parameter regime like one patient in a medical dataset: many
+measurements from the same underlying case should not be divided between
+training and testing.
+\end{readerintuition}
+
+\section{Stages 7--8: Direct Price and Positive Premium}
+
+\subsection{Why low RMSE is insufficient}
+A direct-price regressor learns
+\[
+  \widehat U_\theta=f_\theta(x).
+\]
+Standard squared-error training rewards average price accuracy but does not
+encode \(\widehat U\geq\Phi\). A model can therefore achieve low RMSE while
+predicting below the immediate payoff at some nodes.
+
+A soft obstacle penalty may add
+\[
+  \lambda
+  \left[\max\!\left(\Phi-\widehat U,0\right)\right]^2
+\]
+to the loss. This discourages violations but remains a trade-off with the data
+loss. Finite \(\lambda\), finite optimization, and unseen inputs mean the
+penalty is not a hard guarantee.
+
+\subsection{Positive continuation-premium reconstruction}
+Instead, predict a nonnegative premium:
+\[
+  \widehat C_\theta=\operatorname{softplus}(g_\theta(x))\geq0,
+\]
+\[
+  \widehat U=\Phi+\widehat C.
+\]
+Therefore
+\[
+  \widehat U=\Phi+\widehat C,\quad \widehat C\geq0
+  \Rightarrow
+  \widehat U\geq\Phi.
+\]
+This removes one specific failure mode: payoff-obstacle violation.
+
+\begin{commonconfusion}
+Obstacle consistency is not full financial correctness. The construction does
+not enforce monotonicity, convexity, boundary accuracy, Delta accuracy, or
+Gamma accuracy. It also does not make the neural model a substitute for the
+CN/PSOR benchmark.
+\end{commonconfusion}
+
+The selected positive-premium MLP has validation RMSE \(0.0200\), test RMSE
+\(0.0218\), and zero obstacle violation on evaluated samples. The linear
+premium sanity baseline has lower aggregate RMSE in this run, so the neural
+model is not claimed to dominate all baselines.
+
+\section{Stages 9--10: Boundary and Delta Diagnostics}
+
+\subsection{Why boundary prediction is difficult}
+The free boundary is an implicit transition derived from an entire option
+surface. It changes orientation by option type, may be absent, and is limited
+by the finite-difference grid. Boundary labels are also repeated over many
+spot rows for the same regime-time pair, so a large point count does not imply
+an equally large number of independent boundaries.
+
+The boundary model is therefore a separate supervised diagnostic head:
+\[
+  \widehat B/K=h_\theta(\tau/T,r,q,\sigma,T,\text{option type}).
+\]
+It does not solve the obstacle PDE or reproduce PSOR iterations. The pooled
+boundary MLP test RMSE is \(0.3513\) and its test MAE is \(0.2087\), making it
+the weakest of the three neural components.
+
+\subsection{Why price autograd Delta requires validation}
+Let
+\[
+  y=\frac{U}{K},
+  \qquad
+  z=\log(S/K).
+\]
+Because \(U=Ky\) and
+\[
+  \frac{\partial z}{\partial S}=\frac{1}{S},
+\]
+the chain rule gives
+\[
+  \Delta
+  =
+  \frac{\partial U}{\partial S}
+  =
+  K\frac{\partial y}{\partial z}\frac{1}{S}
+  =
+  \frac{\partial (U/K)}{\partial \log(S/K)}
+  \frac{1}{S/K}.
+\]
+A differentiable price network supplies this derivative computationally, but
+price-loss accuracy does not directly train the derivative. Small level errors
+can still create material slope errors.
+
+The price-model autograd Delta test RMSE is \(0.0977\), which motivates a
+separate supervised head. Its output map imposes
+\[
+  \Delta_{\mathrm{put}}\in[-1,0],
+  \qquad
+  \Delta_{\mathrm{call}}\in[0,1].
+\]
+The bounded Delta MLP has strict-mask test RMSE \(0.0332\), test MAE \(0.0140\),
+and zero bound violation on evaluated samples.
+
+\begin{commonconfusion}
+Bounding Delta limits its range; it does not prove that the predicted slope is
+correct. It also gives no second-derivative control and therefore does not
+support a Gamma surrogate.
+\end{commonconfusion}
+
+\section{Stage 11: Integrated Scenario Screening}
+
+\subsection{Why the workflow has three heads}
+The integrated workflow keeps separate mathematical responsibilities:
+\begin{enumerate}
+  \item the positive-premium head estimates price while enforcing the payoff
+        obstacle;
+  \item the boundary head estimates a PSOR-derived transition as a diagnostic;
+  \item the bounded Delta head estimates a first derivative within
+        option-specific ranges.
+\end{enumerate}
+Combining their outputs in one interface does not turn them into one universal
+model. Each head has separate labels, losses, metrics, and limitations.
+
+\subsection{Scenario screening, not replacement}
+Scenario screening means generating rapid preliminary estimates for cases
+inside the tested regime envelope. Fresh CN/PSOR remains required for new
+regimes, final label generation, and audit-quality decisions. The integrated
+experiment evaluates six deterministic held-out regimes: three puts and three
+dividend-paying calls.
+
+Across those cases, the verified mean price RMSE is \(0.0092\), mean boundary
+MAE is \(0.1539\), and mean strict-mask Delta RMSE is \(0.0300\). Obstacle and
+Delta-bound violations are zero on the audited cases. Six cases, all from the
+designed test envelope, are not enough to establish universal generalization.
+
+\begin{readerintuition}
+The workflow is a fast screening layer followed by a numerical audit, much as
+a preliminary model can prioritize scenarios before a higher-fidelity
+simulation is run.
+\end{readerintuition}
+
+\subsection{Overall Failure Modes and Limitations}
+The expanded workflow retains the original conservative boundaries:
+\begin{itemize}
+  \item grid 240 is an internal reference, not analytic truth;
+  \item Rannacher smoothing is not active;
+  \item boundary estimation remains weaker than price and Delta estimation;
+  \item strict masks exclude the most delicate Greek regions;
+  \item the evidence does not support a Gamma surrogate;
+  \item the neural workflow does not replace CN/PSOR;
+  \item six integrated audit regimes do not establish broad generalization.
+\end{itemize}
+
+\subsection{Conclusion and Next Step}
+The project demonstrates a benchmark-first learning workflow: formulate the
+obstacle problem, validate CN/PSOR, attach diagnostics, govern labels, then
+evaluate modular neural approximations under explicit claim limits. Stronger
+claims would require broader independent regimes, higher-resolution numerical
+references, and additional derivative validation.

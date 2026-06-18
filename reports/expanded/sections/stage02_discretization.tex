@@ -1,0 +1,412 @@
+\section{Stage 2: From the PDE to CN/PSOR}
+
+\subsection{Purpose}
+This stage explains the finite-difference matrix construction in enough detail
+to connect every mathematical coefficient with the arrays used by the solver.
+The target is a reader who understands derivatives and matrix multiplication
+but has not previously implemented an American-option LCP.
+
+\subsection{Method}
+\subsubsection{Spot and time grids}
+Truncate the unbounded spot domain to \([0,S_{\max}]\). Choose \(M\) equal spot
+intervals and \(N\) equal time intervals:
+\[
+  S_i=i\Delta S,
+  \qquad
+  i=0,\ldots,M,
+  \qquad
+  \Delta S=\frac{S_{\max}}{M},
+\]
+\[
+  \tau_n=n\Delta\tau,
+  \qquad
+  n=0,\ldots,N,
+  \qquad
+  \Delta\tau=\frac{T}{N}.
+\]
+Write \(U_i^n\) for the approximation to \(U(S_i,\tau_n)\). At a fixed time,
+the interior unknown vector is
+\[
+  U^n=(U_1^n,U_2^n,\ldots,U_{M-1}^n)^\top.
+\]
+
+\begin{commonconfusion}
+The index \(i\) moves across spot and the index \(n\) moves across time to
+maturity. \(U_i^n\) is one scalar. \(U^n\) is the column vector containing all
+interior spot values at time level \(n\).
+\end{commonconfusion}
+
+\begin{commonconfusion}
+\(U_0^n\) and \(U_M^n\) are not missing unknowns. They are values at the two
+domain boundaries \(S=0\) and \(S=S_{\max}\), where an option-specific boundary
+condition supplies the value.
+\end{commonconfusion}
+
+\subsection{Mathematical Formulation}
+\stepheading{central differences}
+At an interior node, central differences give
+\[
+  U_S(S_i,\tau_n)
+  \approx
+  \frac{U_{i+1}^n-U_{i-1}^n}{2\Delta S},
+\]
+\[
+  U_{SS}(S_i,\tau_n)
+  \approx
+  \frac{U_{i+1}^n-2U_i^n+U_{i-1}^n}{(\Delta S)^2}.
+\]
+Substitute them into
+\[
+  \mathcal{L}U
+  =
+  \frac12\sigma^2S^2U_{SS}
+  +(r-q)SU_S-rU.
+\]
+At \(S_i\),
+\begin{align*}
+  (L_hU)_i
+  &=
+  \frac12\sigma^2S_i^2
+  \frac{U_{i+1}-2U_i+U_{i-1}}{(\Delta S)^2}\\
+  &\quad
+  +(r-q)S_i
+  \frac{U_{i+1}-U_{i-1}}{2\Delta S}
+  -rU_i.
+\end{align*}
+Collect the coefficients of the three neighboring values:
+\[
+  (L_hU)_i=a_iU_{i-1}+b_iU_i+c_iU_{i+1},
+\]
+where
+\[
+  a_i=
+  \frac{\tfrac12\sigma^2S_i^2}{(\Delta S)^2}
+  -\frac{(r-q)S_i}{2\Delta S},
+\]
+\[
+  b_i=
+  -\frac{\sigma^2S_i^2}{(\Delta S)^2}-r,
+\]
+\[
+  c_i=
+  \frac{\tfrac12\sigma^2S_i^2}{(\Delta S)^2}
+  +\frac{(r-q)S_i}{2\Delta S}.
+\]
+
+\subsubsection{Where the coefficients come from}
+\begin{center}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.18\textwidth}
+                >{\raggedright\arraybackslash}p{0.23\textwidth}
+                >{\raggedright\arraybackslash}p{0.23\textwidth}
+                >{\raggedright\arraybackslash}p{0.23\textwidth}}
+\toprule
+Source & Contribution to \(a_i\) & Contribution to \(b_i\) & Contribution to \(c_i\)\\
+\midrule
+Diffusion
+& \(+\tfrac12\sigma^2S_i^2/(\Delta S)^2\)
+& \(-\sigma^2S_i^2/(\Delta S)^2\)
+& \(+\tfrac12\sigma^2S_i^2/(\Delta S)^2\)\\
+Drift
+& \(-(r-q)S_i/(2\Delta S)\)
+& \(0\)
+& \(+(r-q)S_i/(2\Delta S)\)\\
+Discount
+& \(0\)
+& \(-r\)
+& \(0\)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{readerintuition}
+Diffusion spreads weight symmetrically to the left and right. Drift shifts the
+two off-diagonal weights in opposite directions. Discounting affects only the
+current node and therefore appears only in the diagonal coefficient.
+\end{readerintuition}
+
+\stepheading{a small matrix with \(M=4\)}
+With nodes \(S_0,S_1,S_2,S_3,S_4\), there are three interior unknowns:
+\[
+  U^n=(U_1^n,U_2^n,U_3^n)^\top.
+\]
+The interior matrix is
+\[
+  L_h=
+  \begin{bmatrix}
+    b_1 & c_1 & 0\\
+    a_2 & b_2 & c_2\\
+    0 & a_3 & b_3
+  \end{bmatrix}.
+\]
+The full stencil equations are
+\begin{align*}
+  (L_hU)_1&=a_1U_0+b_1U_1+c_1U_2,\\
+  (L_hU)_2&=a_2U_1+b_2U_2+c_2U_3,\\
+  (L_hU)_3&=a_3U_2+b_3U_3+c_3U_4.
+\end{align*}
+Matrix multiplication by the displayed \(3\times3\) matrix contains only the
+interior terms. The omitted \(a_1U_0\) and \(c_3U_4\) are known boundary
+contributions.
+
+\begin{commonconfusion}
+The first matrix row has no column for \(U_0\), and the last row has no column
+for \(U_4\), because the matrix maps the three-component interior vector to
+another three-component vector. Only the first stencil touches the lower
+boundary; only the last stencil touches the upper boundary.
+\end{commonconfusion}
+
+\stepheading{Crank--Nicolson time stepping}
+Crank--Nicolson averages the spatial operator at the old and new time levels:
+\[
+  \frac{U^{n+1}-U^n}{\Delta\tau}
+  =
+  \frac12L_hU^{n+1}
+  +\frac12L_hU^n.
+\]
+Multiply by \(\Delta\tau\):
+\[
+  U^{n+1}-U^n
+  =
+  \frac{\Delta\tau}{2}L_hU^{n+1}
+  +\frac{\Delta\tau}{2}L_hU^n.
+\]
+Move the new-time operator to the left:
+\[
+  U^{n+1}
+  -\frac{\Delta\tau}{2}L_hU^{n+1}
+  =
+  U^n
+  +\frac{\Delta\tau}{2}L_hU^n.
+\]
+Define
+\[
+  A=I-\frac{\Delta\tau}{2}L_h,
+  \qquad
+  B=I+\frac{\Delta\tau}{2}L_h.
+\]
+Then
+\[
+  AU^{n+1}=BU^n+g^{n,n+1},
+\]
+where \(g^{n,n+1}\) collects known boundary values.
+
+\begin{commonconfusion}
+\(A\) multiplies \(U^{n+1}\) because its terms were gathered on the left.
+\(B\) multiplies \(U^n\) because its terms remain on the right. The signs are a
+consequence of rearrangement, not an arbitrary naming convention.
+\end{commonconfusion}
+
+\subsubsection{What one row means}
+Ignoring the boundary adjustment momentarily, an interior row \(i\) reads
+\begin{align*}
+ &-\frac{\Delta\tau}{2}a_iU_{i-1}^{n+1}
+ +\left(1-\frac{\Delta\tau}{2}b_i\right)U_i^{n+1}
+ -\frac{\Delta\tau}{2}c_iU_{i+1}^{n+1}\\
+ &\qquad=
+ \frac{\Delta\tau}{2}a_iU_{i-1}^{n}
+ +\left(1+\frac{\Delta\tau}{2}b_i\right)U_i^{n}
+ +\frac{\Delta\tau}{2}c_iU_{i+1}^{n}.
+\end{align*}
+This is the scalar equation represented by row \(i\) of \(A\) and \(B\).
+
+\stepheading{why boundary values appear on the right-hand side}
+For the first interior row, the lower-boundary terms at the two time levels are
+\[
+  a_1U_0^{n+1},
+  \qquad
+  a_1U_0^n.
+\]
+Moving the new-time boundary term to the right gives the combined contribution
+\[
+  \frac{\Delta\tau}{2}a_1
+  \left(U_0^n+U_0^{n+1}\right).
+\]
+Similarly, the last row receives
+\[
+  c_{M-1}U_M^{n+1},
+  \qquad
+  c_{M-1}U_M^n,
+\]
+which combine as
+\[
+  \frac{\Delta\tau}{2}c_{M-1}
+  \left(U_M^n+U_M^{n+1}\right).
+\]
+Hence
+\[
+  g^{n,n+1}
+  =
+  \frac{\Delta\tau}{2}
+  \begin{bmatrix}
+    a_1(U_0^n+U_0^{n+1})\\
+    0\\
+    \vdots\\
+    0\\
+    c_{M-1}(U_M^n+U_M^{n+1})
+  \end{bmatrix}.
+\]
+
+\begin{implementationcheck}
+This matches \path{src/solvers/cn_psor.py}: the first right-hand-side entry is
+increased by
+\(\tfrac12\Delta\tau\,a_1(U_0^n+U_0^{n+1})\), and the last by
+\(\tfrac12\Delta\tau\,c_{M-1}(U_M^n+U_M^{n+1})\).
+\end{implementationcheck}
+
+\subsubsection{Boundary conditions used in the project}
+For an American put,
+\[
+  U(0,\tau)=K,
+  \qquad
+  U(S_{\max},\tau)=0.
+\]
+At zero spot, immediate exercise returns \(K\). At a sufficiently large spot,
+the put value approaches zero.
+
+For a dividend-paying American call,
+\[
+  U(0,\tau)=0,
+\]
+\[
+  U(S_{\max},\tau)
+  =
+  \max\!\left(
+    S_{\max}-K,\,
+    S_{\max}e^{-q\tau}-Ke^{-r\tau},\,
+    0
+  \right).
+\]
+The upper boundary retains both immediate-exercise value and the discounted
+European far-field expression.
+
+For European validation with projection disabled, the put uses
+\[
+  U(0,\tau)=Ke^{-r\tau},
+  \qquad
+  U(S_{\max},\tau)=0,
+\]
+and the call uses
+\[
+  U(0,\tau)=0,
+  \qquad
+  U(S_{\max},\tau)=S_{\max}e^{-q\tau}-Ke^{-r\tau}.
+\]
+
+\stepheading{the American linear complementarity problem}
+Let
+\[
+  d^n=BU^n+g^{n,n+1}.
+\]
+A European step solves the equality \(AU^{n+1}=d^n\). For an American option,
+that equality can produce a value below the payoff. The discrete obstacle
+problem is instead
+\[
+  AU^{n+1}\geq d^n,
+  \qquad
+  U^{n+1}\geq\payoff,
+\]
+\[
+  \left(U^{n+1}-\payoff\right)^\top
+  \left(AU^{n+1}-d^n\right)=0.
+\]
+The first inequality requires a nonnegative discrete PDE residual. The second
+enforces the payoff obstacle. The final equality imposes complementarity:
+each node is either continuing with zero PDE residual or exercising with zero
+premium.
+
+\begin{commonconfusion}
+An American option is not priced by solving the European system and then
+reporting whichever nodes happen to lie above the payoff. The obstacle is part
+of the system itself, so the solution method must enforce it during the solve.
+\end{commonconfusion}
+
+\stepheading{projected successive over-relaxation}
+At one time step, write \(Ax=d\) for the interior system and let
+\(\payoff_i\) be the obstacle at node \(i\). Starting from an old iterate
+\(x^{(k)}\), a Gauss--Seidel candidate is
+\[
+  y_i^{(k+1)}
+  =
+  \frac{
+    d_i
+    -\sum_{j<i}A_{ij}x_j^{(k+1)}
+    -\sum_{j>i}A_{ij}x_j^{(k)}
+  }{A_{ii}}.
+\]
+The first sum uses already updated entries; the second uses entries from the
+previous sweep. Relaxation gives
+\[
+  x_i^{\mathrm{relaxed}}
+  =
+  x_i^{(k)}
+  +\omega\left(y_i^{(k+1)}-x_i^{(k)}\right).
+\]
+Projection then enforces the obstacle:
+\[
+  x_i^{\mathrm{new}}=\max\!\left(\payoff_i,
+  x_i^{\mathrm{relaxed}}\right).
+\]
+The parameter \(\omega\in(0,2)\) controls relaxation. Values above one may
+accelerate convergence for suitable systems, but excessive relaxation can
+destabilize the iteration.
+
+\subsubsection{Stopping and complementarity diagnostics}
+The implemented iteration stops when
+\[
+  \lVert x^{(k+1)}-x^{(k)}\rVert_\infty<\text{tol},
+\]
+or reports failure after the maximum number of sweeps. A small update is
+necessary but is not the full financial diagnostic. After solving, define
+\[
+  z=Ax-d.
+\]
+The LCP checks are
+\[
+  x-\payoff\geq0,
+  \qquad
+  z\geq0,
+  \qquad
+  (x-\payoff)^\top z\approx0.
+\]
+These separately test obstacle feasibility, residual feasibility, and
+complementarity.
+
+\begin{readerintuition}
+PSOR alternates two actions: move toward the linear-system solution, then clip
+the result back to the financially admissible side of the payoff. Convergence
+is credible only when both the numerical update and the LCP residual checks are
+small.
+\end{readerintuition}
+
+\subsection{Implementation Details}
+The tridiagonal operator is exposed by
+\path{src/solvers/cn_psor.py} for sign and matrix tests. Boundary formulas live
+in \path{src/solvers/boundary_conditions.py}. The code uses the payoff as the
+initial condition at \(\tau=0\), forms \(A\) and \(B\) once per solve, adjusts
+the first and last right-hand-side entries at every time step, and applies PSOR
+only when American projection is enabled.
+
+\subsection{Validation and Diagnostics}
+The existing solver audit tests verify the operator on a linear function, the
+signs in \(A\) and \(B\), put and dividend-call boundary values, and PSOR
+projection/complementarity. European closed-form and no-dividend call controls
+provide independent checks beyond internal matrix consistency.
+
+\subsection{Results}
+The verified smoke-grid maximum error is \(2.782\times10^{-4}\) for both the
+European put validation and the no-dividend American call control. The American
+put obstacle violation is reported as zero, with complementarity error
+\(4.009\times10^{-12}\). These are engineering-scale validation results, not a
+claim of universal or publication-grade accuracy.
+
+\subsection{Failure Modes and Limitations}
+Uniform grids resolve the payoff kink and free boundary only approximately.
+Finite-domain truncation can contaminate the interior if \(S_{\max}\) is too
+small. Crank--Nicolson begins from a nonsmooth payoff, and Rannacher smoothing
+is not active in the current solver. These limitations are particularly
+important for Gamma near maturity.
+
+\subsection{Conclusion and Next Step}
+The PDE has become a boundary-adjusted LCP at each time step. Later stages
+extract the exercise boundary and Greeks, study resolution and runtime, and use
+only diagnostic-passing solver outputs for machine-learning labels.

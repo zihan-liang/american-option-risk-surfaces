@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+\input{reports/expanded/expanded_preamble.tex}
+\title{Expanded Mathematical Learning Report:\\
+American Option Risk Surfaces and Modular Neural Diagnostics}
+\author{Free-Boundary-Aware Risk Surfaces for American Options}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+This report is the learning companion to the concise final report. It explains
+the mathematical formulation, finite-difference matrices, CN/PSOR calculation,
+boundary and Greek diagnostics, dataset governance, and modular neural
+diagnostics for a second-year AI/ML undergraduate. It introduces no new
+experiments or numerical claims.
+\end{abstract}
+
+\tableofcontents
+
+\section*{How to Use This Learning Version}
+\addcontentsline{toc}{section}{How to Use This Learning Version}
+Read Stages 1--2 for the mathematical and numerical derivation. Stages 3--4
+explain how secondary quantities inherit grid limitations. Stages 5--6 explain
+how solver outputs become governed data. Stages 7--11 explain why price,
+boundary, and Delta are modeled and audited separately.
+
+\input{reports/expanded/sections/stage01_foundations.tex}
+\input{reports/expanded/sections/stage02_discretization.tex}
+\input{reports/expanded/sections/stage03_to_stage11_learning.tex}
+
+\end{document}
