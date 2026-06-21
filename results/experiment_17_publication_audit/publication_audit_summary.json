@@ -1,0 +1,18 @@
+{
+  "claims": 10,
+  "decision": "journal_style_with_scoped_claims",
+  "demoted_or_limited_claims": [
+    "surrogate_dataset",
+    "direct_price_baselines",
+    "boundary_head",
+    "price_delta_audit",
+    "integrated_workflow"
+  ],
+  "integrated_audited_cases": 6,
+  "main_claim_ready": 5,
+  "manuscript_claim_policy": "main text uses scoped claims; weak boundary and six-case integrated audit are explicit limitations",
+  "needs_more_evidence": 0,
+  "no_new_model_architectures": true,
+  "supplement_only": 5,
+  "target_integrated_test_regimes": 34
+}

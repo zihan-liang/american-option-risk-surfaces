@@ -1,6 +1,6 @@
 {
   "allowed_claims": 8,
-  "claims": 10,
+  "claims": 11,
   "decision": "manuscript_safe_claims_only",
   "forbidden_language_violations": 0,
   "missing_artifacts": 0,

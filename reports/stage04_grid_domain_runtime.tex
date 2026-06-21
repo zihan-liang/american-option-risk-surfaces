@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, geometry, graphicx}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \graphicspath{{./}{../}}
 \title{Stage 4: Grid/Domain Sensitivity and Runtime}
 \author{Free-Boundary-Aware Risk Surfaces for American Options}
@@ -11,7 +15,12 @@
 \section{Stage 4: Grid/Domain Sensitivity and Runtime}
 
 \subsection{Purpose}
-This stage audits numerical stability before any surrogate dataset construction. It measures how grid refinement and domain truncation affect price, early-exercise boundary, Delta, Gamma, obstacle and complementarity diagnostics, shape diagnostics, PSOR iterations, and runtime for a base American put and a dividend-paying American call.
+This stage audits numerical stability before any surrogate dataset is
+constructed. Grid refinement tests whether results stabilize as the spot-time
+mesh becomes finer; domain sensitivity tests whether the artificial upper spot
+boundary influences the economically relevant reporting region. The audit
+covers price, the early-exercise boundary, Delta, Gamma, LCP diagnostics, PSOR
+iterations, and runtime for a base American put and dividend-paying call.
 
 \subsection{Method}
 The experiment runs both option cases from a shared convergence configuration. Grid refinement uses $M=N\in\{40,80,120,160,240\}$ on the reference domain $S_{\max}=4K$. The finest grid, $M=N=240$, is used as the stage reference. Domain sensitivity uses $S_{\max}\in\{3K,4K,5K\}$ at $M=N=120$ and compares the stable reporting region $S/K\in[0.4,1.8]$ against the same reference surface.
@@ -62,7 +71,7 @@ Convexity violation & $2.5977\times10^{-11}$\\
 Maximum PSOR iterations & $14$\\
 \bottomrule
 \end{tabular}
-\caption{Maximum diagnostics across grid and domain runs.}
+\caption{Worst obstacle, complementarity, shape, and iteration diagnostics across all Stage 4 grid and domain runs. These maxima define the engineering audit envelope used to select later production settings.}
 \end{table}
 
 \subsection{Results}
@@ -84,7 +93,7 @@ Dividend call & 120 & $7.8662\times10^{-5}$ & $5.9722\times10^{-2}$ & $8.6250\ti
 Dividend call & 160 & $3.7459\times10^{-5}$ & $3.6823\times10^{-2}$ & $5.3932\times10^{-4}$ & $4.6166\times10^{-2}$\\
 \bottomrule
 \end{tabular}
-\caption{Grid convergence against the grid-240 reference. Greek errors use the strict mask.}
+\caption{Grid-refinement errors relative to the internal grid-240 surface. Price is compared on the reporting region; Delta and Gamma use the strict Greek mask; the reference is numerical rather than analytic.}
 \end{table}
 
 Runtime increases with grid size. The put runtime rises from $0.0341$ seconds at grid 40 to $0.8493$ seconds at grid 240. The dividend-paying call runtime rises from $0.0342$ seconds to $1.1688$ seconds. Mean PSOR iterations decrease mildly for the put as the grid refines and remain below 10 for the dividend-paying call at the finest grid.
@@ -95,15 +104,17 @@ Domain sensitivity is modest on the reporting region. For the put, the domain-st
 \centering
 \includegraphics[width=0.45\linewidth]{results/figures/stage04_convergence_runtime/put/price_error_vs_grid.png}
 \includegraphics[width=0.45\linewidth]{results/figures/stage04_convergence_runtime/dividend_call/price_error_vs_grid.png}
-\caption{Price error against grid refinement for the put and dividend-paying call.}
+\caption{Regional final-time price RMSE under grid refinement for the put and dividend-paying call, measured against the internal grid-240 reference.}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.45\linewidth]{results/figures/stage04_convergence_runtime/put/runtime_vs_grid.png}
 \includegraphics[width=0.45\linewidth]{results/figures/stage04_convergence_runtime/dividend_call/runtime_vs_grid.png}
-\caption{Runtime against grid refinement for both option cases.}
+\caption{Wall-clock runtime under grid refinement for the put and dividend-paying call. Runtime is reported together with PSOR iteration counts so speed is not separated from convergence behavior.}
 \end{figure}
+
+\input{reports/visual_blocks/stage04_grid_domain_runtime_visuals.tex}
 
 \subsection{Failure Modes and Limitations}
 Boundary error remains grid-limited because the extracted boundary is tied to the uniform spot mesh. Gamma is the weakest convergence quantity even under the strict mask, which is expected because second derivatives amplify interpolation and nonsmooth-payoff effects. This stage uses the grid-240 solution as an engineering reference, not an external high-resolution or analytic benchmark. Rannacher smoothing is still not active, so near-maturity Gamma should remain restricted in any claims.

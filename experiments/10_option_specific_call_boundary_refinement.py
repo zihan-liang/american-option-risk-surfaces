@@ -23,6 +23,7 @@ from models.training import (
     train_linear_baseline,
     train_torch_regression_model,
 )
+from plotting.publication import save_bar_figure
 
 
 def run(
@@ -244,13 +245,14 @@ def _save_figures(metrics_rows: list[dict], figure_root: Path) -> None:
     ensure_dir(figure_root)
     test_rows = [row for row in metrics_rows if row["split"] == "test" and row["option_type"] == "call"]
     if test_rows:
-        fig, ax = plt.subplots(figsize=(7, 4))
-        ax.bar([row["model"] for row in test_rows], [row["boundary_mae"] for row in test_rows])
-        ax.set_ylabel("call test boundary MAE")
-        ax.tick_params(axis="x", rotation=30)
-        fig.tight_layout()
-        fig.savefig(figure_root / "call_boundary_refinement_mae.png", dpi=160)
-        plt.close(fig)
+        save_bar_figure(
+            figure_root / "call_boundary_refinement_mae.png",
+            [row["model"] for row in test_rows],
+            [row["boundary_mae"] for row in test_rows],
+            "Dividend-call boundary comparison",
+            "Boundary MAE",
+            orientation="horizontal",
+        )
 
 
 if __name__ == "__main__":

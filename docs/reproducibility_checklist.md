@@ -320,3 +320,101 @@ Stage 14 output contract:
 - [x] `docs/artifact_manifest.md` separates source-controlled artifacts from ignored local `.pt`, `.npz`, generated figures, and build PDF outputs.
 - [x] `experiments/16_release_verification.py` checks required files, claim-audit summaries, future-work summaries, and stale tracked generated artifacts.
 - [ ] Final release gate passes only after stale tracked generated manuscript artifacts are removed locally from Git tracking.
+
+## Stage 15 Journal Manuscript Package Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/17_publication_evidence_audit.py --config configs/publication_evidence.yaml
+python experiments/18_publication_figures.py --config configs/publication_figures.yaml
+python experiments/14_claim_audit.py --config configs/claim_audit.yaml
+```
+
+Build paper-facing PDFs:
+
+```powershell
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript -output-directory=build paper/manuscript.tex
+bibtex build/manuscript
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript -output-directory=build paper/manuscript.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=manuscript -output-directory=build paper/manuscript.tex
+
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=supplementary_material -output-directory=build paper/supplementary_material.tex
+bibtex build/supplementary_material
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=supplementary_material -output-directory=build paper/supplementary_material.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=supplementary_material -output-directory=build paper/supplementary_material.tex
+```
+
+Stage 15 output contract:
+
+- [x] `paper/manuscript.tex` is the paper-facing manuscript.
+- [x] `paper/supplementary_material.tex` records audit detail, artifact paths, and reproducibility commands.
+- [x] `publication_gap_matrix.csv` classifies claims as main-text-ready or limited/supplementary.
+- [x] `figure_manifest.csv` maps each publication figure to source artifacts.
+- [x] Boundary and integrated-workflow limitations remain visible.
+
+## Stage 16 Report Visualization Enrichment Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests
+python -m compileall -q src tests experiments
+python experiments/19_report_visualization_enrichment.py --config configs/report_visualization_enrichment.yaml
+python experiments/14_claim_audit.py --config configs/claim_audit.yaml
+```
+
+Compile enriched report PDFs:
+
+```powershell
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage01_math_notes.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage02_solver_validation.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage03_boundary_greeks_diagnostics.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage04_grid_domain_runtime.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage05_application_risk_surfaces.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage06_surrogate_dataset.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage07_baseline_surrogates.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage08_positive_premium_surrogate.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage09_boundary_head.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage10_delta_validation_head.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage11_integrated_workflow.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage13_future_extensions.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=final_report -output-directory=build reports/final_report.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=supplementary_material -output-directory=build paper/supplementary_material.tex
+```
+
+Stage 16 output contract:
+
+- [x] `figure_manifest.csv` records report path, figure id, source artifact, PNG path, PDF path, and claim-safe caption.
+- [x] Every stage report receives a visual evidence gallery generated from existing artifacts.
+- [x] Final report includes student contribution framing around AI/ML, experiment design, plotting, reproducibility, and LaTeX reporting.
+- [x] Visual enrichment does not rerun solvers, train models, or expand scientific claims.
+
+## Stage 17 Mathematical Process Visualization Commands
+
+```powershell
+$env:PYTHONPATH="src;experiments"
+$env:PYTHONPYCACHEPREFIX="$env:TEMP\american_option_pycache"
+python -m unittest discover -s tests -p "test_math_process_visual_types.py"
+python -m unittest discover -s tests -p "test_report_visualization_manifest.py"
+python -m unittest discover -s tests -p "test_visual_claim_language.py"
+python experiments/19_report_visualization_enrichment.py --config configs/report_visualization_enrichment.yaml
+```
+
+Priority compile commands:
+
+```powershell
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage01_math_notes.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build reports/stage02_solver_validation.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=final_report -output-directory=build reports/final_report.tex
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=supplementary_material -output-directory=build paper/supplementary_material.tex
+```
+
+Stage 17 output contract:
+
+- [x] Stage 1 and Stage 2 include explicit matrix-calculation teaching figures.
+- [x] New visual kinds generate both PNG and PDF outputs.
+- [x] Captions remain explanatory and do not claim new solver validation.
+- [x] Solver and model code paths are unchanged.

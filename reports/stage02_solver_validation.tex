@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, geometry}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \title{Stage 2: CN/PSOR Solver Validation Audit}
 \author{Free-Boundary-Aware Risk Surfaces for American Options}
 \date{\today}
@@ -10,10 +14,21 @@
 \section{Stage 2: CN/PSOR Solver Validation Audit}
 
 \subsection{Purpose}
-This stage audits the finite-difference benchmark before using it to generate risk surfaces or supervised-learning labels. The audit checks the Black--Scholes operator sign convention, Crank--Nicolson matrix construction, PSOR projection, American put and dividend-paying American call boundary conditions, analytic validation cases, shape diagnostics, grid refinement, domain sensitivity, and runtime.
+This stage audits the finite-difference benchmark before it is allowed to
+generate risk surfaces or supervised labels. Crank--Nicolson provides a
+time-centered discretization of the Black--Scholes PDE, while projected
+successive over-relaxation (PSOR) enforces the American payoff obstacle at each
+time step. The audit checks the operator sign, matrix construction, boundary
+terms, projection rule, analytic validation cases, shape diagnostics, grid and
+domain sensitivity, and runtime.
 
 \subsection{Method}
-The solver uses a uniform spot grid on $[0,S_{\max}]$ and time-to-maturity grid $\tau\in[0,T]$. The default smoke grid is $M=N=120$, with audit refinement at $80,120,160,240$. The production validation domain uses $S_{\max}=4K$, with sensitivity checks at $3K,4K,5K$.
+The solver uses a uniform spot grid on \([0,S_{\max}]\) and a
+time-to-maturity grid \(\tau\in[0,T]\). The default smoke grid is \(M=N=120\),
+with refinement at \(80,120,160,\) and \(240\). The validation domain uses
+\(S_{\max}=4K\), with sensitivity checks at \(3K,4K,\) and \(5K\). The
+grid-240 solution is an internal engineering reference rather than an analytic
+truth surface.
 
 Validation cases are:
 \begin{enumerate}
@@ -47,8 +62,13 @@ AU^{n+1}\ge B U^n,\qquad U^{n+1}\ge \Phi,\qquad
 \]
 PSOR applies the projected update $x_i\leftarrow\max(\Phi_i,x_i+\omega(y_i-x_i))$.
 
+\subsection{From PDE to Linear Complementarity System}
+The matrix calculation can be read in four layers. First, the spatial stencil creates the lower, diagonal, and upper coefficients $(a_i,b_i,c_i)$ for the discrete operator $L_h$. Second, Crank--Nicolson splits this operator across two time levels through $A=I-\Delta\tau L_h/2$ and $B=I+\Delta\tau L_h/2$. Third, boundary values at $S=0$ and $S=S_{\max}$ adjust only the first and last interior right-hand-side equations. Fourth, PSOR solves the resulting inequality system by relaxing each node and projecting it back above the payoff obstacle. The new visual gallery is intended to make these array and matrix operations transparent for reproducible implementation review.
+
 \subsection{Implementation Details}
-The implementation audited here is in \texttt{src/solvers/cn\_psor.py}. The helper \texttt{fd\_operator\_matrix} exposes $L_h$ for direct sign-convention testing. Boundary conditions are defined in \texttt{src/solvers/boundary\_conditions.py}.
+The implementation audited here is in \path{src/solvers/cn_psor.py}. The helper
+\texttt{fd\_operator\_matrix} exposes $L_h$ for direct sign-convention testing.
+Boundary conditions are defined in \path{src/solvers/boundary_conditions.py}.
 
 American put boundary conditions:
 \[
@@ -84,7 +104,10 @@ The validation experiment writes:
 \end{itemize}
 
 \subsection{Results}
-On the smoke grid $M=N=120$, the European put closed-form max error is $2.7817\times10^{-4}$ and the no-dividend American call max error is $2.7817\times10^{-4}$. These are consistent with the earlier smoke-test values and are not treated as final publication-grade accuracy.
+On the smoke grid \(M=N=120\), the European put closed-form maximum error is
+\(2.782\times10^{-4}\), and the no-dividend American call maximum error is
+also \(2.782\times10^{-4}\). These values reproduce the earlier smoke test,
+but they are not presented as publication-grade accuracy.
 
 \begin{table}[h]
 \centering
@@ -102,11 +125,12 @@ No-dividend American call & 160 & $1.5647\times10^{-4}$ & $4.0166\times10^{-5}$ 
 No-dividend American call & 240 & $6.9375\times10^{-5}$ & $1.7858\times10^{-5}$ & 2.219\\
 \bottomrule
 \end{tabular}
-\caption{Closed-form and theorem validation under grid refinement.}
+\caption{Closed-form and theorem-based validation under grid refinement. Errors decrease with refinement, but the grid-240 values remain engineering-scale evidence rather than a universal accuracy certificate.}
 \end{table}
 
 \begin{table}[h]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrr}
 \toprule
 Case & Obstacle & Complementarity & Monotonicity & Convexity & Max PSOR\\
@@ -116,15 +140,22 @@ No-dividend American call & 0 & $3.1344\times10^{-11}$ & $2.79\times10^{-17}$ & 
 Dividend American call & 0 & $5.2696\times10^{-12}$ & $9.44\times10^{-14}$ & $4.50\times10^{-13}$ & 13\\
 \bottomrule
 \end{tabular}
-\caption{Obstacle, complementarity, shape, and PSOR diagnostics on the smoke grid.}
+}
+\caption{Obstacle, complementarity, shape, and PSOR diagnostics on the smoke grid. These discrete checks assess feasibility and residual consistency; they do not replace the separate grid and domain audits.}
 \end{table}
 
 Domain sensitivity is stable at this audit level. The American put initial boundary is $0.8K$ for $S_{\max}=3K,4K$ and $0.7917K$ for $S_{\max}=5K$. The dividend-paying call initial boundary is $1.35K$ for $S_{\max}=3K$ and $1.3333K$ for $S_{\max}=4K,5K$. The movement is at the scale of the grid spacing and should be refined before final paper tables.
+
+\input{reports/visual_blocks/stage02_solver_validation_visuals.tex}
 
 \subsection{Failure Modes and Limitations}
 The remaining error is most plausibly due to uniform-grid resolution near the payoff kink, finite-domain truncation, and Crank--Nicolson time stepping from nonsmooth terminal data. The refinement table shows decreasing errors from grid 80 to 240, which argues against an operator-sign or boundary-condition implementation error. However, this is still not publication-grade evidence. A final benchmark should use a higher-resolution reference, finer boundary interpolation, and active Rannacher smoothing if near-maturity Greeks are emphasized.
 
 \subsection{Conclusion and Next Step}
-The solver-validation gate passes for proceeding to classical boundary, Greek, risk-surface, grid/domain, and runtime experiments. It does not yet justify publication-grade accuracy claims. Future reports should continue to attach obstacle, complementarity, monotonicity, convexity, grid, domain, and runtime diagnostics to every solver-generated surface.
+The solver-validation gate passes for proceeding to classical boundary, Greek,
+risk-surface, grid and domain, and runtime experiments. It does not yet justify
+publication-grade accuracy claims. Future reports should continue to attach
+obstacle, complementarity, monotonicity, convexity, grid, domain, and runtime
+diagnostics to every solver-generated surface.
 
 \end{document}

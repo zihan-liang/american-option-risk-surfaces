@@ -221,10 +221,37 @@ def _save_representative_figures(
     gamma: np.ndarray,
 ) -> None:
     ensure_dir(fig_dir)
-    save_price_surface(spots / cfg.k, taus, values / cfg.k, fig_dir / "price_surface.png", "price surface")
-    save_price_surface(spots / cfg.k, taus, delta, fig_dir / "delta_surface.png", "Delta surface")
-    save_price_surface(spots / cfg.k, taus, gamma, fig_dir / "gamma_surface.png", "Gamma surface")
-    save_curve(taus, boundary / cfg.k, fig_dir / "boundary_curve.png", "boundary curve", "B/K")
+    save_price_surface(
+        spots / cfg.k,
+        taus,
+        values / cfg.k,
+        fig_dir / "price_surface.png",
+        "Price surface",
+        colorbar_label=r"$U/K$",
+    )
+    save_price_surface(
+        spots / cfg.k,
+        taus,
+        delta,
+        fig_dir / "delta_surface.png",
+        "Delta surface",
+        colorbar_label=r"$\Delta$",
+    )
+    save_price_surface(
+        spots / cfg.k,
+        taus,
+        gamma,
+        fig_dir / "gamma_surface.png",
+        "Gamma surface",
+        colorbar_label=r"$\Gamma$",
+    )
+    save_curve(
+        taus,
+        boundary / cfg.k,
+        fig_dir / "boundary_curve.png",
+        "Early-exercise boundary",
+        r"$B/K$",
+    )
 
 
 def _save_heatmaps(fig_dir: Path, boundary_rows: list[dict], risk_rows: list[dict], greek_rows: list[dict]) -> None:

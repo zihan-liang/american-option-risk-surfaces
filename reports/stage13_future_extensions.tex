@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, geometry}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \title{Stage 13: Future Extensions and Non-Claim Roadmap}
 \date{\today}
 
@@ -10,7 +14,11 @@
 \section{Stage 13: Future Extensions and Non-Claim Roadmap}
 
 \subsection{Purpose}
-This stage documents credible future extensions without mixing them into the completed project claims. The stage is a roadmap and validation plan only. It does not train models, regenerate labels, rerun PSOR experiments, or add new current-results claims.
+This stage documents credible future extensions without mixing them into the
+completed project claims. Each proposal is motivated by an observed limitation,
+but motivation is not evidence of implementation. The stage is a roadmap and
+validation plan only: it does not train models, regenerate labels, rerun PSOR
+experiments, or add current-results claims.
 
 \subsection{Method}
 The future-extension manifest is generated from \texttt{configs/future\_extensions.yaml}. Each extension is required to include a motivation, current limitation addressed, required new solver or data work, validation requirements, expected outputs, risk level, and \texttt{future\_work\_only} claim status.
@@ -19,12 +27,23 @@ The future-extension manifest is generated from \texttt{configs/future\_extensio
 No new mathematical formulation is implemented in this stage. Extensions involving alternative dynamics would require a new variational inequality or optimal-stopping formulation before any solver or surrogate claim could be made.
 
 \subsection{Implementation Details}
-The manifest generator writes \texttt{future\_extensions.csv}, \texttt{future\_extension\_validation\_matrix.csv}, \texttt{future\_extension\_language\_scan.csv}, and \texttt{future\_extensions\_summary.json}. The language scan flags completed-result wording unless it appears in an explicitly future-work context.
+The manifest generator writes:
+\begin{itemize}
+  \item \path{future_extensions.csv};
+  \item \path{future_extension_validation_matrix.csv};
+  \item \path{future_extension_language_scan.csv};
+  \item \path{future_extensions_summary.json}.
+\end{itemize}
+The language scan flags completed-result wording unless it appears in an
+explicitly future-work context.
 
 \subsection{Validation and Diagnostics}
 The acceptance check is claim hygiene rather than numerical accuracy. Every extension must remain future work only, every extension must specify required validation, and paper-facing text must not imply completed active learning, uncertainty quantification, shape-constrained modeling, Gamma surrogates, alternative dynamics, or market calibration.
 
 \subsection{Results}
+\begin{table}[h]
+\centering
+\small
 \begin{tabular}{p{0.28\linewidth}p{0.28\linewidth}p{0.32\linewidth}}
 \toprule
 Extension & Current limitation addressed & Required validation before claim \\
@@ -39,11 +58,18 @@ Alternative dynamics & Black--Scholes-only formulation & New formulation, benchm
 Market calibration & Synthetic regimes only & Data provenance, calibration error, and out-of-sample PSOR audit \\
 \bottomrule
 \end{tabular}
+\caption{Future-work roadmap linked to current limitations and the validation required before any extension could enter the project claim matrix. None of these items is implemented evidence.}
+\end{table}
+
+\input{reports/visual_blocks/stage13_future_extensions_visuals.tex}
 
 \subsection{Failure Modes and Limitations}
 The main failure mode is overclaiming. These extensions are not implemented, not validated, and not part of the completed evidence matrix. Alternative dynamics and market calibration are especially high risk because they require new mathematical formulation, new data governance, and new benchmark validation.
 
 \subsection{Conclusion and Next Step}
-Stage 13 closes the current project by documenting future research directions as non-claims. Any future extension should start with a new plan, a new validation gate, and an updated claim audit before it appears in the manuscript as evidence.
+Stage 13 closes the current project by documenting future research directions
+as non-claims. Any extension must begin with a new mathematical or statistical
+specification, a dedicated validation gate, and an updated claim audit before
+it may appear in the manuscript as completed evidence.
 
 \end{document}

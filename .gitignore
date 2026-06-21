@@ -6,6 +6,10 @@ __pycache__/
 .coverage
 dist/
 build/
+tmp/
+$out/
+deliverables/
+id.png
 /manuscript_outline.*
 *.egg-info/
 results/**/*.npz
@@ -16,9 +20,12 @@ results/**/*.log
 results/logs/*.txt
 data/processed/*.npz
 paper/*.aux
+paper/*.fdb_latexmk
+paper/*.fls
 paper/*.log
 paper/*.out
 paper/*.pdf
+paper/*.synctex.gz
 paper/*.toc
 reports/*.aux
 reports/*.fdb_latexmk

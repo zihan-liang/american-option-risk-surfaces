@@ -1,51 +1,398 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, geometry, hyperref}
+
+\usepackage{amsmath,amssymb,array,booktabs,geometry,graphicx,hyperref,longtable,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
-\title{Final Report: Free-Boundary-Aware Risk Surfaces for American Options}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+
+\title{Free-Boundary-Aware Risk Surfaces for American Options: A Reproducible CN/PSOR Benchmark and Modular Neural Diagnostics}
 \author{SURF Computational Finance Project}
 \date{\today}
 
 \begin{document}
 \maketitle
 
-\section{Purpose}
-This report consolidates the project evidence into manuscript-safe claims. The project contribution is a reproducible research-engineering workflow: a validated CN/PSOR benchmark first, audited classical risk-surface experiments second, and separate neural diagnostic components only after validated PSOR labels exist.
+\begin{abstract}
+American option valuation couples price estimation with an early-exercise free boundary and nonsmooth payoff geometry. This project develops a reproducible computational workflow for American put and dividend-paying American call risk surfaces. The workflow deliberately separates three roles: a Crank--Nicolson projected successive over-relaxation (CN/PSOR) finite-difference benchmark as the source of truth; numerical diagnostics for obstacle, complementarity, shape, grid, domain, runtime, boundary, and Greek behavior; and modular neural components trained only after benchmark validation. The central methodological conclusion is that neural surrogates are useful as scoped accelerators or diagnostic heads, but they should not be presented as replacements for the free-boundary solver. Within the tested regime envelope, the audited workflow supports an obstacle-consistent positive continuation-premium price surrogate, a direct supervised boundary diagnostic head, and a bounded supervised Delta head. It does not support claims that one network solves price, boundary, and Greeks, or that the price surrogate is automatically a Greek engine.
+\end{abstract}
 
-\section{Method Summary}
-The numerical source of truth is a Crank--Nicolson finite-difference method with PSOR projection for the American option variational inequality. All later labels for prices, early-exercise boundaries, Delta, and Gamma come from this audited benchmark. Neural components are modular: a positive continuation-premium price surrogate, a direct boundary diagnostic head, and a bounded supervised Delta head.
+\textbf{Keywords:} American options; variational inequality; free boundary; CN/PSOR; risk surfaces; neural surrogate; continuation premium; Delta diagnostics; reproducible computational finance.
 
-\section{Evidence Matrix}
-\begin{tabular}{p{0.25\linewidth}p{0.28\linewidth}p{0.33\linewidth}}
+\section*{Paper-Facing Manuscript Package}
+
+Stage 15 upgrades the final deliverable into a paper-facing package. The source files live in the \texttt{paper} folder. This report remains the SURF-style final summary, while the manuscript and supplement provide the reviewer-facing narrative, publication evidence audit, figure manifest, and claim restrictions.
+
+\section*{Student Contribution Focus}
+
+The student contribution is framed around AI/ML, scientific-computing experiment design, Python and PyTorch pipeline development, diagnostic plotting, reproducibility engineering, and LaTeX reporting. The financial mathematics is treated with care through established formulations and benchmark validation, while the primary project ownership is the computational evidence pipeline that turns solver outputs into auditable datasets, figures, reports, and claim boundaries.
+
+\begin{figure}[!htbp]
+\centering
+\begin{subfigure}[t]{0.42\linewidth}
+\centering
+\includegraphics[width=\linewidth]{results/figures/report_enrichment/final_report_visual_executive_summary.pdf}
+\caption{Benchmark-first evidence flow.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.54\linewidth}
+\centering
+\includegraphics[width=\linewidth]{results/figures/report_enrichment/final_report_student_contribution_focus.pdf}
+\caption{Computational and reporting contribution focus.}
+\end{subfigure}
+\end{figure}
+\FloatBarrier
+
+\section{Introduction}
+An American option gives its holder the right to exercise at any time up to
+maturity. This flexibility creates an obstacle problem: the option value must
+remain above the immediate-exercise payoff, and the boundary between exercise
+and continuation is not known in advance. American options are therefore a
+useful test case for scientific machine learning because the object of interest
+is not a smooth scalar price alone. A model can fit prices in aggregate while
+still violating the payoff obstacle, misplacing the free boundary, or producing
+unreliable Greeks near payoff kinks.
+
+This report presents a completed SURF research-engineering workflow for \emph{Free-Boundary-Aware Risk Surfaces for American Options}. The project was designed around a conservative ordering:
+\begin{enumerate}
+  \item formulate the risk-neutral American option variational inequality;
+  \item implement and validate a CN/PSOR benchmark;
+  \item attach numerical diagnostics to every classical solve;
+  \item generate American put and dividend-paying American call risk surfaces;
+  \item construct supervised datasets only from diagnostic-passing PSOR outputs;
+  \item evaluate neural components as separate modules for price/premium, boundary, and Delta.
+\end{enumerate}
+
+The contribution is computational and reproducibility-focused. It is neither a
+new theorem in American option theory nor a claim of a universal neural solution
+to free-boundary problems. The project is strongest as a disciplined evidence
+pipeline: classical labels are validated before use, failed regimes remain
+visible, and each neural component is evaluated only for the quantity it is
+designed to estimate.
+
+\section{Related Work and Positioning}
+The mathematical framing follows the classical American option literature on variational inequalities, linear complementarity, early-exercise premiums, and optimal exercise boundaries \cite{JailletLambertonLapeyre1990,HuangPang1998,Kim1990,CarrJarrowMyneni1992,Peskir2005,ChenChadam2007,EvansKuskeKeller2002}. These references justify treating the exercise boundary and continuation premium as first-class quantities rather than incidental plots.
+
+The numerical workflow is motivated by finite-difference studies of domain truncation, nonsmooth payoff convergence, and Greek sensitivity \cite{KangroNicolaides2000,PooleyVetzalForsyth2003,GilesCarter2006,InTHout2024}. This is particularly important because Gamma and boundary-adjacent derivatives can be visually compelling but numerically fragile.
+
+The neural-surrogate stage is positioned against the broader option-pricing and constrained-learning literature \cite{HutchinsonLoPoggio1994,RufWang2020,LiuOosterleeBohte2019,DugasEtAl2009,YangZhengHospedales2017,CaoLiuZhai2021}. The project uses hard obstacle consistency through a positive continuation-premium parameterization, but it does not claim that this architecture is a standard or complete solution. Work on differential machine learning and optimal stopping motivates separate treatment of price, derivative, and stopping-related objects \cite{BeckerCheriditoJentzen2019,HugeSavine2020,FrandsenPedersenPoulsen2022}. The reporting and artifact strategy follows reproducible computational research guidance \cite{SandveEtAl2013,WilsonEtAl2014}.
+
+\section{Mathematical Formulation}
+Under the risk-neutral Black--Scholes model with continuous dividend yield,
+\begin{equation}
+  dS_t = (r-q)S_t\,dt + \sigma S_t\,dW_t,
+\end{equation}
+where $r$ is the risk-free rate, $q$ is the dividend yield, and $\sigma$ is volatility. Let $\tau=T-t$ denote time to maturity. For payoff $\Phi(S)$, the American option value $U(S,\tau)$ satisfies an obstacle problem with terminal condition
+\begin{equation}
+  U(S,0)=\Phi(S).
+\end{equation}
+For puts and calls,
+\begin{equation}
+  \Phi_{\mathrm{put}}(S)=\max(K-S,0), \qquad
+  \Phi_{\mathrm{call}}(S)=\max(S-K,0).
+\end{equation}
+
+Define the Black--Scholes spatial operator
+\begin{equation}
+  \mathcal{L}U =
+  \frac{1}{2}\sigma^2 S^2 U_{SS}
+  +(r-q)S U_S
+  -rU.
+\end{equation}
+The time-to-maturity variational inequality is written as
+\begin{equation}
+  U\geq \Phi, \qquad
+  U_\tau-\mathcal{L}U\geq 0, \qquad
+  (U-\Phi)(U_\tau-\mathcal{L}U)=0.
+\end{equation}
+In the continuation region, $U>\Phi$ and the Black--Scholes PDE holds. In the exercise region, $U=\Phi$. The free boundary $B(\tau)$ separates these regions, with opposite orientation for puts and dividend-paying calls.
+
+The continuation premium
+\begin{equation}
+  C(S,\tau)=U(S,\tau)-\Phi(S)
+\end{equation}
+is nonnegative for American options. This motivates the later price surrogate
+\begin{equation}
+  \widehat{U}_\theta(S,\tau,\cdots)=\Phi(S)+\operatorname{softplus}(f_\theta(x)),
+\end{equation}
+which enforces the payoff obstacle by construction. This construction is a price/premium model only; differentiability of the network does not automatically validate Greek estimates.
+
+\section{Numerical Benchmark}
+The benchmark solver uses a finite-difference grid in $S$ and $\tau$, Crank--Nicolson time stepping, and PSOR projection to enforce the obstacle constraint. Boundary conditions are option-specific: American puts use low-spot exercise behavior and far-field decay; dividend-paying American calls use high-spot behavior consistent with early exercise when dividends make it optimal.
+
+The benchmark is not treated as credible until it passes a validation ladder:
+\begin{itemize}
+  \item European put comparison against Black--Scholes closed form with projection disabled where appropriate;
+  \item no-dividend American call comparison against the European call theorem;
+  \item American put obstacle and complementarity checks;
+  \item dividend-paying call boundary-condition sanity checks;
+  \item monotonicity, convexity, grid, domain, and runtime diagnostics.
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrr}
 \toprule
-Area & Evidence & Claim status \\
+Validation check & Metric & Value \\
 \midrule
-CN/PSOR solver & European put and no-dividend call max errors near $2.78\times 10^{-4}$; American put obstacle violation $0.0$; complementarity near $4.01\times10^{-12}$ & Valid for tested engineering-scale label generation, not a publication-grade universal benchmark. \\
-Grid and domain audit & Grid/domain/runtime tables for put and dividend-call cases; obstacle violation $0.0$ in the convergence summary & Supports selected engineering grid and domain with explicit Gamma and boundary limitations. \\
-Application surfaces & 288 regimes; 32 diagnostic-failure or delicate regimes retained in outputs & Supports audited risk-surface generation while preserving failure regimes. \\
-Dataset construction & 3,264,943 samples; 223 clean regimes; regime-level splits & Supports clean supervised labels only inside the validated regime envelope. \\
-Direct-price baselines & Best validation RMSE about $0.0281$ with obstacle and shape limitations & Baselines are negative evidence, not final models. \\
-Positive-premium price & Selected MLP validation RMSE about $0.0200$; obstacle violation $0.0$ & Supports obstacle-consistent price/premium screening within tested regimes. \\
-Boundary head & Pooled MLP test boundary RMSE about $0.3513$ and MAE about $0.2087$ & Supports scoped boundary diagnostics; boundary remains a weak component. \\
-Delta head & Bounded MLP strict-mask test RMSE about $0.0332$ and max bound violation $0.0$ & Supports separate bounded Delta diagnostics, not Gamma. \\
-Integrated workflow & Six fresh PSOR audit cases; mean price RMSE about $0.00919$; mean boundary MAE about $0.1539$; mean strict Delta RMSE about $0.0300$; mean speedup about $87.5$ & Supports scenario screening with PSOR audit. \\
+European put closed-form & max error & $2.782\times 10^{-4}$ \\
+No-dividend American call & max error & $2.782\times 10^{-4}$ \\
+American put & obstacle violation & $0.0$ \\
+American put & complementarity error & $4.009\times 10^{-12}$ \\
+Grid/domain audit & reference grid & $240$ \\
+Grid/domain audit & max obstacle violation & $0.0$ \\
+Grid/domain audit & max complementarity error & $6.129\times10^{-12}$ \\
 \bottomrule
 \end{tabular}
+\caption{Core benchmark validation evidence. The grid-240 result is an internal numerical reference, not an analytic reference.}
+\label{tab:solver-validation}
+\end{table}
 
-\section{Allowed Claims}
-The project may claim that a validated CN/PSOR benchmark generates audited American put and dividend-paying American call risk surfaces within tested regimes. It may also claim that the positive continuation-premium surrogate enforces $V\geq\Phi$ by construction for price/premium prediction, that direct boundary heads provide scoped supervised diagnostics, and that a bounded supervised Delta head provides strict-mask Delta diagnostics.
+\begin{figure}[!htbp]
+\centering
+\begin{subfigure}[t]{0.42\linewidth}
+\centering
+\includegraphics[width=\linewidth]{results/figures/report_enrichment/final_report_matrix_process_summary.pdf}
+\caption{From the PDE operator to the CN matrix system.}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.54\linewidth}
+\centering
+\includegraphics[width=\linewidth]{results/figures/report_enrichment/final_report_psor_teaching_summary.pdf}
+\caption{Projected iteration used to enforce the payoff obstacle.}
+\end{subfigure}
+\end{figure}
+\FloatBarrier
 
-The integrated workflow may be described as scenario screening with PSOR audit. This wording is important because PSOR remains the benchmark, label generator, and audit mechanism for new regimes.
+The remaining closed-form errors are consistent with finite grid resolution near the payoff kink, finite-domain truncation, and Crank--Nicolson time stepping from nonsmooth terminal data. Rannacher smoothing is discussed as future refinement; it is not active evidence in this report.
 
-\section{Restricted Claims}
-The project must not claim that a single network solves price, boundary, and Greeks. The price surrogate is not a Greek model. The boundary head is not an exact free-boundary solver. The Delta head is not a Gamma model. The workflow does not replace PSOR. The grid-240 reference used in the engineering audit is not an analytic reference.
+\section{Diagnostics and Risk-Surface Experiments}
+Every solver-generated surface is audited using obstacle violation, complementarity error, monotonicity, convexity, boundary status, strict Greek masks, grid/domain sensitivity, and runtime. The application sweep includes American puts, dividend-paying American calls, and no-dividend call controls. Controls are deliberately separated so that the no-dividend call theorem is not misused as dividend-call boundary evidence.
 
-\section{Limitations}
-The strongest limitations are numerical and statistical. First, the solver evidence is engineering-scale and should not be described as final publication-grade accuracy across all regimes. Second, Gamma is delicate near payoff kinks and free boundaries, so strict masks and caution remain necessary. Third, boundary estimation is weaker than price and Delta estimation, especially for call-only generalization. Fourth, the integrated workflow is evaluated on six deterministic held-out PSOR cases, not on an exhaustive production envelope.
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+Application audit metric & Value & Interpretation \\
+\midrule
+Total regimes & $288$ & Full application sweep \\
+Put regimes & $144$ & American put surfaces \\
+Dividend-call regimes & $108$ & Call cases with $q>0$ \\
+No-dividend call controls & $36$ & Theorem/control cases only \\
+Diagnostic failures or delicate regimes & $32$ & Retained, not hidden \\
+Maximum obstacle violation & $0.0$ & Obstacle enforced in sweep \\
+Maximum complementarity error & $1.681\times10^{-9}$ & Near solver tolerance scale \\
+\bottomrule
+\end{tabular}
+\caption{Application risk-surface audit summary. Diagnostic-failure regimes are excluded from clean ML labels but retained in the audit trail.}
+\label{tab:application}
+\end{table}
+
+Gamma is treated cautiously. Finite-difference Gamma can spike near payoff kinks and exercise boundaries; the project therefore reports masked and unmasked behavior separately and does not train or claim a Gamma surrogate.
+
+\section{Dataset Governance}
+Supervised datasets are built only after the classical benchmark passes its validation gate. Features use normalized moneyness and market/regime parameters:
+\begin{equation}
+  x = \bigl(\log(S/K),\, \tau/T,\, r,\, q,\, \sigma,\, T,\, \mathbf{1}_{\mathrm{call}}\bigr).
+\end{equation}
+Labels include normalized price, continuation premium, payoff, Delta, and scaled Gamma, with masks for strict Greek regions and delicate boundary/kink neighborhoods.
+
+A regime-level split keeps every spot-time node from one parameter regime in
+the same partition. This prevents neighboring nodes from the same numerical
+surface from appearing in both training and test data, which would otherwise
+understate generalization error.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+Dataset quantity & Value \\
+\midrule
+Total clean samples & $3,264,943$ \\
+Clean regimes & $223$ \\
+Excluded regimes & $65$ \\
+Training regimes & $156$ \\
+Validation regimes & $33$ \\
+Test regimes & $34$ \\
+Feature dimension & $7$ \\
+Label dimension & $5$ \\
+\bottomrule
+\end{tabular}
+\caption{Clean surrogate dataset summary. Splitting is by regime key, not pointwise random splitting, to reduce leakage.}
+\label{tab:dataset}
+\end{table}
+
+The excluded regimes include no-dividend controls and diagnostic-failure or delicate regimes. They are not silently discarded; they remain in audit outputs and claim limitations.
+
+\section{Modular Neural Diagnostics}
+The neural stage is intentionally modular. A single network is not claimed to solve the price, boundary, and Greeks. Three separate questions are audited:
+\begin{enumerate}
+  \item Can a price/premium model enforce the payoff obstacle?
+  \item Can a direct supervised boundary head estimate PSOR boundary labels within the tested regime envelope?
+  \item Can a bounded supervised Delta head provide stricter Greek diagnostics than differentiating the price model?
+\end{enumerate}
+
+\subsection{Direct-Price Baselines}
+Direct-price baselines are retained as negative evidence. The best validation baseline is the direct-price MLP with validation RMSE about $0.0281$, but direct-price baselines show obstacle and shape-diagnostic violations. Penalty terms are not hard guarantees.
+
+\subsection{Positive Continuation-Premium Price}
+The positive-premium model predicts a nonnegative continuation premium
+\(\widehat C\) and reconstructs
+\(\widehat U=\Phi+\widehat C\). This enforces the payoff obstacle by
+construction. It does not enforce monotonicity, convexity, boundary accuracy,
+or Greek accuracy.
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+Positive-premium metric & Model or value & Interpretation \\
+\midrule
+Best validation model & linear sanity baseline & Lower aggregate validation RMSE in this run \\
+Selected neural model & positive-premium MLP & Retained neural artifact for workflow \\
+Selected validation RMSE & $0.0200$ & Price/premium accuracy metric \\
+Selected test RMSE & $0.0218$ & Held-out regime metric \\
+Maximum obstacle violation & $0.0$ & Hard obstacle construction verified \\
+\bottomrule
+\end{tabular}
+\caption{Positive continuation-premium price evidence. This is not boundary or Greek evidence.}
+\label{tab:premium}
+\end{table}
+
+\subsection{Boundary Diagnostic Head}
+The boundary head is trained directly on PSOR boundary labels. It is not inferred from price thresholds and is not an exact free-boundary solver.
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+Boundary metric & Value \\
+\midrule
+Finite boundary-labelled samples & $3,264,943$ \\
+Pooled MLP test boundary RMSE & $0.3513$ \\
+Pooled MLP test boundary MAE & $0.2087$ \\
+\bottomrule
+\end{tabular}
+\caption{Boundary-head evidence. Boundary estimates are materially weaker than price and Delta estimates, especially for call generalization.}
+\label{tab:boundary}
+\end{table}
+
+\subsection{Delta Validation and Bounded Delta Head}
+Differentiating the price surrogate is audited before training a separate Delta head. The derivative audit supports a restricted claim: the price surrogate is not automatically a Greek engine.
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+Delta metric & Value \\
+\midrule
+Price-model autograd Delta RMSE & $0.0977$ \\
+Price-model finite-difference Delta RMSE & $0.0977$ \\
+Bounded Delta MLP strict-mask test RMSE & $0.0332$ \\
+Bounded Delta MLP strict-mask test MAE & $0.0140$ \\
+Bounded Delta MLP max bound violation & $0.0$ \\
+\bottomrule
+\end{tabular}
+\caption{Delta evidence. The final Delta claim is a separate bounded supervised head, not price-network differentiation.}
+\label{tab:delta}
+\end{table}
+
+\section{Integrated Workflow}
+The integrated workflow combines three separate heads: positive-premium price, direct boundary, and bounded Delta. It is evaluated against regenerated PSOR labels on deterministic held-out test regimes.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+Integrated audit metric & Value \\
+\midrule
+Fresh PSOR audit cases & $6$ \\
+Mean price RMSE & $0.0092$ \\
+Mean boundary MAE & $0.1539$ \\
+Mean strict Delta RMSE & $0.0300$ \\
+Maximum obstacle violation & $0.0$ \\
+Maximum Delta-bound violation & $0.0$ \\
+Mean speedup & $87.5$ \\
+\bottomrule
+\end{tabular}
+\caption{Integrated modular workflow evidence. The workflow supports scenario screening with PSOR audit; it does not replace PSOR.}
+\label{tab:integrated}
+\end{table}
+
+The integrated result supports an engineering screening workflow within this
+small audit. It is not a deployment study, a universal generalization claim, or
+evidence for Gamma support. The six audit regimes are deterministic and all
+have short maturity; boundary estimation remains the weakest component.
+
+\section{Claim Audit}
+The final claim audit maps each claim or reporting artifact to evidence, allowed wording, restricted wording, and limitations. The current audit records eleven rows: core scientific claims plus visualization/reporting artifacts. It reports zero missing required artifacts and zero forbidden-language violations.
+
+\begin{longtable}{p{0.23\linewidth}p{0.34\linewidth}p{0.31\linewidth}}
+\toprule
+Claim area & Allowed wording & Main restriction \\
+\midrule
+CN/PSOR benchmark & Audited benchmark and label generator for tested regimes & Not publication-grade universal accuracy \\
+Application surfaces & Audited put, dividend-call, and control studies & Do not hide delicate regimes \\
+Dataset & Clean PSOR labels with regime-level splits & No ML accuracy claim from dataset alone \\
+Direct baselines & Negative evidence for ordinary price networks & Not obstacle-consistent \\
+Positive premium & Obstacle-consistent price/premium surrogate & Not a boundary or Greek model \\
+Boundary head & Scoped supervised boundary diagnostic & Not an exact free-boundary solver \\
+Delta head & Bounded strict-mask Delta diagnostic & Not Gamma support \\
+Integrated workflow & Scenario screening with PSOR audit & Not a PSOR replacement \\
+Report visuals & Evidence-linked visual explanation and contribution framing & Not new solver or surrogate evidence \\
+\bottomrule
+\caption{Condensed claim-audit summary linking each evidence area to its permitted interpretation and principal restriction. The table is a reporting control, not an additional experiment.}
+\label{tab:claims}
+\end{longtable}
+
+\input{reports/visual_blocks/final_report_visuals.tex}
 
 \section{Reproducibility}
-The final claim audit is generated by \texttt{experiments/14\_claim\_audit.py} with \texttt{configs/claim\_audit.yaml}. The main output is \texttt{results/tables/final\_claim\_matrix.csv}, supported by \texttt{forbidden\_language\_scan.csv}, \texttt{missing\_artifacts.csv}, and \texttt{claim\_audit\_summary.json}.
+All major stages are scripted under \path{experiments/}, configured under
+\path{configs/}, and documented under \path{docs/}. The rounded values in
+this report are reconciled in
+\path{docs/verified_metric_ledger.md}; raw CSV and JSON files retain full
+precision. The final claim audit is generated by
+\begin{verbatim}
+python experiments/14_claim_audit.py --config configs/claim_audit.yaml
+\end{verbatim}
+The future-work roadmap is generated by
+\begin{verbatim}
+python experiments/15_future_extensions_manifest.py
+  --config configs/future_extensions.yaml
+\end{verbatim}
+The release verification script checks required artifacts and claim hygiene:
+\begin{verbatim}
+python experiments/16_release_verification.py
+\end{verbatim}
+
+Large model checkpoints, solver surfaces, figures, and build PDFs are local
+artifacts and are not required as source-controlled evidence. The key
+source-controlled artifacts are CSV/JSON summaries, TeX sources, configuration
+files, manifests, and governance documents.
+
+\section{Limitations}
+The report is intentionally conservative. The main limitations are:
+\begin{itemize}
+  \item the solver validation is engineering-scale, not a high-resolution publication-grade benchmark across all regimes;
+  \item Rannacher smoothing is identified as future refinement and is not active evidence;
+  \item Gamma is not supported as a neural surrogate claim;
+  \item boundary-head performance is weaker than price and Delta performance;
+  \item the integrated workflow uses six fresh PSOR audit cases;
+  \item alternative dynamics, market calibration, uncertainty quantification, active learning, and shape-constrained models are future work only.
+\end{itemize}
+
+These limitations are not defects in reporting; they define the boundary between supported claims and future research.
 
 \section{Conclusion}
-The project is ready to be reported as a reproducible computational-finance workflow with careful claim boundaries: validated classical benchmark, audited risk surfaces, obstacle-consistent price/premium surrogate, scoped boundary diagnostics, bounded Delta diagnostics, and integrated scenario screening with PSOR audit.
+This project establishes a reproducible pipeline for free-boundary-aware American option risk surfaces. The strongest contribution is methodological discipline: validate the classical solver first, attach diagnostics to every generated label, separate price, boundary, and Delta claims, and audit failures rather than hiding them. Within the tested regime envelope, the evidence supports obstacle-consistent price/premium screening, scoped boundary diagnostics, bounded Delta diagnostics, and integrated scenario screening with PSOR audit. Stronger journal-level claims would require a larger benchmark envelope, more extensive integrated PSOR audits, stronger boundary generalization, and additional numerical refinement for Greek stability.
+
+\bibliographystyle{plain}
+\bibliography{paper/references}
 
 \end{document}

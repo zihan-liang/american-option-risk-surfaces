@@ -1,0 +1,15 @@
+evidence_family,model,split,metric,value,max_obstacle_violation
+direct_price_baseline,linear_price_baseline,validation,price_rmse,0.7271978583581146,1.8469038712904613
+direct_price_baseline,linear_price_baseline,test,price_rmse,0.6652961027440175,1.8467483822943174
+direct_price_baseline,mlp_direct_price,validation,price_rmse,0.028088274965102702,0.1358214020729065
+direct_price_baseline,mlp_direct_price,test,price_rmse,0.02821120011211636,0.13376212120056152
+direct_price_baseline,mlp_obstacle_penalty_1,validation,price_rmse,0.039079974696171284,0.21036547422409058
+direct_price_baseline,mlp_obstacle_penalty_1,test,price_rmse,0.037631195606665294,0.21475380659103394
+direct_price_baseline,mlp_obstacle_penalty_10,validation,price_rmse,0.05441394956376488,0.11524343490600586
+direct_price_baseline,mlp_obstacle_penalty_10,test,price_rmse,0.05071797117236048,0.12164252996444702
+positive_premium,positive_premium_linear,validation,price_rmse,0.018758900679095955,0.0
+positive_premium,positive_premium_linear,test,price_rmse,0.020101937181983713,0.0
+positive_premium,positive_premium_mlp,validation,price_rmse,0.019988299678999184,0.0
+positive_premium,positive_premium_mlp,test,price_rmse,0.021800903980790293,0.0
+delta,price_model_autograd_delta,test,delta_rmse,0.09770389345203662,
+delta,bounded_delta_head_mlp,test,delta_rmse,0.033240113189454475,

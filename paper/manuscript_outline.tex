@@ -1,13 +1,19 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, geometry}
+\usepackage{amsmath,amssymb,geometry,hyperref,url}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \title{Free-Boundary-Aware Risk Surfaces for American Options}
 \date{\today}
 \begin{document}
 \maketitle
 
 \section{Introduction}
-American option risk surfaces, Greeks, and early-exercise boundaries. Position the project as a reproducible research-engineering study: a validated classical benchmark first, then diagnostic-aware neural surrogate components. The contribution is computational and methodological rather than a new financial-mathematics theorem.
+Define the American exercise right, payoff obstacle, free boundary, and Greek
+diagnostics in concise terms. Position the project as a reproducible
+research-engineering study: a validated classical benchmark first, followed by
+quantity-specific neural diagnostics. The contribution is computational and
+methodological rather than a new financial-mathematics theorem.
 
 \section{Literature Review}
 Classical American option theory motivates the variational inequality, obstacle, and free-boundary formulation used throughout the project \cite{JailletLambertonLapeyre1990,HuangPang1998}. Early-exercise premium and boundary characterizations motivate treating the continuation premium and the free boundary as meaningful objects rather than incidental plots \cite{Kim1990,CarrJarrowMyneni1992,Peskir2005,ChenChadam2007,EvansKuskeKeller2002}.
@@ -30,15 +36,33 @@ Stress-regime risk maps for American puts and dividend-paying American calls. Se
 \section{Neural Surrogate Workflow}
 Positive-premium price surrogate, direct boundary diagnostic head, bounded supervised Delta head. The positive continuation-premium model should be described as a literature-inspired hard obstacle parameterization, not as an established standard architecture. Boundary and Delta heads should be scoped as separate diagnostic tasks.
 
-Dataset construction uses 3,264,943 samples from 223 clean PSOR regimes with regime-level train/validation/test splits. Direct-price baselines are retained as negative evidence because they do not hard-enforce the obstacle. The selected positive-premium MLP has validation RMSE about $0.0200$ and obstacle violation $0.0$ on evaluated samples. The pooled boundary MLP has test boundary RMSE about $0.3513$ and MAE about $0.2087$, so boundary estimates should be described as scoped diagnostics. The bounded supervised Delta MLP has strict-mask test RMSE about $0.0332$ and zero Delta-bound violation in the evaluated samples.
+Dataset construction uses 3,264,943 samples from 223 clean PSOR regimes, with
+65 regimes excluded and a regime-level \(156/33/34\)
+train/validation/test split. Direct-price baselines are retained as negative
+evidence because they do not hard-enforce the obstacle. The selected
+positive-premium MLP has validation RMSE about \(0.0200\), test RMSE about
+\(0.0218\), and zero obstacle violation on evaluated samples; the linear
+positive-premium sanity baseline has lower aggregate RMSE in this run. The
+pooled boundary MLP has test RMSE about \(0.3513\) and MAE about \(0.2087\),
+so boundary estimates remain scoped diagnostics. The bounded supervised Delta
+MLP has strict-mask test RMSE about \(0.0332\), test MAE about \(0.0140\), and
+zero Delta-bound violation on evaluated samples.
 
 \section{Results}
-Price, boundary, Delta, violation, and runtime comparisons. The integrated workflow combines three separate heads and is audited on six fresh PSOR held-out regimes. The mean price RMSE is about $0.00919$, mean boundary MAE is about $0.1539$, mean strict Delta RMSE is about $0.0300$, and mean speedup is about $87.5$. Obstacle and Delta-bound violations are $0.0$ in the integrated audit.
+Price, boundary, Delta, violation, and runtime comparisons. The integrated
+workflow combines three separate heads and is audited on six deterministic
+fresh PSOR regimes: three puts and three dividend-paying calls, all at short
+maturity. Mean price RMSE is about \(0.0092\), mean boundary MAE is about
+\(0.1539\), mean strict-mask Delta RMSE is about \(0.0300\), and mean speedup
+is about \(87.5\). Obstacle and Delta-bound violations are zero in this audit.
 
 Claim wording should remain conservative: the workflow supports scenario screening with PSOR audit. It should not be described as a replacement for the benchmark solver, as a Gamma model, or as a single network for all risk quantities.
 
 \section{Limitations and Future Work}
-PSOR remains the audit standard. Current limits include engineering-scale rather than final publication-grade solver evidence, masked rather than universal Greek stability, weak boundary generalization, and only six fresh integrated audit cases.
+PSOR remains the audit standard. Current limits include engineering-scale
+solver evidence, masked rather than universal Greek stability, weak boundary
+generalization, no validated Gamma surrogate, no market calibration, and only
+six short-maturity fresh integrated audit cases.
 
 Future work should remain separate from the completed claim matrix. A larger regime envelope would require new PSOR sweeps, domain and grid audits, and explicit reporting of failed regimes. Active learning could be investigated as a PSOR label-selection policy, but it would require comparison against random sampling and retention of failed acquisitions before any claim. Uncertainty quantification could support PSOR spot-check triggers, but it would require coverage, interval-width, and calibration diagnostics. Shape-constrained and no-arbitrage-aware models would require architectural or certificate-based audits for obstacle, monotonicity, convexity, and Delta-bound behavior. Gamma modeling would require finer references, boundary-aware masks, and smoothing sensitivity studies. Alternative dynamics and market calibration would require new mathematical formulation, new benchmark solvers, data provenance, and a new claim audit before being treated as evidence.
 

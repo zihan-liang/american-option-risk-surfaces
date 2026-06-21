@@ -1,0 +1,7 @@
+{
+  "does_not_rerun_solver_or_training": true,
+  "figures": 78,
+  "latex_block_dir": "reports/visual_blocks",
+  "output_dir": "results/figures/report_enrichment",
+  "reports": 14
+}

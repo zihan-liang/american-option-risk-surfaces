@@ -1,0 +1,4 @@
+evidence,metric,value,publication_interpretation
+grid_domain_runtime,reference_grid,240,Internal reference grid; not analytic publication-grade convergence.
+grid_domain_runtime,max_obstacle_violation,0.0,Obstacle enforcement remains robust in the tested grid/domain audit.
+application_sweep,diagnostic_failures,32,Weak regimes must remain visible in manuscript and supplement.

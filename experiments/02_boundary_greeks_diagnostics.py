@@ -80,10 +80,38 @@ def run(
         mask_near_boundary=masks["near_boundary"],
         mask_near_zero_spot=masks["near_zero_spot"],
     )
-    save_price_surface(result.spots / cfg.k, result.taus, result.values / cfg.k, fig_root / "price_surface.png", f"{cfg.option_type} price surface")
-    save_price_surface(result.spots / cfg.k, result.taus, delta, fig_root / "delta_surface.png", f"{cfg.option_type} Delta surface")
-    save_price_surface(result.spots / cfg.k, result.taus, gamma, fig_root / "gamma_surface.png", f"{cfg.option_type} Gamma surface")
-    save_curve(result.taus, boundary / cfg.k, fig_root / "boundary_curve.png", f"{cfg.option_type} boundary curve", "B/K")
+    option_label = cfg.option_type.replace("_", " ").title()
+    save_price_surface(
+        result.spots / cfg.k,
+        result.taus,
+        result.values / cfg.k,
+        fig_root / "price_surface.png",
+        f"{option_label} price surface",
+        colorbar_label=r"$U/K$",
+    )
+    save_price_surface(
+        result.spots / cfg.k,
+        result.taus,
+        delta,
+        fig_root / "delta_surface.png",
+        f"{option_label} Delta surface",
+        colorbar_label=r"$\Delta$",
+    )
+    save_price_surface(
+        result.spots / cfg.k,
+        result.taus,
+        gamma,
+        fig_root / "gamma_surface.png",
+        f"{option_label} Gamma surface",
+        colorbar_label=r"$\Gamma$",
+    )
+    save_curve(
+        result.taus,
+        boundary / cfg.k,
+        fig_root / "boundary_curve.png",
+        f"{option_label} early-exercise boundary",
+        r"$B/K$",
+    )
     return metrics
 
 

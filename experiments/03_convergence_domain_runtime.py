@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -110,6 +111,37 @@ def run(
     write_json(out_dir / "convergence_summary.json", summary)
     write_json(out_dir / "convergence_config_manifest.json", raw)
     return summary
+
+
+def regenerate_figures(
+    *,
+    output_root: str | Path = "results/experiment_03_convergence_domain_runtime",
+    figure_root: str | Path = "results/figures/stage04_convergence_runtime",
+) -> dict:
+    output_dir = Path(output_root)
+    grid_rows = _read_csv_rows(output_dir / "grid_convergence.csv")
+    runtime_rows = _read_csv_rows(output_dir / "runtime_table.csv")
+    domain_rows = _read_csv_rows(output_dir / "domain_sensitivity.csv")
+    cases = sorted({row["case"] for row in grid_rows})
+    if not cases:
+        raise FileNotFoundError(f"No Stage 4 grid evidence found under {output_dir}")
+
+    for case_name in cases:
+        _save_case_figures(
+            case_name,
+            Path(figure_root) / case_name,
+            grid_rows,
+            domain_rows,
+            runtime_rows,
+        )
+    return {"mode": "figures_only", "cases": len(cases), "figure_root": str(figure_root)}
+
+
+def _read_csv_rows(path: Path) -> list[dict]:
+    if not path.exists():
+        raise FileNotFoundError(path)
+    with path.open(newline="", encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
 
 
 def _config_for(base: dict, case: dict, **overrides) -> SolverConfig:
@@ -227,20 +259,74 @@ def _save_case_figures(
     case_runtime = [row for row in runtime_rows if row["case"] == case_name]
     if case_grid:
         grids = np.array([row["grid"] for row in case_grid], dtype=float)
-        save_curve(grids, np.array([row["price_rmse"] for row in case_grid]), fig_dir / "price_error_vs_grid.png", f"{case_name} price error", "RMSE")
-        save_curve(grids, np.array([row["boundary_mae"] for row in case_grid]), fig_dir / "boundary_error_vs_grid.png", f"{case_name} boundary error", "MAE")
-        save_curve(grids, np.array([row["delta_strict_rmse"] for row in case_grid]), fig_dir / "delta_error_vs_grid.png", f"{case_name} Delta strict error", "RMSE")
-        save_curve(grids, np.array([row["gamma_strict_rmse"] for row in case_grid]), fig_dir / "gamma_error_vs_grid.png", f"{case_name} Gamma strict error", "RMSE")
+        save_curve(
+            grids,
+            np.array([row["price_rmse"] for row in case_grid], dtype=float),
+            fig_dir / "price_error_vs_grid.png",
+            f"{case_name.replace('_', ' ').title()} price error",
+            "Price RMSE",
+            xlabel=r"Grid size, $M=N$",
+        )
+        save_curve(
+            grids,
+            np.array([row["boundary_mae"] for row in case_grid], dtype=float),
+            fig_dir / "boundary_error_vs_grid.png",
+            f"{case_name.replace('_', ' ').title()} boundary error",
+            r"Boundary MAE, $B/K$",
+            xlabel=r"Grid size, $M=N$",
+        )
+        save_curve(
+            grids,
+            np.array([row["delta_strict_rmse"] for row in case_grid], dtype=float),
+            fig_dir / "delta_error_vs_grid.png",
+            f"{case_name.replace('_', ' ').title()} strict-mask Delta error",
+            r"Strict-mask $\Delta$ RMSE",
+            xlabel=r"Grid size, $M=N$",
+        )
+        save_curve(
+            grids,
+            np.array([row["gamma_strict_rmse"] for row in case_grid], dtype=float),
+            fig_dir / "gamma_error_vs_grid.png",
+            f"{case_name.replace('_', ' ').title()} strict-mask Gamma error",
+            r"Strict-mask $\Gamma$ RMSE",
+            xlabel=r"Grid size, $M=N$",
+        )
     if case_runtime:
         grids = np.array([row["grid"] for row in case_runtime], dtype=float)
-        save_curve(grids, np.array([row["runtime_seconds"] for row in case_runtime]), fig_dir / "runtime_vs_grid.png", f"{case_name} runtime", "seconds")
+        save_curve(
+            grids,
+            np.array([row["runtime_seconds"] for row in case_runtime], dtype=float),
+            fig_dir / "runtime_vs_grid.png",
+            f"{case_name.replace('_', ' ').title()} runtime",
+            "Runtime (s)",
+            xlabel=r"Grid size, $M=N$",
+        )
     if case_domain:
         domains = np.array([row["s_max"] for row in case_domain], dtype=float)
-        save_curve(domains, np.array([row["initial_boundary"] for row in case_domain]), fig_dir / "domain_boundary_sensitivity.png", f"{case_name} domain boundary sensitivity", "B/K")
+        save_curve(
+            domains,
+            np.array([row["initial_boundary"] for row in case_domain], dtype=float),
+            fig_dir / "domain_boundary_sensitivity.png",
+            f"{case_name.replace('_', ' ').title()} domain sensitivity",
+            r"Initial boundary, $B/K$",
+            xlabel=r"Domain cap, $S_{\max}/K$",
+        )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/convergence.yaml")
+    parser.add_argument("--figures-only", action="store_true")
+    parser.add_argument(
+        "--output-root",
+        default="results/experiment_03_convergence_domain_runtime",
+    )
+    parser.add_argument(
+        "--figure-root",
+        default="results/figures/stage04_convergence_runtime",
+    )
     args = parser.parse_args()
-    print(run(args.config))
+    if args.figures_only:
+        print(regenerate_figures(output_root=args.output_root, figure_root=args.figure_root))
+    else:
+        print(run(args.config, output_root=args.output_root, figure_root=args.figure_root))

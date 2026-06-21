@@ -18,3 +18,7 @@
 | 14 | `experiments/14_claim_audit.py` | Final claims are manuscript-safe and evidence-backed | Claim matrix maps each claim to artifacts and metrics; forbidden-language scan and artifact checks pass |
 | 15 | `experiments/15_future_extensions_manifest.py` | Future work is separated from completed claims | Every extension is `future_work_only`; validation requirements and language scan are recorded |
 | 16 | `experiments/16_release_verification.py` | Repository handoff is reproducible and packaging-safe | Required files, claim summaries, future-work summaries, and stale tracked generated artifacts are checked |
+| 17 | `experiments/17_publication_evidence_audit.py` | Journal-style manuscript claims are scoped to available evidence | Publication gap matrix demotes weak boundary and six-case integrated workflow claims |
+| 18 | `experiments/18_publication_figures.py` | Manuscript figures are source-traceable | Figure manifest records PNG/PDF outputs and source artifact for every paper figure |
+| 19 | `experiments/19_report_visualization_enrichment.py` | Stage reports and supplement are visually evidence-linked | Report figure manifest records caption, source artifact, PNG, and PDF for every enrichment figure |
+| 19a | `experiments/19_report_visualization_enrichment.py` | Mathematical matrix process is explainable through diagrams | Stage 1 and Stage 2 include stencil, operator, CN matrix, RHS, LCP, and PSOR teaching figures |

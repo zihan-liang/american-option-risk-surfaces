@@ -29,6 +29,7 @@ from models.training import (
     train_linear_baseline,
     train_torch_price_model,
 )
+from plotting.publication import save_bar_figure
 
 
 def run(
@@ -298,22 +299,24 @@ def _save_figures(metrics_rows: list[dict], violation_rows: list[dict], figure_r
     ensure_dir(figure_root)
     validation = [row for row in metrics_rows if row["split"] == "validation" and row["option_type"] == "all"]
     if validation:
-        fig, ax = plt.subplots(figsize=(7, 4))
-        ax.bar([row["model"] for row in validation], [row["rmse"] for row in validation])
-        ax.set_ylabel("validation RMSE")
-        ax.tick_params(axis="x", rotation=30)
-        fig.tight_layout()
-        fig.savefig(figure_root / "validation_rmse.png", dpi=160)
-        plt.close(fig)
+        save_bar_figure(
+            figure_root / "validation_rmse.png",
+            [row["model"] for row in validation],
+            [row["rmse"] for row in validation],
+            "Validation price RMSE",
+            "Price RMSE",
+            orientation="horizontal",
+        )
     test_violations = [row for row in violation_rows if row["split"] == "test"]
     if test_violations:
-        fig, ax = plt.subplots(figsize=(7, 4))
-        ax.bar([row["model"] for row in test_violations], [row["max_obstacle_violation"] for row in test_violations])
-        ax.set_ylabel("test obstacle violation")
-        ax.tick_params(axis="x", rotation=30)
-        fig.tight_layout()
-        fig.savefig(figure_root / "test_obstacle_violation.png", dpi=160)
-        plt.close(fig)
+        save_bar_figure(
+            figure_root / "test_obstacle_violation.png",
+            [row["model"] for row in test_violations],
+            [row["max_obstacle_violation"] for row in test_violations],
+            "Maximum test obstacle violation",
+            "Obstacle violation",
+            orientation="horizontal",
+        )
 
 
 if __name__ == "__main__":

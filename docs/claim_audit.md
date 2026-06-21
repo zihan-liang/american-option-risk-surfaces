@@ -251,3 +251,52 @@ Restricted wording:
 - Do not claim release verification passes while stale tracked generated manuscript artifacts remain tracked.
 - Do not treat build PDFs as source artifacts.
 - Do not use release packaging as new scientific evidence.
+
+## Journal-Style Manuscript Upgrade - 2026-06-17
+
+Allowed wording:
+
+- The final deliverable now includes a paper-facing manuscript and supplementary material.
+- The publication evidence audit classifies `5` claims as main-text-ready and `5` claims as limited or supplementary.
+- The positive-premium price surrogate and bounded Delta head may be presented as scoped main results within the tested regime envelope.
+- Boundary-head and integrated-workflow results should be discussed as useful but limited diagnostics.
+- The figure manifest makes publication figures traceable to source artifacts.
+
+Restricted wording:
+
+- Do not imply the Stage 15 rewrite creates stronger scientific evidence by itself.
+- Do not describe the manuscript as top-journal ready in the sense of acceptance-quality evidence.
+- Do not promote boundary-head results to an exact free-boundary solver claim.
+- Do not promote the six-case integrated audit to broad workflow generalization.
+- Do not introduce Gamma, market calibration, or alternative-dynamics claims.
+
+## Report Visualization Enrichment - 2026-06-17
+
+Allowed wording:
+
+- The reports and supplement now include evidence-linked visual galleries generated from existing CSV, JSON, NPZ, and figure artifacts.
+- The figure manifest maps each enrichment figure to its report, source artifact, PNG/PDF output, and caption.
+- The final report may describe the student contribution as AI/ML pipeline work, numerical experiment orchestration, plotting, reproducibility, and LaTeX reporting.
+- Visual enrichment improves communication and auditability, not the underlying numerical or neural evidence.
+
+Restricted wording:
+
+- Do not claim richer figures make the neural surrogates better than the CN/PSOR benchmark.
+- Do not imply the workflow replaces PSOR because the reports are now more polished.
+- Do not hide boundary weakness, limited integrated-audit scope, or masked Greek limitations behind visual summaries.
+- Do not use visual schematics as evidence for completed Gamma, uncertainty quantification, active learning, market calibration, or alternative-dynamics results.
+
+## Mathematical Process Visualization Upgrade - 2026-06-17
+
+Allowed wording:
+
+- Stage 1 and Stage 2 now include teaching figures for the finite-difference stencil, operator coefficients, tridiagonal matrix, Crank--Nicolson matrix pair, boundary-adjusted right hand side, LCP vector form, time marching, and PSOR projection.
+- These figures support understanding of the numerical implementation and matrix calculations.
+- The visual explanation may be framed as part of the student's scientific-computing, plotting, reproducibility, and LaTeX-reporting contribution.
+
+Restricted wording:
+
+- Do not describe the matrix-process figures as new validation evidence.
+- Do not claim the diagrams improve solver accuracy or prove convergence.
+- Do not modify the CN/PSOR solver behavior in this visualization stage.
+- Do not use the diagrams to strengthen neural surrogate, boundary, Delta, or Gamma claims.
