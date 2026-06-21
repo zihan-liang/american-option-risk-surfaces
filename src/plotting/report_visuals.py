@@ -9,6 +9,7 @@ import textwrap
 from typing import Any
 
 import matplotlib.image as mpimg
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -47,6 +48,9 @@ DEFAULT_DISPLAY_LABELS = {
     "supplement_only": "Supplement only",
 }
 
+DEFAULT_REPORT_DPI = 300
+RASTERIZED_REPORT_DPI = 450
+
 
 def format_display_label(value: Any, aliases: dict[str, str] | None = None) -> str:
     raw = str(value)
@@ -77,7 +81,8 @@ def apply_report_style() -> None:
             "font.size": 9,
             "axes.titlesize": 11,
             "axes.labelsize": 9,
-            "figure.dpi": 160,
+            "figure.dpi": DEFAULT_REPORT_DPI,
+            "savefig.dpi": DEFAULT_REPORT_DPI,
             "savefig.bbox": "tight",
             "axes.grid": True,
             "grid.alpha": 0.25,
@@ -242,12 +247,12 @@ def save_matrix(path: str | Path, spec: dict[str, Any]) -> None:
             mat[i, i - 1] = 0.65
         if i < n - 1:
             mat[i, i + 1] = 0.65
-    fig, ax = plt.subplots(figsize=(4.4, 4.0))
+    fig, ax = plt.subplots(figsize=(7.4, 6.6))
     ax.imshow(mat, cmap="Blues")
     ax.set_title(spec.get("title", "Tridiagonal finite-difference structure"))
     ax.set_xlabel("column")
     ax.set_ylabel("row")
-    _save(fig, path)
+    _save(fig, path, dpi=RASTERIZED_REPORT_DPI)
 
 
 def save_fd_stencil(path: str | Path, spec: dict[str, Any]) -> None:
@@ -310,7 +315,7 @@ def save_operator_matrix_annotated(path: str | Path, spec: dict[str, Any]) -> No
             mat[i, i - 1] = -1.0
         if i < n - 1:
             mat[i, i + 1] = 1.0
-    fig, ax = plt.subplots(figsize=(5.4, 4.8))
+    fig, ax = plt.subplots(figsize=(7.4, 6.6))
     shown = np.nan_to_num(mat, nan=0.0)
     ax.imshow(np.abs(shown), cmap="Blues", vmin=0, vmax=1)
     for i in range(n):
@@ -329,7 +334,7 @@ def save_operator_matrix_annotated(path: str | Path, spec: dict[str, Any]) -> No
     ax.set_xticklabels([fr"$U_{i+1}$" for i in range(n)], rotation=45, ha="right", fontsize=8)
     ax.set_yticklabels([fr"row {i+1}" for i in range(n)], fontsize=8)
     ax.set_title(spec.get("title", r"Annotated $L_h$ matrix"))
-    _save(fig, path)
+    _save(fig, path, dpi=RASTERIZED_REPORT_DPI)
 
 
 def save_cn_matrix_pair(path: str | Path, spec: dict[str, Any]) -> None:
@@ -346,19 +351,34 @@ def save_cn_matrix_pair(path: str | Path, spec: dict[str, Any]) -> None:
     eye = np.eye(n)
     a_mat = eye - 0.5 * dt * l_mat
     b_mat = eye + 0.5 * dt * l_mat
-    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.8))
+    fig, axes = plt.subplots(1, 2, figsize=(8.8, 4.1))
+    cmap = plt.get_cmap("coolwarm")
+    norm = mcolors.Normalize(vmin=-0.25, vmax=1.25)
     for ax, mat, title in zip(axes, [a_mat, b_mat], [r"$A=I-\Delta\tau L_h/2$", r"$B=I+\Delta\tau L_h/2$"]):
-        im = ax.imshow(mat, cmap="coolwarm", vmin=-0.25, vmax=1.25)
+        for row in range(n):
+            for col in range(n):
+                ax.add_patch(
+                    plt.Rectangle(
+                        (col - 0.5, row - 0.5),
+                        1,
+                        1,
+                        facecolor=cmap(norm(mat[row, col])),
+                        edgecolor="#ffffff",
+                        linewidth=0.25,
+                    )
+                )
         ax.set_title(title)
+        ax.set_xlim(-0.5, n - 0.5)
+        ax.set_ylim(n - 0.5, -0.5)
+        ax.set_aspect("equal")
         ax.set_xticks([])
         ax.set_yticks([])
         for i in range(n):
             for j in range(n):
                 if abs(mat[i, j]) > 1e-12:
                     ax.text(j, i, f"{mat[i,j]:.1f}", ha="center", va="center", fontsize=7)
-    fig.colorbar(im, ax=axes.ravel().tolist(), shrink=0.72)
     fig.suptitle(spec.get("title", "Crank-Nicolson matrix pair"), y=0.98)
-    _save(fig, path)
+    _save(fig, path, dpi=RASTERIZED_REPORT_DPI)
 
 
 def save_rhs_boundary_adjustment(path: str | Path, spec: dict[str, Any]) -> None:
@@ -653,7 +673,7 @@ def _to_float(value: Any) -> float:
         return float("nan")
 
 
-def _save(fig, path: str | Path) -> None:
+def _save(fig, path: str | Path, *, dpi: int = DEFAULT_REPORT_DPI) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, bbox_inches=None)
+    fig.savefig(path, bbox_inches=None, dpi=dpi)
     plt.close(fig)

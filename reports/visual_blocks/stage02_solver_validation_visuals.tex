@@ -2,77 +2,62 @@
 \section*{Visual Evidence Gallery}
 \begin{figure}[!htbp]
 \centering
-\begin{subfigure}[t]{0.48\linewidth}
-\centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_tridiagonal_operator.pdf}
+\includegraphics[width=0.84\linewidth]{results/figures/report_enrichment/stage02_solver_validation_tridiagonal_operator.pdf}
 \caption{The discretized Black Scholes operator has the expected sparse tridiagonal structure.}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.48\linewidth}
+\end{figure}
+
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_fd_stencil_validation.pdf}
+\includegraphics[width=0.92\linewidth]{results/figures/report_enrichment/stage02_solver_validation_fd_stencil_validation.pdf}
 \caption{The validation audit checks that the implementation uses the intended three point stencil.}
-\end{subfigure}
 \end{figure}
 
 \begin{figure}[!htbp]
 \centering
-\begin{subfigure}[t]{0.48\linewidth}
-\centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_coefficient_sign_audit.pdf}
+\includegraphics[width=0.92\linewidth]{results/figures/report_enrichment/stage02_solver_validation_coefficient_sign_audit.pdf}
 \caption{The coefficient diagram helps connect operator sign conventions to implemented matrix rows.}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.48\linewidth}
+\end{figure}
+
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_annotated_lh_matrix.pdf}
+\includegraphics[width=0.84\linewidth]{results/figures/report_enrichment/stage02_solver_validation_annotated_lh_matrix.pdf}
 \caption{The labeled operator matrix makes the lower diagonal and upper entries explicit for implementation review.}
-\end{subfigure}
 \end{figure}
 
 \begin{figure}[!htbp]
 \centering
-\begin{subfigure}[t]{0.48\linewidth}
-\centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_cn_a_b_matrices.pdf}
+\includegraphics[width=0.82\linewidth]{results/figures/report_enrichment/stage02_solver_validation_cn_a_b_matrices.pdf}
 \caption{The Crank--Nicolson matrix pair makes the A and B sign convention explicit for the Stage 2 implementation audit.}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.48\linewidth}
+\end{figure}
+
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_rhs_boundary_terms.pdf}
+\includegraphics[width=0.92\linewidth]{results/figures/report_enrichment/stage02_solver_validation_rhs_boundary_terms.pdf}
 \caption{The right hand side diagram shows why boundary conditions must be audited together with matrix construction.}
-\end{subfigure}
 \end{figure}
 
 \begin{figure}[!htbp]
 \centering
-\begin{subfigure}[t]{0.48\linewidth}
-\centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_psor_projection_step.pdf}
+\includegraphics[width=0.92\linewidth]{results/figures/report_enrichment/stage02_solver_validation_psor_projection_step.pdf}
 \caption{The projected update enforces the payoff obstacle after each relaxed candidate update.}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.48\linewidth}
-\centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_lcp_matrix_system.pdf}
-\caption{The LCP diagram connects the CN matrices to obstacle and complementarity diagnostics.}
-\end{subfigure}
 \end{figure}
 
 \begin{figure}[!htbp]
 \centering
-\begin{subfigure}[t]{0.48\linewidth}
+\includegraphics[width=0.92\linewidth]{results/figures/report_enrichment/stage02_solver_validation_lcp_matrix_system.pdf}
+\caption{The LCP diagram connects the CN matrices to obstacle and complementarity diagnostics.}
+\end{figure}
+
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_time_step_flow.pdf}
+\includegraphics[width=0.92\linewidth]{results/figures/report_enrichment/stage02_solver_validation_time_step_flow.pdf}
 \caption{Time marching starts from the nonsmooth payoff and builds the American value surface step by step.}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.48\linewidth}
+\end{figure}
+
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=\linewidth]{results/figures/report_enrichment/stage02_solver_validation_validation_ladder.pdf}
+\includegraphics[width=0.92\linewidth]{results/figures/report_enrichment/stage02_solver_validation_validation_ladder.pdf}
 \caption{Validation proceeds from analytic checks to inequality and shape diagnostics before downstream experiments.}
-\end{subfigure}
 \end{figure}
 
 \begin{figure}[!htbp]

@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .coverage
+.DS_Store
 dist/
 build/
 tmp/
@@ -27,6 +28,7 @@ paper/*.out
 paper/*.pdf
 paper/*.synctex.gz
 paper/*.toc
+paper/*.xdv
 reports/*.aux
 reports/*.fdb_latexmk
 reports/*.fls

@@ -1,0 +1,14 @@
+{
+  "compiled_pdf": "deliverables/compiled_reports/stage02_solver_validation.pdf",
+  "does_not_rerun_solver_or_training": true,
+  "dpi_status_counts": {
+    "pass_after_300dpi_regeneration": 12
+  },
+  "figures_audited": 12,
+  "output_path": "results/figures/report_enrichment/stage02_solver_validation_image_audit.csv",
+  "report_path": "reports/stage02_solver_validation.tex",
+  "visual_status_counts": {
+    "pass": 10,
+    "pass_with_note": 2
+  }
+}

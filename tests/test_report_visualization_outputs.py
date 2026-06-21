@@ -61,6 +61,17 @@ class ReportVisualizationOutputsTest(unittest.TestCase):
         self.assertEqual(len(rows), 2)
         self.assertTrue(all(Path(row["png_path"]).exists() for row in rows))
         self.assertTrue(all(Path(row["pdf_path"]).exists() for row in rows))
+        try:
+            from PIL import Image
+        except Exception:
+            Image = None
+        if Image is not None:
+            for row in rows:
+                with Image.open(row["png_path"]) as image:
+                    dpi = image.info.get("dpi")
+                    self.assertIsNotNone(dpi, row["png_path"])
+                    self.assertGreaterEqual(round(dpi[0]), 300, row["png_path"])
+                    self.assertGreaterEqual(round(dpi[1]), 300, row["png_path"])
 
 
 if __name__ == "__main__":

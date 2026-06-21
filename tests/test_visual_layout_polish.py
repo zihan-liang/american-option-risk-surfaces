@@ -88,6 +88,26 @@ class VisualLayoutPolishTest(unittest.TestCase):
         axis.barh.assert_called_once()
         axis.bar.assert_not_called()
 
+    def test_report_visuals_use_300_dpi_export_policy(self):
+        self.assertEqual(report_visuals.DEFAULT_REPORT_DPI, 300)
+        report_visuals.apply_report_style()
+        self.assertEqual(report_visuals.plt.rcParams["figure.dpi"], 300)
+        self.assertEqual(report_visuals.plt.rcParams["savefig.dpi"], 300)
+
+    def test_save_uses_explicit_300_dpi(self):
+        figure = MagicMock()
+        with (
+            patch.object(report_visuals.Path, "mkdir"),
+            patch.object(report_visuals.plt, "close"),
+        ):
+            report_visuals._save(figure, self.temp_root / "ignored.png")
+
+        figure.savefig.assert_called_once()
+        self.assertEqual(
+            figure.savefig.call_args.kwargs["dpi"],
+            report_visuals.DEFAULT_REPORT_DPI,
+        )
+
     def test_enrichment_groups_consecutive_figures_without_forced_page_breaks(self):
         root = self.temp_root
         config = root / "config.yaml"

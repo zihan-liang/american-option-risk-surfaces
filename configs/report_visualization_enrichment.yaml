@@ -89,12 +89,16 @@ reports:
       - figure_id: fd_stencil_validation
         kind: fd_stencil
         panel_group: operator_audit
+        force_full_width: true
+        width: 0.92
         title: Stencil used by the validation audit
         caption: The validation audit checks that the implementation uses the intended three point stencil.
         source_artifact: src/solvers/cn_psor.py
       - figure_id: coefficient_sign_audit
         kind: operator_coefficients
         panel_group: matrix_signs
+        force_full_width: true
+        width: 0.92
         title: Coefficient sign audit
         caption: The coefficient diagram helps connect operator sign conventions to implemented matrix rows.
         source_artifact: src/solvers/cn_psor.py
@@ -107,30 +111,39 @@ reports:
       - figure_id: cn_a_b_matrices
         kind: cn_matrix_pair
         panel_group: cn_boundary
+        width: 0.82
         title: A and B matrices in the CN step
         caption: The Crank--Nicolson matrix pair makes the A and B sign convention explicit for the Stage 2 implementation audit.
         source_artifact: src/solvers/cn_psor.py
       - figure_id: rhs_boundary_terms
         kind: rhs_boundary_adjustment
         panel_group: cn_boundary
+        force_full_width: true
+        width: 0.92
         title: Boundary terms in the RHS
         caption: The right hand side diagram shows why boundary conditions must be audited together with matrix construction.
         source_artifact: src/solvers/boundary_conditions.py
       - figure_id: psor_projection_step
         kind: psor_update_flow
         panel_group: psor_lcp
+        force_full_width: true
+        width: 0.92
         title: PSOR projection step
         caption: The projected update enforces the payoff obstacle after each relaxed candidate update.
         source_artifact: src/solvers/cn_psor.py
       - figure_id: lcp_matrix_system
         kind: lcp_vector_form
         panel_group: psor_lcp
+        force_full_width: true
+        width: 0.92
         title: Matrix LCP system
         caption: The LCP diagram connects the CN matrices to obstacle and complementarity diagnostics.
         source_artifact: reports/stage02_solver_validation.tex
       - figure_id: time_step_flow
         kind: time_marching_grid
         panel_group: validation_flow
+        force_full_width: true
+        width: 0.92
         title: Time step flow
         caption: Time marching starts from the nonsmooth payoff and builds the American value surface step by step.
         source_artifact: src/solvers/cn_psor.py
@@ -138,6 +151,8 @@ reports:
         kind: workflow
         layout: vertical
         panel_group: validation_flow
+        force_full_width: true
+        width: 0.92
         title: Solver validation ladder
         labels: ["European put check", "No dividend call theorem", "Obstacle audit", "Complementarity audit", "Shape and runtime"]
         caption: Validation proceeds from analytic checks to inequality and shape diagnostics before downstream experiments.

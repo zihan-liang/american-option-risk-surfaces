@@ -86,9 +86,11 @@ def _render_latex_figures(figures: list[dict[str, Any]]) -> list[str]:
         panel_group = figure.get("panel_group")
         paired = (
             panel_group
+            and not figure.get("force_full_width")
             and index + 1 < len(figures)
             and figures[index + 1].get("panel_group") == panel_group
             and figures[index + 1].get("placement") != "inline"
+            and not figures[index + 1].get("force_full_width")
         )
         if paired:
             second = figures[index + 1]

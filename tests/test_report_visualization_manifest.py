@@ -60,6 +60,18 @@ class ReportVisualizationManifestTest(unittest.TestCase):
             self.assertTrue(Path(row["png_path"]).exists(), row["png_path"])
             self.assertTrue(Path(row["pdf_path"]).exists(), row["pdf_path"])
 
+    def test_stage02_image_audit_covers_all_report_figures(self):
+        audit_path = Path("results/figures/report_enrichment/stage02_solver_validation_image_audit.csv")
+        self.assertTrue(audit_path.exists())
+        with audit_path.open(encoding="utf-8", newline="") as fh:
+            rows = list(csv.DictReader(fh))
+        self.assertEqual(len(rows), 12)
+        self.assertEqual({row["report_path"] for row in rows}, {"reports/stage02_solver_validation.tex"})
+        self.assertTrue(all(row["plotting_function"].startswith("save_") for row in rows))
+        self.assertTrue(all(row["source_artifact"] for row in rows))
+        self.assertTrue(all(row["visual_status"].startswith("pass") for row in rows))
+        self.assertTrue(all(row["dpi_status"] == "pass_after_300dpi_regeneration" for row in rows))
+
 
 if __name__ == "__main__":
     unittest.main()
