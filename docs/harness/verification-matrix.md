@@ -10,6 +10,18 @@ Purpose: confirm the checkout can be used safely by an agent.
 bash scripts/init_harness.sh
 ```
 
+If a full report/manuscript check is planned, also run:
+
+```bash
+bash scripts/verify_report_artifacts.sh
+```
+
+If it reports missing ignored figures, run:
+
+```bash
+bash scripts/bootstrap_artifacts.sh
+```
+
 ## Tier 1: Focused edit
 
 Purpose: quick confidence for harness, boundary-head, or Delta-head edits.
@@ -49,6 +61,19 @@ bash scripts/verify_round2_evidence.sh
 ```
 
 This tier checks the consolidated Round-2 matrix, required CSV schema, full-scale manifest caps, and the current no-combo decision.
+
+## Tier 4b: Harness observability
+
+Purpose: score harness completeness and write machine-readable evidence.
+
+```bash
+$PY scripts/score_harness.py
+```
+
+Outputs:
+
+- `results/harness/harness_score.json`
+- `results/harness/harness_score.md`
 
 ## Tier 5: Paper-readiness screen
 

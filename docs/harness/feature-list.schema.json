@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "American Option Harness Feature List",
+  "description": "Course-aligned feature state tracker for agent-driven research work.",
+  "type": "object",
+  "required": ["schema_version", "features"],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "dependencies",
+          "status",
+          "priority",
+          "area",
+          "user_visible_behavior",
+          "verification",
+          "evidence",
+          "notes"
+        ],
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "dependencies": {"type": "array", "items": {"type": "string"}},
+          "status": {
+            "type": "string",
+            "enum": [
+              "not-started",
+              "in-progress",
+              "blocked",
+              "done",
+              "failed_metric_gate",
+              "diagnostic_only",
+              "future_work_only"
+            ]
+          },
+          "priority": {"type": "string", "enum": ["high", "medium", "low"]},
+          "area": {"type": "string"},
+          "user_visible_behavior": {"type": "string"},
+          "verification": {"type": "string"},
+          "evidence": {"type": "string"},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}

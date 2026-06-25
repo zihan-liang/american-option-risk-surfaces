@@ -1,4 +1,5 @@
 {
+  "schema_version": 2,
   "features": [
     {
       "id": "harness-v1",
@@ -6,7 +7,27 @@
       "description": "Add minimal instructions, state, verification, scope, and lifecycle artifacts for reliable agent work.",
       "dependencies": [],
       "status": "done",
-      "evidence": "AGENTS.md; docs/harness/; scripts/init_harness.sh; scripts/verify_harness.sh; scripts/verify_round2_evidence.sh; tests/test_harness_contract.py"
+      "priority": "high",
+      "area": "harness-core",
+      "user_visible_behavior": "Agents can restart from AGENTS.md, feature_list.json, progress.md, init.sh, and session-handoff.md.",
+      "verification": "bash scripts/verify_harness.sh",
+      "evidence": "commit a343c78; AGENTS.md; docs/harness/; scripts/init_harness.sh; scripts/verify_harness.sh; tests/test_harness_contract.py",
+      "notes": "v1 intentionally stayed small; v1.1 adds operational hardening from course project patterns."
+    },
+    {
+      "id": "harness-v1.1-operational",
+      "name": "Course-aligned operational harness",
+      "description": "Add startup readiness, artifact bootstrap, feature-list validation, clean-session checks, evaluator rubric, quality document, and harness scoring.",
+      "dependencies": [
+        "harness-v1"
+      ],
+      "priority": "high",
+      "area": "harness-operations",
+      "user_visible_behavior": "A fresh agent can discover startup state, verify generated report artifacts, validate active work state, score harness quality, and leave a clean handoff.",
+      "verification": "$PY -m pytest tests/test_harness_contract.py tests/test_harness_v11_contract.py -q; bash scripts/verify_harness.sh; bash scripts/check_clean_session.sh",
+      "evidence": "$PY -m pytest tests -q; bash scripts/verify_harness.sh; bash scripts/verify_round2_evidence.sh; bash scripts/verify_report_artifacts.sh; $PY experiments/16_release_verification.py",
+      "notes": "Based on local Learn Harness Engineering templates and Project 05/06 solution patterns. Artifact bootstrap regenerated ignored figures locally but generated binaries are not committed.",
+      "status": "done"
     },
     {
       "id": "round2-boundary-enriched-full",
@@ -14,7 +35,12 @@
       "description": "Full-scale boundary-enriched sampling rerun with provenance and schema-checked outputs.",
       "dependencies": [],
       "status": "failed_metric_gate",
-      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-boundary-enriched-full/results/round2_boundary_enriched/pilot_comparison.csv"
+      "priority": "medium",
+      "area": "research-evidence",
+      "user_visible_behavior": "Boundary-enriched Round-2 evidence is recorded but not promoted to a best-combo method.",
+      "verification": "bash scripts/verify_round2_evidence.sh",
+      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-boundary-enriched-full/results/round2_boundary_enriched/pilot_comparison.csv",
+      "notes": "Failed full metric gate; remains evidence, not a claim."
     },
     {
       "id": "round2-option-specific-full",
@@ -22,7 +48,12 @@
       "description": "Full-scale separate put/call boundary head rerun with schema-correct comparison evidence.",
       "dependencies": [],
       "status": "failed_metric_gate",
-      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-option-specific-full/results/round2_option_specific_boundary/option_specific_boundary_comparison.csv"
+      "priority": "medium",
+      "area": "research-evidence",
+      "user_visible_behavior": "Option-specific Round-2 evidence is recorded but not promoted to a best-combo method.",
+      "verification": "bash scripts/verify_round2_evidence.sh",
+      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-option-specific-full/results/round2_option_specific_boundary/option_specific_boundary_comparison.csv",
+      "notes": "Failed full metric gate; call-side degradation prevents promotion."
     },
     {
       "id": "round2-structural-full",
@@ -30,7 +61,12 @@
       "description": "Full-scale structural boundary-loss rerun with schema-correct comparison evidence.",
       "dependencies": [],
       "status": "failed_metric_gate",
-      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-structural-full/results/round2_structural_boundary_loss/pilot_structural_boundary_metrics.csv"
+      "priority": "medium",
+      "area": "research-evidence",
+      "user_visible_behavior": "Structural-loss Round-2 evidence is recorded but not promoted to a best-combo method.",
+      "verification": "bash scripts/verify_round2_evidence.sh",
+      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-structural-full/results/round2_structural_boundary_loss/pilot_structural_boundary_metrics.csv",
+      "notes": "Closest boundary RMSE but did not pass the strict Round-2 gate."
     },
     {
       "id": "round2-evidence-summary",
@@ -42,17 +78,27 @@
         "round2-structural-full"
       ],
       "status": "diagnostic_only",
-      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-evidence-summary/results/round2_ablation/round2_result_matrix.summary.json"
+      "priority": "medium",
+      "area": "research-evidence",
+      "user_visible_behavior": "The project records a claim-safe Round-2 decision: no candidate passed and no combo is justified.",
+      "verification": "bash scripts/verify_round2_evidence.sh",
+      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-evidence-summary/results/round2_ablation/round2_result_matrix.summary.json",
+      "notes": "Diagnostic evidence only; no PSOR replacement claim."
     },
     {
       "id": "lesson-by-lesson-harness-refinement",
       "name": "Lesson-by-lesson harness refinement",
       "description": "Update the harness as the user provides Learn Harness Engineering lessons page by page.",
       "dependencies": [
-        "harness-v1"
+        "harness-v1.1-operational"
       ],
       "status": "not-started",
-      "evidence": "docs/harness/harness_changelog.md"
+      "priority": "low",
+      "area": "harness-maintenance",
+      "user_visible_behavior": "Future course lessons can update the matching harness subsystem without rewriting the whole harness.",
+      "verification": "bash scripts/verify_harness.sh",
+      "evidence": "docs/harness/harness_changelog.md",
+      "notes": "Use docs/harness/decision-log.md and harness_changelog.md for incremental changes."
     }
   ]
 }

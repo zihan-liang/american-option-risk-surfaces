@@ -25,6 +25,7 @@ if [[ "$ROOT" == "/Users/liangzihan/Documents/SURF_0159/SURF/american-option-ris
 fi
 
 "$PYTHON" -m compileall -q src tests experiments
+"$PYTHON" scripts/validate_feature_list.py feature_list.json
 bash scripts/verify_harness.sh
 
 echo "startup health check ok"
