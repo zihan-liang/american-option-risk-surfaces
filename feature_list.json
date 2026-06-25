@@ -1,0 +1,58 @@
+{
+  "features": [
+    {
+      "id": "harness-v1",
+      "name": "Initial project-specific harness",
+      "description": "Add minimal instructions, state, verification, scope, and lifecycle artifacts for reliable agent work.",
+      "dependencies": [],
+      "status": "done",
+      "evidence": "AGENTS.md; docs/harness/; scripts/init_harness.sh; scripts/verify_harness.sh; scripts/verify_round2_evidence.sh; tests/test_harness_contract.py"
+    },
+    {
+      "id": "round2-boundary-enriched-full",
+      "name": "Round-2 boundary-enriched full-scale evidence",
+      "description": "Full-scale boundary-enriched sampling rerun with provenance and schema-checked outputs.",
+      "dependencies": [],
+      "status": "failed_metric_gate",
+      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-boundary-enriched-full/results/round2_boundary_enriched/pilot_comparison.csv"
+    },
+    {
+      "id": "round2-option-specific-full",
+      "name": "Round-2 option-specific boundary heads",
+      "description": "Full-scale separate put/call boundary head rerun with schema-correct comparison evidence.",
+      "dependencies": [],
+      "status": "failed_metric_gate",
+      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-option-specific-full/results/round2_option_specific_boundary/option_specific_boundary_comparison.csv"
+    },
+    {
+      "id": "round2-structural-full",
+      "name": "Round-2 structural boundary loss",
+      "description": "Full-scale structural boundary-loss rerun with schema-correct comparison evidence.",
+      "dependencies": [],
+      "status": "failed_metric_gate",
+      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-structural-full/results/round2_structural_boundary_loss/pilot_structural_boundary_metrics.csv"
+    },
+    {
+      "id": "round2-evidence-summary",
+      "name": "Round-2 ablation matrix and no-combo decision",
+      "description": "Aggregate Round-2 method outputs and record that no best-combo branch is justified.",
+      "dependencies": [
+        "round2-boundary-enriched-full",
+        "round2-option-specific-full",
+        "round2-structural-full"
+      ],
+      "status": "diagnostic_only",
+      "evidence": "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/round2-evidence-summary/results/round2_ablation/round2_result_matrix.summary.json"
+    },
+    {
+      "id": "lesson-by-lesson-harness-refinement",
+      "name": "Lesson-by-lesson harness refinement",
+      "description": "Update the harness as the user provides Learn Harness Engineering lessons page by page.",
+      "dependencies": [
+        "harness-v1"
+      ],
+      "status": "not-started",
+      "evidence": "docs/harness/harness_changelog.md"
+    }
+  ]
+}
