@@ -14,6 +14,7 @@ Run this checklist at the end of a session and before handing work to another ag
 - [ ] `feature_list.json` validates with `scripts/validate_feature_list.py`.
 - [ ] At most one feature is `in-progress`.
 - [ ] Completed features include verification evidence.
+- [ ] Status changes were made through `scripts/update_feature_status.py` or are explicitly explained.
 - [ ] `progress.md` records the current state.
 - [ ] `session-handoff.md` records branch, commit, verification, risks, and next step.
 

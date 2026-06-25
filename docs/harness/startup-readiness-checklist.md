@@ -10,6 +10,7 @@ Use this checklist at the beginning of a session. It is deliberately separate fr
 - [ ] Read `feature_list.json`, `progress.md`, and `session-handoff.md`.
 - [ ] Run `bash scripts/init_harness.sh`.
 - [ ] Pick one active feature from `feature_list.json`.
+- [ ] If starting a new feature, use `scripts/update_feature_status.py` instead of editing the status by hand.
 
 ## Research-artifact readiness
 

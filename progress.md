@@ -6,8 +6,8 @@ This is the short current-session state file for agent continuity. The long rese
 
 - Last updated: 2026-06-25
 - Active feature: none
-- Branch: `exp/harness-v1.1-operational`
-- Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/harness-v1.1-operational`
+- Branch: `exp/harness-v1.2-feature-lifecycle`
+- Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/harness-v1.2-feature-lifecycle`
 
 ## What Is Done
 
@@ -15,6 +15,7 @@ This is the short current-session state file for agent continuity. The long rese
 - Round-2 aggregate evidence found zero candidate methods and no best-combo justification.
 - The initial v1 harness has been implemented on `exp/initial-harness-v1`.
 - The v1.1 operational harness has been implemented on `exp/harness-v1.1-operational`.
+- The v1.2 feature lifecycle helper has been implemented on `exp/harness-v1.2-feature-lifecycle`.
 
 ## In Progress
 
@@ -22,7 +23,7 @@ This is the short current-session state file for agent continuity. The long rese
 
 ## Next Step
 
-- Commit or review `exp/harness-v1.1-operational`.
+- Commit or review `exp/harness-v1.2-feature-lifecycle`.
 - When the user provides the next Learn Harness Engineering lesson, update only the relevant harness subsystem and append `docs/harness/harness_changelog.md`.
 
 ## Blockers / Risks
@@ -39,6 +40,7 @@ This is the short current-session state file for agent continuity. The long rese
 - Keep the v1 harness small and revise it lesson-by-lesson as the user provides more course content.
 - Keep `AGENTS.md` as a router; detailed harness rules live under `docs/harness/`.
 - Treat `feature_list.json` as the system of record and keep at most one active feature.
+- Use `scripts/update_feature_status.py` for routine status transitions.
 
 ## Evidence of Completion
 
@@ -49,3 +51,4 @@ This is the short current-session state file for agent continuity. The long rese
 - `bash scripts/verify_round2_evidence.sh` passed and confirmed the current zero-candidate Round-2 decision.
 - `bash scripts/verify_report_artifacts.sh` passed after `bash scripts/bootstrap_artifacts.sh`.
 - `$PY experiments/16_release_verification.py` passed with `release_gate: pass`.
+- `$PY -m pytest tests/test_feature_lifecycle_tools.py -q` passed.

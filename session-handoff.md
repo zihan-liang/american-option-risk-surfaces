@@ -3,8 +3,8 @@
 ## Current Objective
 
 - Goal: maintain a course-aligned, project-specific harness for reliable American option research-agent sessions.
-- Current status: v1.1 operational harness implementation complete and ready for review.
-- Branch / commit: `exp/harness-v1.1-operational` / current branch HEAD after final commit.
+- Current status: v1.2 feature lifecycle helper implementation complete and ready for review.
+- Branch / commit: `exp/harness-v1.2-feature-lifecycle` / current branch HEAD after final commit.
 
 ## Completed This Session
 
@@ -15,12 +15,15 @@
 - [x] Add feature-list schema validation.
 - [x] Add report-artifact verification and bootstrap scripts.
 - [x] Add clean-state check, evaluator rubric, quality document, decision log, and harness scoring.
+- [x] Add `scripts/update_feature_status.py`.
+- [x] Add feature lifecycle documentation and tests.
 
 ## Verification Evidence
 
 | Check | Command | Result | Notes |
 |---|---|---|---|
 | Harness contract | `$PY -m pytest tests/test_harness_contract.py tests/test_harness_v11_contract.py -q` | passed | 11 tests passed. |
+| Feature lifecycle | `$PY -m pytest tests/test_feature_lifecycle_tools.py -q` | passed | 4 tests passed. |
 | Full tests | `$PY -m pytest tests -q` | passed | Required ignored canonical figures were regenerated locally first. |
 | Harness startup | `bash scripts/init_harness.sh` | passed | Compileall plus harness verification. |
 | Harness scripts | `bash scripts/verify_harness.sh` | passed | Harness contract and v1.1 contract passed. |
@@ -34,11 +37,14 @@
 - Harness scripts under `scripts/`.
 - Harness contract tests under `tests/`.
 - `feature_list.json` schema version 2.
+- `scripts/update_feature_status.py`.
+- `docs/harness/feature-lifecycle.md`.
 
 ## Decisions Made
 
 - Keep `AGENTS.md` as a router; do not turn it into one giant instruction file.
 - Adapt course patterns to this research repo rather than copying the course project verbatim.
+- Use the lifecycle helper for routine feature status changes instead of manual edits.
 - Do not touch or clean the dirty main checkout.
 
 ## Blockers / Risks
@@ -58,4 +64,4 @@
 
 ## Recommended Next Step
 
-Review or merge `exp/harness-v1.1-operational`. For future course pages, update only the relevant harness subsystem and append `docs/harness/harness_changelog.md`.
+Review or merge `exp/harness-v1.2-feature-lifecycle`. For future course pages, update only the relevant harness subsystem and append `docs/harness/harness_changelog.md`.

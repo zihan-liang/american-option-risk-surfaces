@@ -31,6 +31,7 @@ If baseline verification fails, diagnose that first before adding new scope.
 - Add tests before behavior-changing code when practical.
 - Record evidence in `feature_list.json`, `progress.md`, or `session-handoff.md` before ending a session.
 - Treat `feature_list.json` as the system of record for active work. Keep at most one feature at `in-progress` unless `docs/harness/subagent-protocol.md` assigns explicit branch ownership.
+- Use `scripts/update_feature_status.py` for status transitions when practical; see `docs/harness/feature-lifecycle.md`.
 - Run `bash scripts/check_clean_session.sh` before handoff; use `--allow-dirty` only while intentionally working in an uncommitted branch.
 
 ## Claim Boundaries

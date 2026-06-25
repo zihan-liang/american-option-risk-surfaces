@@ -31,6 +31,7 @@ DIMENSIONS = {
         "scripts/verify_report_artifacts.sh",
         "scripts/check_result_schema.py",
         "scripts/validate_feature_list.py",
+        "scripts/update_feature_status.py",
     ],
     "scope": [
         "docs/harness/worktree-policy.md",
@@ -44,6 +45,7 @@ DIMENSIONS = {
         "progress.md",
         "session-handoff.md",
         "docs/harness/decision-log.md",
+        "docs/harness/feature-lifecycle.md",
     ],
     "observability": [
         "docs/harness/evaluator-rubric.md",

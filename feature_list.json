@@ -30,6 +30,21 @@
       "status": "done"
     },
     {
+      "id": "harness-v1.2-feature-lifecycle",
+      "name": "Feature lifecycle helper",
+      "description": "Add a safe command for feature_list.json status transitions and evidence updates.",
+      "dependencies": [
+        "harness-v1.1-operational"
+      ],
+      "status": "done",
+      "priority": "medium",
+      "area": "harness-state",
+      "user_visible_behavior": "Agents can start, block, fail, or complete features without hand-editing state or violating the one-active-feature rule.",
+      "verification": "$PY -m pytest tests/test_feature_lifecycle_tools.py -q; bash scripts/verify_harness.sh",
+      "evidence": "$PY -m pytest tests/test_feature_lifecycle_tools.py -q passed",
+      "notes": "Adds scripts/update_feature_status.py and docs/harness/feature-lifecycle.md."
+    },
+    {
       "id": "round2-boundary-enriched-full",
       "name": "Round-2 boundary-enriched full-scale evidence",
       "description": "Full-scale boundary-enriched sampling rerun with provenance and schema-checked outputs.",
@@ -98,7 +113,7 @@
       "user_visible_behavior": "Future course lessons can update the matching harness subsystem without rewriting the whole harness.",
       "verification": "bash scripts/verify_harness.sh",
       "evidence": "docs/harness/harness_changelog.md",
-      "notes": "Use docs/harness/decision-log.md and harness_changelog.md for incremental changes."
+      "notes": "Use docs/harness/decision-log.md and harness_changelog.md for incremental changes.\n2026-06-25T08:51:50+00:00: v1.2 added feature lifecycle helper; future lesson updates still not started."
     }
   ]
 }

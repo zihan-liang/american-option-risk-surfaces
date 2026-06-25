@@ -34,11 +34,13 @@ required_files=(
   docs/harness/quality-document.md
   docs/harness/decision-log.md
   docs/harness/feature-list.schema.json
+  docs/harness/feature-lifecycle.md
   scripts/init_harness.sh
   scripts/verify_harness.sh
   scripts/verify_round2_evidence.sh
   scripts/check_result_schema.py
   scripts/validate_feature_list.py
+  scripts/update_feature_status.py
   scripts/verify_report_artifacts.sh
   scripts/bootstrap_artifacts.sh
   scripts/check_clean_session.sh
@@ -54,6 +56,6 @@ done
 
 "$PYTHON" -m json.tool feature_list.json >/dev/null
 "$PYTHON" scripts/validate_feature_list.py feature_list.json >/dev/null
-"$PYTHON" -m pytest tests/test_harness_contract.py tests/test_harness_v11_contract.py -q
+"$PYTHON" -m pytest tests/test_harness_contract.py tests/test_harness_v11_contract.py tests/test_feature_lifecycle_tools.py -q
 
 echo "harness verification ok"
