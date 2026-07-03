@@ -85,3 +85,11 @@ the supervised model and `0.0461946940` for the PINN-inspired model. The
 boundary threshold proxy also did not find stable crossings. These outputs are
 not strong enough to promote the extension into a main project claim; they are
 an implementation and diagnostic baseline for future ablations.
+
+## Stage 22 Follow-Up
+
+Stage 22 extends this single-method probe into a campaign. It tests
+warm-start/ramped PDE loss, hard terminal premium, residual-aware sampling,
+Delta/Sobolev-style loss, and selected combinations. The comparison target
+remains the matched supervised positive-premium surrogate, while CN/PSOR
+remains the label benchmark.

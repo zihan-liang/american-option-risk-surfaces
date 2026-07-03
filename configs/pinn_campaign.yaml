@@ -1,0 +1,53 @@
+dataset: data/processed/surrogate_dataset.npz
+seed: 21
+seeds: [21, 22, 23]
+option_scope: put
+train_cap: 12000
+validation_cap: 4000
+test_cap: 4000
+hidden: 64
+depth: 2
+batch_size: 2048
+epochs: 8
+warm_start_epochs: 4
+learning_rate: 1.0e-3
+patience: 3
+device: auto
+training_dtype: float64
+lambda_sup: 1.0
+lambda_obs: 1.0
+lambda_pde_values: [0.0, 1.0e-6, 1.0e-5, 1.0e-4, 1.0e-3]
+lambda_pde_default: 1.0e-4
+lambda_delta: 1.0e-4
+pde_batch_cap: 512
+pde_huber_delta: 1.0
+gap_epsilon: 1.0e-5
+tau_min_for_pde: 0.08
+residual_eval_cap: 2048
+premium_boundary_threshold: 1.0e-3
+obstacle_tolerance: 1.0e-10
+success_price_rmse_rel_improvement: 0.005
+neutral_price_rmse_rel_worsening: 0.001
+residual_rel_worsening_limit: 0.05
+boundary_rel_worsening_limit: 0.01
+diagnostic_rel_improvement: 0.02
+methods:
+  - supervised_baseline
+  - pde_weight_1e-6
+  - pde_weight_1e-5
+  - pde_weight_1e-4
+  - pde_weight_1e-3
+  - pde_ramp
+  - terminal_premium
+  - residual_sampling
+  - delta_loss
+  - terminal_plus_ramp
+  - terminal_plus_ramp_plus_residual_sampling
+feature_names:
+  - log_moneyness
+  - tau_over_T
+  - r
+  - q
+  - sigma
+  - T
+  - is_call
