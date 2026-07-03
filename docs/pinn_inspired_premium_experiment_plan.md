@@ -103,3 +103,19 @@ relative to the supervised baseline (`0.0510992717` versus `0.0938396723`),
 but masked residual mean-absolute value worsened (`0.1492955575` versus
 `0.0680604329`), so no PINN-inspired improvement claim is supported. CN/PSOR
 remains the benchmark and label generator.
+
+## Stage 23 Strong Terminal Result
+
+Stage 23 retested the terminal-scaled positive-premium architecture with much
+stronger masked PDE regularization. The best capped campaign method was
+`terminal_pde_weight_5`, which passed `candidate_success` on all three seeds.
+Mean test price RMSE improved relative to the matched supervised baseline
+(`0.0222343770` versus `0.0636748569`), masked residual mean-absolute value
+also improved (`0.0280642832` versus `0.0551382080`), boundary-band RMSE
+improved (`0.0117206063` versus `0.0597350487`), and strict Delta RMSE
+improved (`0.0970616110` versus `0.1025131994`).
+
+This supports a future-extension claim that a terminal-scaled,
+PSOR-supervised, masked-PDE-regularized neural surrogate can beat the matched
+supervised neural baseline on the capped put campaign. It does not replace
+CN/PSOR; PSOR remains the benchmark and label generator.

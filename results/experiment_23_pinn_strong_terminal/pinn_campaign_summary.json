@@ -1,0 +1,89 @@
+{
+  "best_combo_method": null,
+  "best_method": "terminal_pde_weight_5",
+  "candidate_success": true,
+  "decision": "stage23_pinn_strong_terminal",
+  "diagnostic_success": false,
+  "interpretation": "terminal_pde_weight_5 passed at least one capped candidate-success gate; this remains a future-extension surrogate diagnostic.",
+  "method_aggregates": [
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.059735048669028845,
+      "mean_test_delta_rmse": 0.10251319936031861,
+      "mean_test_price_rmse": 0.0636748569377359,
+      "mean_test_residual_mean_abs": 0.055138207980481774,
+      "method": "supervised_baseline"
+    },
+    {
+      "candidate_success_count": 3,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.01054195199815982,
+      "mean_test_delta_rmse": 0.0971081162050068,
+      "mean_test_price_rmse": 0.023264542449494444,
+      "mean_test_residual_mean_abs": 0.025116896069504832,
+      "method": "terminal_pde_weight_10"
+    },
+    {
+      "candidate_success_count": 3,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.008182070302130116,
+      "mean_test_delta_rmse": 0.09684112797199784,
+      "mean_test_price_rmse": 0.024995131541233524,
+      "mean_test_residual_mean_abs": 0.02194725178668391,
+      "method": "terminal_pde_weight_10_residual_sampling"
+    },
+    {
+      "candidate_success_count": 3,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.014823288641009687,
+      "mean_test_delta_rmse": 0.09719677684972337,
+      "mean_test_price_rmse": 0.022970176237385526,
+      "mean_test_residual_mean_abs": 0.03559164834915827,
+      "method": "terminal_pde_weight_2"
+    },
+    {
+      "candidate_success_count": 3,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.01018327110121566,
+      "mean_test_delta_rmse": 0.09741766406400404,
+      "mean_test_price_rmse": 0.027821008177579334,
+      "mean_test_residual_mean_abs": 0.0234731463270245,
+      "method": "terminal_pde_weight_25"
+    },
+    {
+      "candidate_success_count": 3,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.00815016988611946,
+      "mean_test_delta_rmse": 0.09706386088632585,
+      "mean_test_price_rmse": 0.031332518863077814,
+      "mean_test_residual_mean_abs": 0.021206923015628612,
+      "method": "terminal_pde_weight_25_residual_sampling"
+    },
+    {
+      "candidate_success_count": 3,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.011720606287582187,
+      "mean_test_delta_rmse": 0.0970616110079414,
+      "mean_test_price_rmse": 0.022234376957616698,
+      "mean_test_residual_mean_abs": 0.028064283152143255,
+      "method": "terminal_pde_weight_5"
+    }
+  ],
+  "methods": [
+    "supervised_baseline",
+    "terminal_pde_weight_10",
+    "terminal_pde_weight_10_residual_sampling",
+    "terminal_pde_weight_2",
+    "terminal_pde_weight_25",
+    "terminal_pde_weight_25_residual_sampling",
+    "terminal_pde_weight_5"
+  ],
+  "note": "Stage 23 retests terminal-scaled PINN-inspired premium models with strong masked PDE regularization; CN/PSOR remains the benchmark and label generator.",
+  "pde_total_mask_samples": 684188,
+  "seeds": [
+    21,
+    22,
+    23
+  ]
+}
