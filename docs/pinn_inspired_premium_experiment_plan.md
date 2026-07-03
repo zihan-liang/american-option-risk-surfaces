@@ -93,3 +93,13 @@ warm-start/ramped PDE loss, hard terminal premium, residual-aware sampling,
 Delta/Sobolev-style loss, and selected combinations. The comparison target
 remains the matched supervised positive-premium surrogate, while CN/PSOR
 remains the label benchmark.
+
+## Stage 22 Campaign Result
+
+The best Stage 22 method by the capped campaign ranking was
+`terminal_plus_ramp_plus_residual_sampling`. It did not pass
+`candidate_success` or `diagnostic_success`: mean test price RMSE improved
+relative to the supervised baseline (`0.0510992717` versus `0.0938396723`),
+but masked residual mean-absolute value worsened (`0.1492955575` versus
+`0.0680604329`), so no PINN-inspired improvement claim is supported. CN/PSOR
+remains the benchmark and label generator.
