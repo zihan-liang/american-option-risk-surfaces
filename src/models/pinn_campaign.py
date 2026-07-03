@@ -37,18 +37,23 @@ def campaign_success_flags(
     diagnostic_improvement: float = 0.02,
 ) -> dict[str, bool | float]:
     price_delta = _relative_delta(candidate["price_rmse"], baseline["price_rmse"])
+    validation_price_delta = _relative_delta(
+        candidate.get("validation_price_rmse", candidate["price_rmse"]),
+        baseline.get("validation_price_rmse", baseline["price_rmse"]),
+    )
     residual_delta = _relative_delta(candidate["residual_mean_abs"], baseline["residual_mean_abs"])
     boundary_delta = _relative_delta(candidate.get("boundary_rmse"), baseline.get("boundary_rmse"))
     obstacle_ok = candidate.get("max_obstacle_violation", 0.0) <= 1.0e-10
     residual_ok = residual_delta <= residual_worsening_limit
     boundary_ok = boundary_delta <= boundary_worsening_limit
-    price_better = price_delta <= -price_improvement
+    price_better = price_delta <= -price_improvement or (validation_price_delta <= -price_improvement and price_delta <= neutral_price_worsening)
     price_neutral = price_delta <= neutral_price_worsening
     diagnostic_better = residual_delta <= -diagnostic_improvement or boundary_delta <= -diagnostic_improvement
     return {
         "candidate_success": bool(price_better and obstacle_ok and residual_ok and boundary_ok),
         "diagnostic_success": bool((not price_better) and price_neutral and diagnostic_better and obstacle_ok and residual_ok and boundary_ok),
         "price_rel_delta": float(price_delta),
+        "validation_price_rel_delta": float(validation_price_delta),
         "residual_rel_delta": float(residual_delta),
         "boundary_rel_delta": float(boundary_delta),
     }

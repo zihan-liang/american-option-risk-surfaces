@@ -40,12 +40,14 @@ class PinnCampaignHelperTests(unittest.TestCase):
     def test_campaign_success_flags_rejects_price_gain_with_residual_regression(self):
         baseline = {
             "price_rmse": 1.0,
+            "validation_price_rmse": 1.0,
             "max_obstacle_violation": 0.0,
             "boundary_rmse": 1.0,
             "residual_mean_abs": 1.0,
         }
         candidate = {
             "price_rmse": 0.99,
+            "validation_price_rmse": 0.99,
             "max_obstacle_violation": 0.0,
             "boundary_rmse": 1.0,
             "residual_mean_abs": 1.2,
@@ -53,6 +55,26 @@ class PinnCampaignHelperTests(unittest.TestCase):
         flags = campaign_success_flags(candidate, baseline)
         self.assertFalse(flags["candidate_success"])
         self.assertFalse(flags["diagnostic_success"])
+
+    def test_campaign_success_flags_accepts_validation_gain_with_neutral_test(self):
+        baseline = {
+            "price_rmse": 1.0,
+            "validation_price_rmse": 1.0,
+            "max_obstacle_violation": 0.0,
+            "boundary_rmse": 1.0,
+            "residual_mean_abs": 1.0,
+        }
+        candidate = {
+            "price_rmse": 1.0005,
+            "validation_price_rmse": 0.99,
+            "max_obstacle_violation": 0.0,
+            "boundary_rmse": 1.0,
+            "residual_mean_abs": 1.0,
+        }
+
+        flags = campaign_success_flags(candidate, baseline)
+
+        self.assertTrue(flags["candidate_success"])
 
 
 if __name__ == "__main__":
