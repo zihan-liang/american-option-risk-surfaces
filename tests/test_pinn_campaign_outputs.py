@@ -16,6 +16,15 @@ _SPEC.loader.exec_module(experiment)
 
 
 class PinnCampaignOutputTests(unittest.TestCase):
+    def test_method_spec_supports_strong_terminal_pde_sweep(self):
+        spec = experiment._method_spec("terminal_pde_weight_10_residual_sampling", {})
+
+        self.assertEqual(spec["method"], "terminal_pde_weight_10_residual_sampling")
+        self.assertTrue(spec["terminal"])
+        self.assertTrue(spec["ramp"])
+        self.assertTrue(spec["residual_sampling"])
+        self.assertEqual(spec["lambda_pde"], 10.0)
+
     def test_dry_run_writes_required_campaign_outputs(self):
         root = Path("results/test_stage22_pinn_campaign")
         root.mkdir(parents=True, exist_ok=True)

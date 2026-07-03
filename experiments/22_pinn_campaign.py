@@ -35,12 +35,14 @@ DEFAULT_OUTPUT_ROOT = "results/experiment_22_pinn_campaign"
 def run(
     config_path: str,
     *,
-    output_root: str | Path = DEFAULT_OUTPUT_ROOT,
+    output_root: str | Path | None = None,
     overrides: dict | None = None,
 ) -> dict[str, Any]:
     cfg = load_config(config_path)
     if overrides:
         cfg = {**cfg, **overrides}
+    if output_root is None:
+        output_root = cfg.get("output_root", DEFAULT_OUTPUT_ROOT)
     out_dir = ensure_dir(output_root)
     write_json(out_dir / "pinn_campaign_config_manifest.json", cfg)
 
@@ -326,7 +328,20 @@ def _method_spec(method: str, cfg: dict[str, Any]) -> dict[str, Any]:
         return {"method": method, "lambda_pde": default_pde, "ramp": True, "terminal": True}
     if method == "terminal_plus_ramp_plus_residual_sampling":
         return {"method": method, "lambda_pde": default_pde, "ramp": True, "terminal": True, "residual_sampling": True}
+    if method.startswith("terminal_pde_weight_"):
+        weight_token = method.removeprefix("terminal_pde_weight_")
+        residual_sampling = weight_token.endswith("_residual_sampling")
+        if residual_sampling:
+            weight_token = weight_token.removesuffix("_residual_sampling")
+        spec = {"method": method, "lambda_pde": _parse_method_weight(weight_token), "ramp": True, "terminal": True}
+        if residual_sampling:
+            spec["residual_sampling"] = True
+        return spec
     raise ValueError(f"unknown Stage 22 method: {method}")
+
+
+def _parse_method_weight(token: str) -> float:
+    return float(token.replace("p", "."))
 
 
 def _epoch_pde_weight(spec: dict[str, Any], cfg: dict[str, Any], epoch: int) -> float:

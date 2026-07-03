@@ -1,0 +1,49 @@
+dataset: data/processed/surrogate_dataset.npz
+output_root: results/experiment_23_pinn_strong_terminal
+seed: 21
+seeds: [21, 22, 23]
+option_scope: put
+train_cap: 12000
+validation_cap: 4000
+test_cap: 4000
+hidden: 64
+depth: 2
+batch_size: 2048
+epochs: 12
+warm_start_epochs: 2
+learning_rate: 1.0e-3
+patience: 6
+device: auto
+training_dtype: float64
+lambda_sup: 1.0
+lambda_obs: 1.0
+lambda_pde_default: 1.0e-4
+lambda_delta: 1.0e-4
+pde_batch_cap: 1024
+pde_huber_delta: 1.0
+gap_epsilon: 1.0e-5
+tau_min_for_pde: 0.08
+residual_eval_cap: 2048
+premium_boundary_threshold: 1.0e-3
+obstacle_tolerance: 1.0e-10
+success_price_rmse_rel_improvement: 0.005
+neutral_price_rmse_rel_worsening: 0.001
+residual_rel_worsening_limit: 0.05
+boundary_rel_worsening_limit: 0.01
+diagnostic_rel_improvement: 0.02
+methods:
+  - supervised_baseline
+  - terminal_pde_weight_2
+  - terminal_pde_weight_5
+  - terminal_pde_weight_10
+  - terminal_pde_weight_25
+  - terminal_pde_weight_10_residual_sampling
+  - terminal_pde_weight_25_residual_sampling
+feature_names:
+  - log_moneyness
+  - tau_over_T
+  - r
+  - q
+  - sigma
+  - T
+  - is_call
