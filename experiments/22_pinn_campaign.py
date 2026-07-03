@@ -605,7 +605,7 @@ def _summary(metrics_rows, residual_rows, delta_rows, cfg, seeds, pde_mask):
     any_candidate = any(row["candidate_success_count"] > 0 for row in aggregates)
     any_diagnostic = any(row["diagnostic_success_count"] > 0 for row in aggregates)
     return {
-        "decision": "stage22_pinn_campaign",
+        "decision": str(cfg.get("decision", "stage22_pinn_campaign")),
         "seeds": [int(seed) for seed in seeds],
         "methods": method_names,
         "best_method": best["method"] if best else None,
@@ -615,7 +615,12 @@ def _summary(metrics_rows, residual_rows, delta_rows, cfg, seeds, pde_mask):
         "method_aggregates": aggregates,
         "pde_total_mask_samples": int(np.count_nonzero(pde_mask)),
         "interpretation": _interpretation(any_candidate, any_diagnostic, best),
-        "note": "Stage 22 compares PINN-inspired neural variants against the matched supervised surrogate baseline; CN/PSOR remains the benchmark and label generator.",
+        "note": str(
+            cfg.get(
+                "note",
+                "Stage 22 compares PINN-inspired neural variants against the matched supervised surrogate baseline; CN/PSOR remains the benchmark and label generator.",
+            )
+        ),
     }
 
 

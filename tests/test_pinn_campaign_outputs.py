@@ -74,6 +74,7 @@ class PinnCampaignOutputTests(unittest.TestCase):
                 "validation_cap": 18,
                 "test_cap": 18,
                 "methods": ["supervised_baseline", "pde_weight_1e-6", "terminal_premium"],
+                "decision": "test_stage22_pinn_campaign",
                 "batch_size": 16,
                 "pde_batch_cap": 8,
                 "residual_eval_cap": 12,
@@ -83,7 +84,7 @@ class PinnCampaignOutputTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(summary["decision"], "stage22_pinn_campaign")
+        self.assertEqual(summary["decision"], "test_stage22_pinn_campaign")
         self.assertIn("best_method", summary)
         for name in [
             "pinn_campaign_config_manifest.json",

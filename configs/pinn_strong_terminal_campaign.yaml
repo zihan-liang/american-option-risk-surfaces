@@ -1,5 +1,7 @@
 dataset: data/processed/surrogate_dataset.npz
 output_root: results/experiment_23_pinn_strong_terminal
+decision: stage23_pinn_strong_terminal
+note: Stage 23 retests terminal-scaled PINN-inspired premium models with strong masked PDE regularization; CN/PSOR remains the benchmark and label generator.
 seed: 21
 seeds: [21, 22, 23]
 option_scope: put
