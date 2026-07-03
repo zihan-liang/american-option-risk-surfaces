@@ -76,6 +76,46 @@ In the campaign configuration, \(\epsilon=10^{-5}\) and \(\theta_{\min}=0.08\). 
 
 \section{Results}
 
+Table~\ref{tab:full-method-coverage} lists the full method coverage before any best-method filtering. Stage 21 was a single matched diagnostic run, so it did not use the multi-seed candidate-success gate. Stage 22 and Stage 23 report candidate-success counts over three seeds.
+
+\begin{table}[H]
+\centering
+\begingroup
+\setlength{\tabcolsep}{3pt}
+\scriptsize
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{0.46\linewidth}ccc@{}}
+\toprule
+Stage & Method & Gate count & Price RMSE & Masked residual \\
+\midrule
+21 & \path{supervised_positive_premium_mlp} & baseline & 0.09276 & 0.04594 \\
+21 & \path{pinn_inspired_premium_mlp} & not gated & 0.09283 & 0.04619 \\
+\addlinespace[0.2em]
+22 & \path{supervised_baseline} & baseline & 0.09384 & 0.06806 \\
+22 & \path{pde_weight_1e-6} & 0/3 & 0.09384 & 0.06806 \\
+22 & \path{pde_weight_1e-5} & 0/3 & 0.09384 & 0.06806 \\
+22 & \path{pde_weight_1e-4} & 0/3 & 0.09384 & 0.06806 \\
+22 & \path{pde_weight_1e-3} & 0/3 & 0.09384 & 0.06802 \\
+22 & \path{pde_ramp} & 0/3 & 0.09384 & 0.06806 \\
+22 & \path{residual_sampling} & 0/3 & 0.09384 & 0.06805 \\
+22 & \path{delta_loss} & 0/3 & 0.09384 & 0.06806 \\
+22 & \path{terminal_premium} & 0/3 & 0.05111 & 0.14933 \\
+22 & \path{terminal_plus_ramp} & 0/3 & 0.05110 & 0.14931 \\
+22 & \path{terminal_plus_ramp_plus_residual_sampling} & 0/3 & 0.05110 & 0.14930 \\
+\addlinespace[0.2em]
+23 & \path{supervised_baseline} & baseline & 0.06367 & 0.05514 \\
+23 & \path{terminal_pde_weight_2} & 3/3 & 0.02297 & 0.03559 \\
+23 & \path{terminal_pde_weight_5} & 3/3 & 0.02223 & 0.02806 \\
+23 & \path{terminal_pde_weight_10} & 3/3 & 0.02326 & 0.02512 \\
+23 & \path{terminal_pde_weight_25} & 3/3 & 0.02782 & 0.02347 \\
+23 & \path{terminal_pde_weight_10_residual_sampling} & 3/3 & 0.02500 & 0.02195 \\
+23 & \path{terminal_pde_weight_25_residual_sampling} & 3/3 & 0.03133 & 0.02121 \\
+\bottomrule
+\end{tabular}
+\endgroup
+\caption{Full method coverage for the Stage 21--23 PINN-inspired campaign. Price RMSE and masked residual mean absolute value are test metrics; lower is better. Values are rounded from the generated coverage CSV, which is built from the committed Stage 21 metrics/residual CSVs and Stage 22--23 JSON summaries. Baseline rows are references rather than candidate methods.}
+\label{tab:full-method-coverage}
+\end{table}
+
 \begin{table}[H]
 \centering
 \begingroup
@@ -102,18 +142,18 @@ Stage & Best method & Successes & Price RMSE & Masked residual & Boundary RMSE &
 \bottomrule
 \end{tabular}
 \endgroup
-\caption{Stage 22 and Stage 23 mean test metrics for each stage's best method. Each metric is shown as matched supervised baseline \(\rightarrow\) candidate; lower is better. Values are rounded from the JSON/CSV artifacts in the Stage 22 and Stage 23 results directories.}
+\caption{Best-method summary after the full method search in Table~\ref{tab:full-method-coverage}. Each metric is shown as matched supervised baseline \(\rightarrow\) candidate; lower is better. Values are rounded from the JSON/CSV artifacts in the Stage 22 and Stage 23 results directories.}
 \label{tab:stage-comparison}
 \end{table}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.88\linewidth]{pinn_stage22_stage23_relative_changes.pdf}
-\caption{Relative metric changes for the best Stage 22 and Stage 23 methods against their matched supervised baselines. Negative values indicate error reduction. Stage 22 improved three displayed supervised diagnostics but worsened the masked residual; Stage 23 improved all four displayed metrics.}
+\caption{Relative metric changes for the best Stage 22 and Stage 23 methods after the full method search. Negative values indicate error reduction against the matched supervised baseline. Stage 22 improved three displayed supervised diagnostics but worsened the masked residual; Stage 23 improved all four displayed metrics.}
 \label{fig:relative-changes}
 \end{figure}
 
-Table~\ref{tab:stage-comparison} and Figure~\ref{fig:relative-changes} show the central contrast. Stage 22 identified terminal premium scaling as useful for supervised diagnostics but did not produce a residual-safe method. Stage 23 preserved the terminal scaling and increased the masked PDE regularization strength enough to improve the residual as well.
+Tables~\ref{tab:full-method-coverage}--\ref{tab:stage-comparison} and Figure~\ref{fig:relative-changes} show the central contrast. Stage 22 identified terminal premium scaling as useful for supervised diagnostics but did not produce a residual-safe method. Stage 23 preserved the terminal scaling and increased the masked PDE regularization strength enough to improve the residual as well.
 
 The Stage 23 method \path{terminal_pde_weight_5} improved mean price RMSE by about \(65.1\%\), masked residual mean absolute value by about \(49.1\%\), boundary RMSE by about \(80.4\%\), and strict-\(\Delta\) RMSE by about \(5.3\%\) against the matched supervised neural baseline. The largest gains are in price and boundary diagnostics. The Delta gain is modest but directionally favorable under the strict Greek mask.
 
@@ -155,10 +195,10 @@ The PINN-inspired campaign progressed from negative evidence in Stage 21, throug
   \path{results/experiment_21_pinn_inspired_premium/pinn_summary.json};
   \path{results/experiment_22_pinn_campaign/pinn_campaign_summary.json};
   \path{results/experiment_23_pinn_strong_terminal/pinn_campaign_summary.json}.
-  \item Figure generation:
-  \path{scripts/plot_pinn_experiment_report.py} writes
-  \path{results/figures/pinn_experiment_report/stage22_stage23_relative_changes.csv}
-  and \path{output/figures/pinn_stage22_stage23_relative_changes.pdf}.
+  \item Figure and table generation:
+  \path{scripts/plot_pinn_experiment_report.py};
+  CSV outputs are under \path{results/figures/pinn_experiment_report/},
+  and the comparison figure is under \path{output/figures/}.
 \end{itemize}
 
 \end{document}
