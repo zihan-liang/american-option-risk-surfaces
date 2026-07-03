@@ -67,3 +67,16 @@ Any report wording should say that this is a PINN-inspired future extension
 that evaluates whether a masked physics regularizer improves surrogate
 diagnostics while preserving obstacle and boundary consistency. It must not
 claim that the neural model solves American options or replaces PSOR.
+
+## Initial Small Run
+
+The default Stage 21 config ran on capped put samples from the existing
+surrogate dataset. It produced lightweight CSV/JSON summaries under
+`results/experiment_21_pinn_inspired_premium/`.
+
+The small run is diagnostic only. The PINN-inspired model preserved zero
+obstacle violation on the capped test slice and reported masked continuation
+residual summaries, but the boundary threshold proxy did not find stable
+crossings. These outputs are not strong enough to promote the extension into a
+main project claim; they are an implementation and diagnostic baseline for
+future ablations.

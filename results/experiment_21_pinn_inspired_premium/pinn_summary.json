@@ -1,0 +1,37 @@
+{
+  "boundary_diagnostic": {
+    "boundary_mae": null,
+    "boundary_max_error": null,
+    "boundary_rmse": null,
+    "boundary_samples": 0,
+    "boundary_status": "insufficient_threshold_crossings",
+    "model": "pinn_inspired_premium_mlp",
+    "premium_threshold": 0.001
+  },
+  "decision": "pinn_inspired_future_extension",
+  "device": "cpu",
+  "models": [
+    {
+      "inference_seconds": 0.0026086249854415655,
+      "model": "supervised_positive_premium_mlp",
+      "train_seconds": 0.35434433398768306
+    },
+    {
+      "inference_seconds": 0.002420083968900144,
+      "model": "pinn_inspired_premium_mlp",
+      "train_seconds": 0.1173914999817498
+    }
+  ],
+  "note": "This PINN-inspired future extension uses PSOR labels and a masked continuation-region residual; it does not replace CN/PSOR.",
+  "option_scope": "put",
+  "pde_total_mask_samples": 697952,
+  "pde_train_samples": 4775,
+  "selected_model": "pinn_inspired_premium_mlp",
+  "selected_test_max_obstacle_violation": 0.0,
+  "selected_test_premium_rmse": 0.0762334928614864,
+  "selected_test_price_rmse": 0.07623349330729158,
+  "test_samples": 4000,
+  "train_samples": 12000,
+  "training_dtype": "float64",
+  "validation_samples": 4000
+}
