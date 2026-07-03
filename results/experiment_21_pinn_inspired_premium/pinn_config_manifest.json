@@ -19,6 +19,11 @@
   "lambda_pde": 0.0001,
   "lambda_sup": 1.0,
   "learning_rate": 0.001,
+  "mask_exclusions": [
+    "near_boundary",
+    "near_kink",
+    "near_maturity"
+  ],
   "obstacle_tolerance": 1e-10,
   "option_scope": "put",
   "patience": 3,

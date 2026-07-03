@@ -44,6 +44,7 @@ The PDE mask comes from PSOR labels, not from the neural model:
 gap_PSOR = price_PSOR_over_K - payoff_over_K
 mask = gap_PSOR > gap_epsilon
        and not near_boundary
+       and not near_kink
        and tau_over_T > tau_min_for_pde
        and is_put
 ```
@@ -76,7 +77,11 @@ surrogate dataset. It produced lightweight CSV/JSON summaries under
 
 The small run is diagnostic only. The PINN-inspired model preserved zero
 obstacle violation on the capped test slice and reported masked continuation
-residual summaries, but the boundary threshold proxy did not find stable
-crossings. These outputs are not strong enough to promote the extension into a
-main project claim; they are an implementation and diagnostic baseline for
-future ablations.
+residual summaries outside boundary/kink/maturity exclusions, but the matched
+ablation did not improve the supervised baseline on this run. Test price RMSE
+was `0.0927620625` for the supervised model and `0.0928312998` for the
+PINN-inspired model; test residual mean-absolute value was `0.0459431366` for
+the supervised model and `0.0461946940` for the PINN-inspired model. The
+boundary threshold proxy also did not find stable crossings. These outputs are
+not strong enough to promote the extension into a main project claim; they are
+an implementation and diagnostic baseline for future ablations.

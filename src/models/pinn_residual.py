@@ -80,6 +80,7 @@ def build_psor_continuation_mask(
     labels: np.ndarray,
     *,
     near_boundary: np.ndarray | None = None,
+    near_kink: np.ndarray | None = None,
     gap_epsilon: float = 1.0e-5,
     tau_min_for_pde: float = 0.05,
     option_scope: str = "put",
@@ -94,12 +95,11 @@ def build_psor_continuation_mask(
         raise ValueError("labels must have shape (n, >=3)")
     if len(features) != len(labels):
         raise ValueError("features and labels must have the same row count")
-    boundary_mask = np.zeros(len(features), dtype=bool) if near_boundary is None else np.asarray(near_boundary, dtype=bool)
-    if len(boundary_mask) != len(features):
-        raise ValueError("near_boundary must match feature rows")
+    boundary_mask = _optional_bool_mask(near_boundary, len(features), "near_boundary")
+    kink_mask = _optional_bool_mask(near_kink, len(features), "near_kink")
 
     gap = labels[:, 0] - labels[:, 2]
-    mask = (gap > float(gap_epsilon)) & (~boundary_mask) & (features[:, 1] > float(tau_min_for_pde))
+    mask = (gap > float(gap_epsilon)) & (~boundary_mask) & (~kink_mask) & (features[:, 1] > float(tau_min_for_pde))
     if option_scope == "put":
         mask &= features[:, 6] <= 0.5
     elif option_scope == "call":
@@ -109,6 +109,13 @@ def build_psor_continuation_mask(
     else:
         raise ValueError(f"unknown option_scope: {option_scope}")
     return mask.astype(bool)
+
+
+def _optional_bool_mask(mask: np.ndarray | None, length: int, name: str) -> np.ndarray:
+    values = np.zeros(length, dtype=bool) if mask is None else np.asarray(mask, dtype=bool)
+    if len(values) != length:
+        raise ValueError(f"{name} must match feature rows")
+    return values
 
 
 def residual_distribution_metrics(residual, *, prefix: str = "residual") -> dict[str, float | int]:

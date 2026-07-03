@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 import numpy as np
+import torch
 
 _EXPERIMENT_PATH = Path("experiments/21_pinn_inspired_premium.py")
 _SPEC = importlib.util.spec_from_file_location("stage21_pinn_inspired_premium", _EXPERIMENT_PATH)
@@ -15,6 +16,16 @@ _SPEC.loader.exec_module(experiment)
 
 
 class PinnInspiredExperimentOutputTests(unittest.TestCase):
+    def test_matched_model_builder_uses_identical_independent_initial_weights(self):
+        baseline, pinn = experiment._build_matched_premium_models(input_dim=7, hidden=8, depth=1, seed=21)
+
+        baseline_state = baseline.state_dict()
+        pinn_state = pinn.state_dict()
+        self.assertEqual(set(baseline_state), set(pinn_state))
+        for key in baseline_state:
+            self.assertTrue(torch.equal(baseline_state[key], pinn_state[key]), key)
+            self.assertNotEqual(baseline_state[key].data_ptr(), pinn_state[key].data_ptr(), key)
+
     def test_dry_run_writes_required_pinn_outputs(self):
         root = Path("results/test_stage21_pinn_inspired")
         root.mkdir(parents=True, exist_ok=True)
@@ -37,6 +48,8 @@ class PinnInspiredExperimentOutputTests(unittest.TestCase):
         regime_key = np.array([f"regime_{idx // 12}".encode("utf-8") for idx in range(n)])
         near_boundary = np.zeros(n, dtype=bool)
         near_boundary[::11] = True
+        near_kink = np.zeros(n, dtype=bool)
+        near_kink[::13] = True
         strict_greek_mask = np.ones(n, dtype=bool)
         boundary = np.full(n, 0.9, dtype=np.float32)
         np.savez_compressed(
@@ -46,6 +59,7 @@ class PinnInspiredExperimentOutputTests(unittest.TestCase):
             split=split,
             regime_key=regime_key,
             near_boundary=near_boundary,
+            near_kink=near_kink,
             strict_greek_mask=strict_greek_mask,
             boundary=boundary,
         )
@@ -85,7 +99,11 @@ class PinnInspiredExperimentOutputTests(unittest.TestCase):
         with open(output_root / "pinn_summary.json", encoding="utf-8") as fh:
             loaded = json.load(fh)
         self.assertEqual(loaded["decision"], summary["decision"])
+        self.assertTrue(loaded["matched_initialization"])
+        self.assertIn("diagnostic_interpretation", loaded)
         self.assertIn("masked continuation-region", loaded["note"])
+        for name in ["pinn_metrics.csv", "pinn_residual_metrics.csv", "pinn_training_history.csv"]:
+            self.assertNotIn(b"\r\n", (output_root / name).read_bytes(), name)
 
 
 if __name__ == "__main__":

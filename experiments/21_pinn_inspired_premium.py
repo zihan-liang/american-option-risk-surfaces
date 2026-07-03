@@ -11,7 +11,7 @@ from typing import Any
 
 import numpy as np
 
-from common import ensure_dir, load_config, write_csv, write_json
+from common import ensure_dir, load_config, write_json
 from models.metrics import boundary_band_error, error_metrics, max_obstacle_violation
 from models.pinn_residual import (
     build_psor_continuation_mask,
@@ -49,12 +49,14 @@ def run(
     premium = labels[:, 1]
     payoff = labels[:, 2]
     near_boundary = data.get("near_boundary", np.zeros(len(features), dtype=bool)).astype(bool)
+    near_kink = data.get("near_kink", np.zeros(len(features), dtype=bool)).astype(bool)
     option_scope = str(cfg.get("option_scope", "put"))
     scope_mask = _option_scope_mask(features, option_scope)
     pde_mask = build_psor_continuation_mask(
         features,
         labels,
         near_boundary=near_boundary,
+        near_kink=near_kink,
         gap_epsilon=float(cfg.get("gap_epsilon", 1.0e-5)),
         tau_min_for_pde=float(cfg.get("tau_min_for_pde", 0.05)),
         option_scope=option_scope,
@@ -86,12 +88,17 @@ def run(
     residual_rows: list[dict[str, Any]] = []
     history_rows: list[dict[str, Any]] = []
     model_summaries: list[dict[str, Any]] = []
+    supervised_model, pinn_model = _build_matched_premium_models(
+        input_dim=features.shape[1],
+        hidden=int(cfg.get("hidden", 64)),
+        depth=int(cfg.get("depth", 2)),
+        seed=seed,
+    )
 
-    for model_name, use_pde in [
-        ("supervised_positive_premium_mlp", False),
-        ("pinn_inspired_premium_mlp", True),
+    for model_name, use_pde, model in [
+        ("supervised_positive_premium_mlp", False, supervised_model),
+        ("pinn_inspired_premium_mlp", True, pinn_model),
     ]:
-        model = PositivePremiumModel.build(features.shape[1], hidden=int(cfg.get("hidden", 64)), depth=int(cfg.get("depth", 2)))
         start = time.perf_counter()
         trained, history = _train_model(
             model,
@@ -156,14 +163,23 @@ def run(
             }
         )
 
-    write_csv(out_dir / "pinn_metrics.csv", metrics_rows)
-    write_csv(out_dir / "pinn_residual_metrics.csv", residual_rows)
-    write_csv(out_dir / "pinn_training_history.csv", history_rows)
+    _write_csv_with_header(out_dir / "pinn_metrics.csv", metrics_rows, ["model", "split", "option_type", "samples"])
+    _write_csv_with_header(out_dir / "pinn_residual_metrics.csv", residual_rows, ["model", "split", "residual_samples"])
+    _write_csv_with_header(out_dir / "pinn_training_history.csv", history_rows, ["model", "epoch", "train_loss"])
     selected = next(
         row
         for row in metrics_rows
         if row["model"] == "pinn_inspired_premium_mlp" and row["split"] == "test" and row["option_type"] == "all"
     )
+    supervised_selected = next(
+        row
+        for row in metrics_rows
+        if row["model"] == "supervised_positive_premium_mlp" and row["split"] == "test" and row["option_type"] == "all"
+    )
+    selected_residual = next(row for row in residual_rows if row["model"] == "pinn_inspired_premium_mlp" and row["split"] == "test")
+    supervised_residual = next(row for row in residual_rows if row["model"] == "supervised_positive_premium_mlp" and row["split"] == "test")
+    price_rmse_delta = selected["price_rmse"] - supervised_selected["price_rmse"]
+    residual_mean_abs_delta = selected_residual["residual_mean_abs"] - supervised_residual["residual_mean_abs"]
     boundary = _boundary_comparison(
         "pinn_inspired_premium_mlp",
         predicted_premium,
@@ -184,13 +200,46 @@ def run(
         "selected_test_price_rmse": selected["price_rmse"],
         "selected_test_premium_rmse": selected["premium_rmse"],
         "selected_test_max_obstacle_violation": selected["max_obstacle_violation"],
+        "supervised_test_price_rmse": supervised_selected["price_rmse"],
+        "supervised_test_premium_rmse": supervised_selected["premium_rmse"],
+        "supervised_test_residual_mean_abs": supervised_residual["residual_mean_abs"],
+        "selected_test_residual_mean_abs": selected_residual["residual_mean_abs"],
+        "price_rmse_delta_vs_supervised": price_rmse_delta,
+        "residual_mean_abs_delta_vs_supervised": residual_mean_abs_delta,
         "boundary_diagnostic": boundary,
         "device": device,
         "training_dtype": str(cfg.get("training_dtype", "float64")),
-        "note": "This PINN-inspired future extension uses PSOR labels and a masked continuation-region residual; it does not replace CN/PSOR.",
+        "matched_initialization": True,
+        "diagnostic_interpretation": _diagnostic_interpretation(price_rmse_delta, residual_mean_abs_delta),
+        "note": "This PINN-inspired future extension uses PSOR labels and a masked continuation-region residual outside boundary/kink/maturity exclusions; it does not replace CN/PSOR.",
     }
     write_json(out_dir / "pinn_summary.json", summary)
     return summary
+
+
+def _build_matched_premium_models(input_dim: int, hidden: int, depth: int, seed: int):
+    """Return baseline/PINN models cloned from the same initial state."""
+
+    import torch
+
+    torch.manual_seed(int(seed))
+    base = PositivePremiumModel.build(input_dim, hidden=hidden, depth=depth)
+    base_state = {key: value.detach().clone() for key, value in base.state_dict().items()}
+    baseline = PositivePremiumModel.build(input_dim, hidden=hidden, depth=depth)
+    pinn = PositivePremiumModel.build(input_dim, hidden=hidden, depth=depth)
+    baseline.load_state_dict({key: value.clone() for key, value in base_state.items()})
+    pinn.load_state_dict({key: value.clone() for key, value in base_state.items()})
+    return baseline, pinn
+
+
+def _diagnostic_interpretation(price_rmse_delta: float, residual_mean_abs_delta: float) -> str:
+    if price_rmse_delta < 0.0 and residual_mean_abs_delta < 0.0:
+        return "The matched capped run improved both price RMSE and masked residual mean-absolute value; this remains future-extension evidence only."
+    if price_rmse_delta < 0.0:
+        return "The matched capped run improved price RMSE but not masked residual mean-absolute value; this remains future-extension evidence only."
+    if residual_mean_abs_delta < 0.0:
+        return "The matched capped run improved masked residual mean-absolute value but not price RMSE; this remains future-extension evidence only."
+    return "The matched capped run did not improve price RMSE or masked residual mean-absolute value versus the supervised baseline; no physics-regularization improvement claim is supported."
 
 
 def _train_model(
@@ -381,7 +430,7 @@ def _residual_rows(
             {
                 "model": model_name,
                 "split": split_name,
-                "mask_source": "psor_continuation_not_boundary_not_maturity",
+                "mask_source": "psor_continuation_not_boundary_not_kink_not_maturity",
                 **residual_distribution_metrics(residual, prefix="residual"),
             }
         )
@@ -484,11 +533,15 @@ def _write_empty_outputs(out_dir: Path, summary: dict[str, Any]) -> None:
 def _write_csv_with_header(path: str | Path, rows: list[dict[str, Any]], fieldnames: list[str]) -> None:
     ensure_dir(Path(path).parent)
     if rows:
-        write_csv(path, rows)
-        return
+        fieldnames = []
+        for row in rows:
+            for key in row:
+                if key not in fieldnames:
+                    fieldnames.append(key)
     with open(path, "w", newline="", encoding="utf-8") as fh:
-        writer = csv.DictWriter(fh, fieldnames=fieldnames)
+        writer = csv.DictWriter(fh, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
+        writer.writerows(rows)
 
 
 def _throughput(samples: int, seconds: float) -> float:

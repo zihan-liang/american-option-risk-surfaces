@@ -19,6 +19,10 @@ pde_batch_cap: 512
 pde_huber_delta: 1.0
 gap_epsilon: 1.0e-5
 tau_min_for_pde: 0.08
+mask_exclusions:
+  - near_boundary
+  - near_kink
+  - near_maturity
 residual_eval_cap: 2048
 premium_boundary_threshold: 1.0e-3
 obstacle_tolerance: 1.0e-10

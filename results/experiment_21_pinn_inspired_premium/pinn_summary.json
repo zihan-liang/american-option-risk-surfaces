@@ -10,26 +10,34 @@
   },
   "decision": "pinn_inspired_future_extension",
   "device": "cpu",
+  "diagnostic_interpretation": "The matched capped run did not improve price RMSE or masked residual mean-absolute value versus the supervised baseline; no physics-regularization improvement claim is supported.",
+  "matched_initialization": true,
   "models": [
     {
-      "inference_seconds": 0.0026086249854415655,
+      "inference_seconds": 0.0022817919962108135,
       "model": "supervised_positive_premium_mlp",
-      "train_seconds": 0.35434433398768306
+      "train_seconds": 0.34520216699456796
     },
     {
-      "inference_seconds": 0.002420083968900144,
+      "inference_seconds": 0.002165290992707014,
       "model": "pinn_inspired_premium_mlp",
-      "train_seconds": 0.1173914999817498
+      "train_seconds": 0.11735004099318758
     }
   ],
-  "note": "This PINN-inspired future extension uses PSOR labels and a masked continuation-region residual; it does not replace CN/PSOR.",
+  "note": "This PINN-inspired future extension uses PSOR labels and a masked continuation-region residual outside boundary/kink/maturity exclusions; it does not replace CN/PSOR.",
   "option_scope": "put",
-  "pde_total_mask_samples": 697952,
-  "pde_train_samples": 4775,
+  "pde_total_mask_samples": 684188,
+  "pde_train_samples": 4687,
+  "price_rmse_delta_vs_supervised": 6.923734116426328e-05,
+  "residual_mean_abs_delta_vs_supervised": 0.0002515574199415671,
   "selected_model": "pinn_inspired_premium_mlp",
   "selected_test_max_obstacle_violation": 0.0,
-  "selected_test_premium_rmse": 0.0762334928614864,
-  "selected_test_price_rmse": 0.07623349330729158,
+  "selected_test_premium_rmse": 0.09283129929954712,
+  "selected_test_price_rmse": 0.09283129980818758,
+  "selected_test_residual_mean_abs": 0.04619469403226446,
+  "supervised_test_premium_rmse": 0.09276206195874119,
+  "supervised_test_price_rmse": 0.09276206246702332,
+  "supervised_test_residual_mean_abs": 0.045943136612322896,
   "test_samples": 4000,
   "train_samples": 12000,
   "training_dtype": "float64",
