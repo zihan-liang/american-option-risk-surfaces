@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, geometry}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \title{Stage 1: Mathematical Formulation Notes}
 \date{\today}
 \begin{document}
@@ -8,36 +12,102 @@
 
 \section{Stage 1: Mathematical Formulation Notes}
 \subsection{Purpose}
-Record the American option variational inequality and implementation notation before coding.
+This stage establishes the mathematical and notational contract used by every
+later solver, diagnostic, and surrogate experiment. An American option may be
+exercised at any time up to maturity, so its value must never fall below the
+immediate-exercise payoff. That additional decision makes the problem an
+obstacle problem with an unknown early-exercise boundary, rather than the
+fixed-boundary valuation problem associated with a European option.
 
 \subsection{Method}
-Use time-to-maturity $\tau=T-t$ and normalize experiments to $K=1$ unless otherwise stated.
+Time is expressed as time to maturity, $\tau=T-t$, so the computation starts
+from the payoff at $\tau=0$ and marches forward to the valuation horizon.
+Numerical experiments use $K=1$ unless otherwise stated, while reports retain
+normalized quantities such as $S/K$, $U/K$, and $B/K$ so the interpretation
+does not depend on this implementation choice.
 
 \subsection{Mathematical Formulation}
 \[
-dS_t=(r-q)S_tdt+\sigma S_tdW_t,
-\quad
-\mathcal{L}U=\frac{1}{2}\sigma^2S^2U_{SS}+(r-q)SU_S-rU.
+  dS_t=(r-q)S_t\,dt+\sigma S_t\,dW_t,
+\qquad
+  \mathcal{L}U=
+  \frac{1}{2}\sigma^2S^2U_{SS}+(r-q)SU_S-rU.
 \]
+Here \(r\) is the risk-free rate, \(q\) is the continuous dividend yield,
+\(\sigma\) is volatility, and \(U(S,\tau)\) is the American option value. For
+payoff \(\Phi(S)\), the time-to-maturity variational inequality is
 \[
-U\ge \Phi,\quad U_\tau-\mathcal{L}U\ge0,\quad
-(U-\Phi)(U_\tau-\mathcal{L}U)=0.
+  U\geq \Phi,\qquad
+  U_\tau-\mathcal{L}U\geq0,\qquad
+  (U-\Phi)(U_\tau-\mathcal{L}U)=0.
 \]
-The continuation premium is $C=U-\Phi\ge0$.
+The first inequality is the payoff obstacle. In the exercise region
+\(U=\Phi\); in the continuation region \(U>\Phi\) and the Black--Scholes PDE
+holds. Their interface is the free boundary \(B(\tau)\). The continuation
+premium
+\[
+  C(S,\tau)=U(S,\tau)-\Phi(S)\geq0
+\]
+measures the value of retaining the option rather than exercising immediately.
 
 \subsection{Implementation Details}
-Inputs use $(\log(S/K),\tau/T,r,q,\sigma,T,1_{\mathrm{call}})$ for surrogate datasets.
+The solver operates on a spot-time grid \((S_i,\tau_n)\). Later surrogate
+datasets use
+\[
+  x=\bigl(\log(S/K),\tau/T,r,q,\sigma,T,\mathbf{1}_{\mathrm{call}}\bigr),
+\]
+with labels reported as \(U/K\), \(C/K\), \(\Delta\), and \(K\Gamma\). This
+stage defines those quantities only; it does not yet construct data or train a
+model.
+
+\subsection{How to Read the Matrix Calculations}
+The finite-difference implementation converts the continuous operator into a
+matrix acting on interior grid values. A three-point stencil approximates the
+first and second spot derivatives, producing the lower, diagonal, and upper
+coefficients of a tridiagonal operator \(L_h\). Boundary nodes are prescribed
+separately and contribute only to the first and last interior right-hand-side
+entries. The key reading path is
+\[
+  \text{PDE operator}
+  \longrightarrow \text{three-point stencil}
+  \longrightarrow L_h
+  \longrightarrow
+  \left\{
+  \begin{aligned}
+    A&=I-\frac{\Delta\tau}{2}L_h,\\
+    B&=I+\frac{\Delta\tau}{2}L_h.
+  \end{aligned}
+  \right.
+\]
+The matrices \(A\) and \(B\) are the new- and old-time-level components of the
+Crank--Nicolson step. The American obstacle then turns the linear update into a
+linear complementarity problem, which PSOR handles by alternating relaxation
+with projection above \(\Phi\). Translating this formulation into reproducible
+arrays, diagnostics, figures, and LaTeX explanations is a central
+scientific-computing contribution of the project.
 
 \subsection{Validation and Diagnostics}
-Check operator sign, payoff, boundary conventions, and Greek units before implementation.
+Before implementation, the notation audit checks the time direction, the sign
+of \(U_\tau-\mathcal{L}U\), put and call payoff conventions, boundary
+orientation, and units of \(\Delta\) and \(\Gamma\). These checks prevent
+sign-consistent code from solving the wrong mathematical problem.
 
 \subsection{Results}
-This stage produces notation and sign conventions only.
+The output of this stage is an implementation-ready formulation with consistent
+normalization, matrix notation, and obstacle terminology. It produces no
+numerical accuracy or surrogate-performance evidence.
+
+\input{reports/visual_blocks/stage01_math_notes_visuals.tex}
 
 \subsection{Failure Modes and Limitations}
-The main risks are mixing calendar time and time-to-maturity or reversing the LCP sign.
+The principal risks are mixing calendar time with time to maturity, reversing
+the complementarity sign, applying the put boundary orientation to a
+dividend-paying call, or confusing \(C\) with the option price. These risks are
+addressed in Stage 2 through analytic checks and explicit matrix diagnostics.
 
 \subsection{Conclusion and Next Step}
-Proceed to CN/PSOR implementation and validation.
+The formulation is sufficiently explicit to implement the CN/PSOR benchmark.
+The next stage must verify the discrete operator, matrix construction, boundary
+terms, and obstacle projection before any risk surface is treated as evidence.
 
 \end{document}

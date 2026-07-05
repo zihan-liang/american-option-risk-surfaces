@@ -1,0 +1,6 @@
+figure_dir: results/figures/publication
+publication_audit_dir: results/experiment_17_publication_audit
+source_figures:
+  solver_validation: results/figures/stage04_convergence_runtime/put/price_error_vs_grid.png
+  risk_surface: results/figures/stage05_application_risk_surfaces/put/put_T0p25_sig0p2_r0p05_q0/price_surface.png
+  application_heatmap: results/figures/stage05_application_risk_surfaces/put/exercise_fraction_heatmap.png

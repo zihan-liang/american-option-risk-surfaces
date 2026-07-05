@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, geometry, graphicx}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \graphicspath{{./}{../}}
 \title{Stage 6: Surrogate Dataset Construction}
 \author{Free-Boundary-Aware Risk Surfaces for American Options}
@@ -11,7 +15,10 @@
 \section{Stage 6: Surrogate Dataset Construction}
 
 \subsection{Purpose}
-This stage constructs a supervised dataset for later surrogate experiments using validated CN/PSOR labels. It is a data-engineering stage only. No neural-network model is trained, selected, or evaluated here.
+This stage constructs a supervised dataset for later surrogate experiments
+using audited CN/PSOR labels. It is a data-engineering and governance stage:
+the central question is which solver regimes are sufficiently reliable to
+become labels. No neural network is trained, selected, or evaluated here.
 
 \subsection{Method}
 The dataset consumes the Stage 5 application outputs:
@@ -22,12 +29,16 @@ The dataset consumes the Stage 5 application outputs:
 \]
 Only American put and dividend-paying American call regimes with no diagnostic failure and no delicate-regime flag are included as clean labels. No-dividend American call controls and all flagged regimes are retained in \texttt{excluded\_regimes.csv} with explicit reasons.
 
-The primary split is regime-level, not pointwise. With seed 7, the 223 clean regimes are split into 156 train regimes, 33 validation regimes, and 34 test regimes. This prevents neighboring grid points from the same option regime from leaking across splits.
+The primary split is regime-level rather than pointwise. With seed 7, the 223
+clean regimes are split into 156 training, 33 validation, and 34 test regimes.
+All spot-time nodes from one parameter regime remain in the same partition.
+This prevents nearly identical neighboring nodes from appearing on both sides
+of the evaluation boundary and creating an unrealistically easy test.
 
 \subsection{Mathematical Formulation}
 For each clean regime, the finite-difference solver produces a surface $U(S,\tau)$, payoff $\Phi(S)$, continuation premium
 \[
-P(S,\tau)=\max(U(S,\tau)-\Phi(S),0),
+C(S,\tau)=\max(U(S,\tau)-\Phi(S),0),
 \]
 finite-difference Delta, and finite-difference Gamma. Each node contributes the feature vector
 \[
@@ -35,14 +46,24 @@ finite-difference Delta, and finite-difference Gamma. Each node contributes the 
 \]
 The label vector is
 \[
-\left(U/K,\;P/K,\;\Phi/K,\;\Delta,\;K\Gamma\right).
+\left(U/K,\;C/K,\;\Phi/K,\;\Delta,\;K\Gamma\right).
 \]
 Greek labels are accompanied by strict masks and exclusion masks for the payoff kink, free-boundary band, and near-zero spot region.
 
 \subsection{Implementation Details}
 The main workflow is \texttt{experiments/05\_surrogate\_dataset.py}. Dataset sample construction is implemented in \texttt{src/data/dataset\_builder.py}. Regime-level train/validation/test splitting is implemented in \texttt{src/data/splits.py}.
 
-The generated dataset is \texttt{data/processed/surrogate\_dataset.npz}. It contains \texttt{features}, \texttt{labels}, \texttt{boundary}, \texttt{exercise\_indicator}, \texttt{strict\_greek\_mask}, \texttt{near\_kink}, \texttt{near\_boundary}, \texttt{near\_zero\_spot}, \texttt{regime\_key}, \texttt{split}, \texttt{diagnostic\_status}, \texttt{source\_stage}, and \texttt{solver\_config\_hash}.
+The generated dataset is \path{data/processed/surrogate_dataset.npz}. Its arrays
+are grouped as follows:
+\begin{itemize}
+  \item core labels: \texttt{features}, \texttt{labels}, \texttt{boundary},
+    and \texttt{exercise\_indicator};
+  \item diagnostic masks: \texttt{strict\_greek\_mask}, \texttt{near\_kink},
+    \texttt{near\_boundary}, and \texttt{near\_zero\_spot};
+  \item partition metadata: \texttt{regime\_key} and \texttt{split};
+  \item audit metadata: \texttt{diagnostic\_status}, \texttt{source\_stage},
+    and \texttt{solver\_config\_hash}.
+\end{itemize}
 
 \subsection{Validation and Diagnostics}
 \begin{table}[h]
@@ -61,7 +82,7 @@ Validation regimes & 33\\
 Test regimes & 34\\
 \bottomrule
 \end{tabular}
-\caption{Dataset construction summary.}
+\caption{Clean-label dataset construction summary after Stage 5 diagnostic filtering. Counts are reported by regime and sample so that the much larger pointwise sample total is not confused with independent market scenarios.}
 \end{table}
 
 The excluded regimes consist of 33 control-only regimes, 29 diagnostic-failure/delicate regimes, and 3 no-dividend control regimes that also carried diagnostic flags. No regime key appears in more than one split.
@@ -79,7 +100,7 @@ Near boundary & 26,983 & 0.0083\\
 Near zero spot & 53,966 & 0.0165\\
 \bottomrule
 \end{tabular}
-\caption{Mask coverage in the dataset.}
+\caption{Coverage of exercise and Greek-quality masks across the 3,264,943 clean samples. The strict Greek mask excludes the payoff kink, free-boundary band, and near-zero-spot region.}
 \end{table}
 
 \subsection{Results}
@@ -89,18 +110,27 @@ The dataset contains normalized price, nonnegative continuation premium, payoff,
 \centering
 \includegraphics[width=0.45\linewidth]{results/figures/stage06_surrogate_dataset/price_over_K_hist.png}
 \includegraphics[width=0.45\linewidth]{results/figures/stage06_surrogate_dataset/premium_over_K_hist.png}
-\caption{Price and continuation-premium label distributions.}
+\caption{Distributions of normalized price \(U/K\) and continuation premium \(C/K\) in the clean dataset. These plots describe label coverage and do not constitute surrogate-performance evidence.}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.45\linewidth]{results/figures/stage06_surrogate_dataset/delta_hist.png}
 \includegraphics[width=0.45\linewidth]{results/figures/stage06_surrogate_dataset/K_gamma_hist.png}
-\caption{Delta and scaled-Gamma label distributions. Gamma remains a masked diagnostic label.}
+\caption{Distributions of finite-difference Delta and scaled Gamma \(K\Gamma\). Gamma remains a masked diagnostic label because second derivatives are least stable near kinks and free boundaries.}
 \end{figure}
 
+\input{reports/visual_blocks/stage06_surrogate_dataset_visuals.tex}
+
 \subsection{Failure Modes and Limitations}
-This dataset excludes the 32 Stage 5 diagnostic-failure regimes rather than repairing them. It also excludes no-dividend call controls from the clean ML dataset. Therefore, later surrogate experiments must state that their training envelope is the clean, diagnostic-passing American put and dividend-paying call envelope. Gamma labels are included only with masks; the dataset does not imply that unmasked Gamma is stable.
+This dataset excludes the 32 Stage 5 diagnostic-failure regimes rather than
+repairing them and excludes no-dividend call controls from the clean ML
+dataset. Because three controls also carry diagnostic flags, the unique
+exclusion table contains 65 regimes rather than the sum of disjoint categories.
+Later surrogate experiments must therefore state that their training envelope
+is the clean, diagnostic-passing American put and dividend-paying call
+envelope. Gamma labels are included only with masks; their presence does not
+imply that unmasked Gamma is stable or that a Gamma surrogate is validated.
 
 \subsection{Conclusion and Next Step}
 The Stage 6 gate passes for beginning baseline surrogate experiments on the clean dataset. It does not provide surrogate-performance evidence. The next stage should train baseline models and audit their obstacle, monotonicity, convexity, boundary, and Greek failures without hiding weak regimes.

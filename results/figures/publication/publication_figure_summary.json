@@ -1,0 +1,5 @@
+{
+  "figure_dir": "results\\figures\\publication",
+  "figures": 9,
+  "manifest": "results\\figures\\publication\\figure_manifest.csv"
+}

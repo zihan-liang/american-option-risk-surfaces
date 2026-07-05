@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, geometry, graphicx, url}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \graphicspath{{./}{../}}
 \title{Stage 9: Direct Boundary Diagnostic Head}
 \author{Free-Boundary-Aware Risk Surfaces for American Options}
@@ -11,7 +15,13 @@
 \section{Stage 9: Direct Boundary Diagnostic Head}
 
 \subsection{Purpose}
-This stage trains direct supervised early-exercise boundary diagnostic heads from the clean Stage 6 CN/PSOR dataset. The goal is to test whether a modular model can estimate boundary labels within the tested regime envelope. This stage does not infer boundaries from the Stage 8 price surrogate, does not solve the free-boundary problem exactly, and does not introduce Delta or Gamma heads.
+This stage trains direct supervised early-exercise boundary diagnostic heads
+from the clean Stage 6 CN/PSOR dataset. The free boundary is difficult because
+it is an implicitly defined transition between exercise and continuation, and
+small price errors can move the inferred transition substantially. The goal is
+therefore a scoped diagnostic estimate within the tested regime envelope, not
+an exact free-boundary solution. Boundaries are not inferred from the Stage 8
+price surrogate, and no Delta or Gamma head is introduced here.
 
 \subsection{Method}
 The dataset feature vector is
@@ -51,7 +61,7 @@ MLP pooled & Validation & All & 0.2986 & 0.1726 & 0.0000\\
 MLP pooled & Test & All & 0.3513 & 0.2087 & 0.0000\\
 \bottomrule
 \end{tabular}
-\caption{Pooled direct boundary diagnostic metrics. Errors are in normalized boundary units $B/K$.}
+\caption{Validation and test errors for pooled boundary estimators, measured in normalized units \(B/K\). The bounded MLP output prevents implausible ranges but does not certify the free-boundary equations.}
 \end{table}
 
 \begin{table}[h]
@@ -67,25 +77,31 @@ Call MLP & Validation & Call & 0.3886 & 0.2872\\
 Call MLP & Test & Call & 0.6383 & 0.4853\\
 \bottomrule
 \end{tabular}
-\caption{Option-specific boundary metrics. The call-only MLP is validation-selected but does not improve test RMSE over the call-only linear baseline in this run.}
+\caption{Put- and dividend-call boundary errors for pooled and call-specific estimators. The validation-selected call MLP generalizes poorly on the test regimes and is retained as negative evidence.}
 \end{table}
 
 \subsection{Results}
-The pooled MLP improves substantially over the pooled linear sanity baseline on both validation and test metrics. Its test boundary RMSE is 0.3513 and test boundary MAE is 0.2087. The pooled MLP also keeps predictions within the observed training-label range by construction.
+The pooled MLP improves on the pooled linear sanity baseline, but its test
+boundary RMSE of 0.3513 and MAE of 0.2087 remain large relative to the
+normalized boundary scale. Its outputs stay within the observed training-label
+range by construction; this is a plausibility restriction, not evidence that
+the variational inequality or smooth-pasting conditions are satisfied.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.78\linewidth]{results/figures/stage09_boundary_head/test_boundary_mae_by_option.png}
-\caption{Test boundary MAE by option type for pooled boundary heads.}
+\includegraphics[width=0.95\linewidth]{results/figures/stage09_boundary_head/test_boundary_mae_by_option.png}
+\caption{Test boundary MAE by option type for the pooled linear and MLP diagnostic heads. Errors remain materially larger than the project price and strict-mask Delta errors.}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.72\linewidth]{results/figures/stage09_boundary_head/call_boundary_refinement_mae.png}
-\caption{Dividend-call boundary refinement comparison.}
+\includegraphics[width=0.95\linewidth]{results/figures/stage09_boundary_head/call_boundary_refinement_mae.png}
+\caption{Dividend-call boundary MAE for pooled and call-specific models. The call-specific refinement does not provide consistent held-out improvement.}
 \end{figure}
 
 The call-specific refinement is mixed. The call MLP has better validation RMSE than the call linear baseline, but its test RMSE is worse. This should be treated as weak generalization evidence for call-only boundary heads rather than as a repaired universal boundary claim.
+
+\input{reports/visual_blocks/stage09_boundary_head_visuals.tex}
 
 \subsection{Failure Modes and Limitations}
 Boundary labels are repeated across grid points for each regime and time level, so pointwise sample counts are not independent observations. Boundary errors remain large enough that the model should be described as a diagnostic estimator only. The call-only refinement does not clearly improve test performance, so dividend-call boundary claims must remain scoped and cautious. The model does not use the obstacle, complementarity system, or PSOR iterations internally, and it does not produce prices or Greeks.

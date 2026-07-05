@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, geometry, graphicx}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \graphicspath{{./}{../}}
 \title{Stage 5: Application Risk-Surface Experiments}
 \author{Free-Boundary-Aware Risk Surfaces for American Options}
@@ -11,7 +15,11 @@
 \section{Stage 5: Application Risk-Surface Experiments}
 
 \subsection{Purpose}
-This stage generates audited American put and dividend-paying American call risk-surface studies after the grid/domain/runtime gate. The CN/PSOR solver remains the source of truth. No neural-network, surrogate-dataset, or model-training evidence is produced in this stage.
+This stage generates audited American put and dividend-paying American call
+risk surfaces after the grid, domain, and runtime gate. A risk surface records
+how value and sensitivities change across spot, time, and market parameters
+rather than reporting a single option price. CN/PSOR remains the source of
+truth; this stage produces no neural-model evidence.
 
 \subsection{Method}
 The sweep uses $K=1$, $S_{\max}=4K$, $M=N=120$, PSOR tolerance $10^{-9}$, and $\omega=1.25$. The parameter grid is
@@ -24,7 +32,14 @@ q\in\{0,0.03,0.06,0.10\}.
 American puts are run over the full grid. Calls with $q>0$ are reported as dividend-paying American calls. Calls with $q=0$ are reported separately as no-dividend control regimes and are not used as dividend-call evidence.
 
 \subsection{Mathematical Formulation}
-Each solved surface $U(S,\tau)$ is checked against the obstacle $\Phi(S)$ and the LCP complementarity condition. The exercise fraction is computed from nodes where $U-\Phi$ is within the obstacle tolerance. The early-exercise boundary is summarized only at time levels with status \texttt{boundary\_found}; no-dividend call controls with no genuine boundary therefore report no boundary samples.
+Each solved surface \(U(S,\tau)\) is checked against the payoff obstacle
+\(\Phi(S)\) and the LCP complementarity condition. The exercise fraction is
+the proportion of grid nodes whose continuation premium
+\(C=U-\Phi\) is within the obstacle tolerance. The early-exercise boundary is
+summarized only when a genuine exercise-to-continuation transition is found.
+No-dividend call controls therefore report no boundary samples, consistent with
+the theorem that early exercise is not optimal in the Black--Scholes model
+without dividends.
 
 Delta and Gamma are finite-difference diagnostics from the validated solver surface:
 \[
@@ -60,7 +75,7 @@ Monotonicity violation & $1.2280\times10^{-10}$\\
 Convexity violation & $6.9967\times10^{-3}$\\
 \bottomrule
 \end{tabular}
-\caption{Maximum diagnostics across the Stage 5 application sweep.}
+\caption{Worst obstacle, complementarity, monotonicity, and convexity diagnostics across all 288 Stage 5 regimes. Shape warnings remain visible even when the payoff obstacle is satisfied.}
 \end{table}
 
 \begin{table}[h]
@@ -74,7 +89,7 @@ Dividend call & 108 & 9 & 9 & 92\\
 No-dividend call control & 36 & 3 & 3 & 108\\
 \bottomrule
 \end{tabular}
-\caption{Regime counts and flags. Failures are retained in the output tables.}
+\caption{Application-regime counts and diagnostic flags by option category. All 32 flagged regimes are retained in the audit outputs rather than removed from reporting.}
 \end{table}
 
 \subsection{Results}
@@ -86,15 +101,17 @@ The strict-mask Gamma maximum remains largest for put regimes, with maximum abso
 \centering
 \includegraphics[width=0.45\linewidth]{results/figures/stage05_application_risk_surfaces/put/initial_boundary_heatmap.png}
 \includegraphics[width=0.45\linewidth]{results/figures/stage05_application_risk_surfaces/dividend_call/initial_boundary_heatmap.png}
-\caption{Initial boundary heatmaps at $T=1$, $r=0.05$ for puts and dividend-paying calls.}
+\caption{Initial normalized early-exercise boundary \(B/K\) at \(T=1\) and \(r=0.05\) for puts and dividend-paying calls. The opposite boundary orientations reflect the different exercise regions.}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.45\linewidth]{results/figures/stage05_application_risk_surfaces/put/gamma_strict_mean_abs_heatmap.png}
 \includegraphics[width=0.45\linewidth]{results/figures/stage05_application_risk_surfaces/dividend_call/gamma_strict_mean_abs_heatmap.png}
-\caption{Strict-mask Gamma mean-absolute heatmaps at $T=1$, $r=0.05$.}
+\caption{Mean absolute finite-difference Gamma under the strict Greek mask at \(T=1\) and \(r=0.05\). The mask excludes payoff-kink, free-boundary, and near-zero-spot bands where Gamma is least stable.}
 \end{figure}
+
+\input{reports/visual_blocks/stage05_application_risk_surfaces_visuals.tex}
 
 \subsection{Failure Modes and Limitations}
 The sweep found 32 diagnostic failures, all retained in \texttt{regime\_flags.csv}. The largest failures are convexity violations in long-maturity, high-volatility cases, especially $T=2$ and $\sigma=0.6$. Obstacle violation remains zero, so these are not obstacle failures. They are treated as numerical-shape warning regimes requiring finer grids, smoothing, or additional review before use as surrogate labels.

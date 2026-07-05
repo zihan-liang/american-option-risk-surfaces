@@ -21,6 +21,29 @@ class PositivePremiumModel:
         return nn.Sequential(build_mlp(input_dim, 1, hidden, depth), nn.Softplus())
 
 
+class TerminalScaledPositivePremiumModel:
+    """Positive premium model that enforces zero premium at theta=tau/T=0."""
+
+    @staticmethod
+    def build(input_dim: int, hidden: int = 128, depth: int = 3):
+        import torch
+        from torch import nn
+
+        base = build_mlp(input_dim, 1, hidden=hidden, depth=depth)
+
+        class _TerminalScaled(nn.Module):
+            def __init__(self, net):
+                super().__init__()
+                self.net = net
+                self.softplus = nn.Softplus()
+
+            def forward(self, features):
+                theta = torch.clamp(features[:, 1:2], min=0.0)
+                return theta * self.softplus(self.net(features))
+
+        return _TerminalScaled(base)
+
+
 def reconstruct_price(payoff, predicted_premium):
     if _is_torch_tensor(payoff) or _is_torch_tensor(predicted_premium):
         return payoff + predicted_premium

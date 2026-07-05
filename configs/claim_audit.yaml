@@ -13,6 +13,8 @@ forbidden_phrases:
 scan_files:
   - reports/final_report.tex
   - paper/manuscript_outline.tex
+  - paper/manuscript.tex
+  - paper/supplementary_material.tex
 
 required_artifacts:
   - results/experiment_01_solver_validation/validation_summary.json
@@ -27,7 +29,15 @@ required_artifacts:
   - results/experiment_13_integrated_application_workflow/integrated_summary.json
   - reports/final_report.tex
   - paper/manuscript_outline.tex
+  - paper/manuscript.tex
+  - paper/supplementary_material.tex
   - paper/references.bib
+  - docs/journal_readiness_gap_audit.md
+  - results/experiment_17_publication_audit/publication_audit_summary.json
+  - results/experiment_17_publication_audit/publication_gap_matrix.csv
+  - results/figures/publication/figure_manifest.csv
+  - configs/report_visualization_enrichment.yaml
+  - results/figures/report_enrichment/figure_manifest.csv
 
 claims:
   - claim_id: cn_psor_benchmark
@@ -161,3 +171,15 @@ claims:
       max_price_obstacle_violation: max_price_obstacle_violation
       max_delta_bound_violation: max_delta_bound_violation
       mean_speedup: mean_speedup
+
+  - claim_id: report_visualization_enrichment
+    claim: Stage reports and supplement include evidence-linked visual galleries without expanding scientific claims.
+    evidence: results/figures/report_enrichment/visualization_summary.json
+    status: reporting_artifact
+    allowed_wording: Visual enrichment improves readability, traceability, and student contribution communication.
+    restricted_wording: Do not treat richer visuals as evidence that surrogates outperform or replace CN/PSOR.
+    limitations: Figures communicate existing evidence and do not add solver runs, training, or new validation results.
+    metrics:
+      reports: reports
+      figures: figures
+      does_not_rerun_solver_or_training: does_not_rerun_solver_or_training

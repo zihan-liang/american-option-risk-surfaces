@@ -12,6 +12,7 @@ import numpy as np
 from common import ensure_dir, load_config, write_csv, write_json
 from data.dataset_builder import build_surface_samples
 from experiment_utils import solver_config_from_dict
+from plotting.publication import save_bar_figure
 from workflow import IntegratedWorkflow, integrated_metrics, safe_speedup
 
 
@@ -202,28 +203,31 @@ def _save_figures(case_rows: list[dict], timing_rows: list[dict], figure_root: P
     ensure_dir(figure_root)
     if case_rows:
         labels = [row["case_id"] for row in case_rows]
-        fig, ax = plt.subplots(figsize=(8, 4))
-        ax.bar(labels, [row["price_rmse"] for row in case_rows])
-        ax.set_ylabel("price RMSE")
-        ax.tick_params(axis="x", rotation=35)
-        fig.tight_layout()
-        fig.savefig(figure_root / "integrated_price_rmse.png", dpi=160)
-        plt.close(fig)
-        fig, ax = plt.subplots(figsize=(8, 4))
-        ax.bar(labels, [row["strict_delta_rmse"] for row in case_rows])
-        ax.set_ylabel("strict Delta RMSE")
-        ax.tick_params(axis="x", rotation=35)
-        fig.tight_layout()
-        fig.savefig(figure_root / "integrated_delta_rmse.png", dpi=160)
-        plt.close(fig)
+        save_bar_figure(
+            figure_root / "integrated_price_rmse.png",
+            labels,
+            [row["price_rmse"] for row in case_rows],
+            "Fresh PSOR audit: price error",
+            "Price RMSE",
+            orientation="horizontal",
+        )
+        save_bar_figure(
+            figure_root / "integrated_delta_rmse.png",
+            labels,
+            [row["strict_delta_rmse"] for row in case_rows],
+            r"Fresh PSOR audit: strict-mask $\Delta$ error",
+            r"Strict-mask $\Delta$ RMSE",
+            orientation="horizontal",
+        )
     if timing_rows:
-        fig, ax = plt.subplots(figsize=(8, 4))
-        ax.bar([row["case_id"] for row in timing_rows], [row["speedup"] for row in timing_rows])
-        ax.set_ylabel("PSOR / workflow seconds")
-        ax.tick_params(axis="x", rotation=35)
-        fig.tight_layout()
-        fig.savefig(figure_root / "integrated_speedup.png", dpi=160)
-        plt.close(fig)
+        save_bar_figure(
+            figure_root / "integrated_speedup.png",
+            [row["case_id"] for row in timing_rows],
+            [row["speedup"] for row in timing_rows],
+            "Screening speedup with PSOR audit retained",
+            "PSOR / workflow seconds",
+            orientation="horizontal",
+        )
 
 
 if __name__ == "__main__":

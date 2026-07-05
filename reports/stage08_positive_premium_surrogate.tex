@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, geometry, graphicx}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \graphicspath{{./}{../}}
 \title{Stage 8: Positive Continuation-Premium Price Surrogate}
 \author{Free-Boundary-Aware Risk Surfaces for American Options}
@@ -11,7 +15,12 @@
 \section{Stage 8: Positive Continuation-Premium Price Surrogate}
 
 \subsection{Purpose}
-This stage evaluates obstacle-consistent price and continuation-premium surrogates. The model predicts a nonnegative continuation premium and reconstructs price as payoff plus premium. This is price/premium evidence only; it is not a boundary model, Delta model, Gamma model, or replacement for CN/PSOR.
+This stage evaluates obstacle-consistent price and continuation-premium
+surrogates. Instead of predicting price directly, the model predicts the
+nonnegative value of waiting rather than exercising and reconstructs price as
+payoff plus continuation premium. This removes the specific failure observed in
+Stage 7, but it remains price/premium evidence only: it is not boundary, Delta,
+Gamma, or PSOR-replacement evidence.
 
 \subsection{Method}
 The clean Stage 6 dataset is used with its regime-level train, validation, and test splits. Two positive-premium models are audited: a linear sanity baseline trained on $\log(1+\mathrm{premium})$, and a neural positive-premium model using a softplus output. Both models reconstruct price by adding predicted premium to the payoff.
@@ -19,15 +28,15 @@ The clean Stage 6 dataset is used with its regime-level train, validation, and t
 \subsection{Mathematical Formulation}
 Let $\Phi(S)$ denote the payoff and $U(S,\tau)$ the CN/PSOR American option value. The continuation premium is
 \[
-P(S,\tau)=U(S,\tau)-\Phi(S)\geq 0.
+C(S,\tau)=U(S,\tau)-\Phi(S)\geq 0.
 \]
 The surrogate predicts
 \[
-\widehat{P}_{\theta}(x)=\mathrm{softplus}(f_{\theta}(x))\geq 0,
+\widehat{C}_{\theta}(x)=\operatorname{softplus}(f_{\theta}(x))\geq 0,
 \]
 and reconstructs
 \[
-\widehat{U}_{\theta}(S,\tau)=\Phi(S)+\widehat{P}_{\theta}(x).
+\widehat{U}_{\theta}(S,\tau)=\Phi(S)+\widehat{C}_{\theta}(x).
 \]
 Therefore $\widehat{U}_{\theta}\geq \Phi$ by construction for the neural positive-premium model.
 
@@ -49,7 +58,7 @@ MLP premium & Validation & 0.0200 & 0.0098 & 0.0200 & 0.0000\\
 MLP premium & Test & 0.0218 & 0.0108 & 0.0218 & 0.0000\\
 \bottomrule
 \end{tabular}
-\caption{Positive-premium price and premium errors. Obstacle violation is zero by construction.}
+\caption{Validation and test price/premium errors for the linear sanity model and softplus MLP. Both reconstruct \(\widehat U=\Phi+\widehat C\), so the payoff obstacle is satisfied on evaluated samples by construction.}
 \end{table}
 
 \begin{table}[h]
@@ -64,25 +73,31 @@ MLP premium & Validation & 0.0055 & 0.0187\\
 MLP premium & Test & 0.0062 & 0.0207\\
 \bottomrule
 \end{tabular}
-\caption{Masked and boundary-band price errors. The MLP improves boundary-band error but not aggregate RMSE.}
+\caption{Price RMSE in the free-boundary band and strict-mask region. The softplus MLP improves boundary-band error but does not outperform the linear sanity baseline in aggregate RMSE.}
 \end{table}
 
 \subsection{Results}
-Both positive-premium models have maximum obstacle violation 0. The linear sanity baseline achieves the lowest aggregate validation RMSE, 0.0188, while the selected neural MLP has validation RMSE 0.0200 and test RMSE 0.0218. The selected MLP is retained as the neural positive-premium artifact because it implements the planned softplus parameterization and has lower boundary-band RMSE than the linear sanity model.
+Both positive-premium models have zero maximum obstacle violation on evaluated
+samples. The linear sanity baseline has the lower aggregate validation RMSE,
+0.0188. The selected neural MLP has validation RMSE 0.0200 and test RMSE
+0.0218; it is retained as the neural artifact because it implements the planned
+softplus parameterization and has lower boundary-band error. This selection is
+not evidence that the MLP dominates the linear model.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.68\linewidth]{results/figures/stage08_positive_premium_surrogate/validation_price_rmse.png}
-\caption{Validation price RMSE for positive-premium models.}
+\caption{Validation price RMSE for the linear and neural positive-premium models. The linear sanity baseline has the lower aggregate RMSE in this run.}
 \end{figure}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.68\linewidth]{results/figures/stage08_positive_premium_surrogate/test_obstacle_violation.png}
-\caption{Test obstacle violation. Both positive-premium models satisfy the obstacle in the evaluated nodes.}
-\end{figure}
+The maximum test-set obstacle violation is zero for both positive-premium
+models. Because an all-zero bar chart would add no visual information, this
+result is reported in the metric table and explained by the reconstruction
+\(\widehat U=\Phi+\widehat C\).
 
 Boundary-distance diagnostics for the selected neural model show test RMSE 0.0061 near the boundary, 0.0220 away from the boundary, 0.0844 near the payoff kink, and 0.0208 under the strict mask. The high near-kink error reinforces the earlier conclusion that nonsmooth regions require separate reporting.
+
+\input{reports/visual_blocks/stage08_positive_premium_surrogate_visuals.tex}
 
 \subsection{Failure Modes and Limitations}
 This stage does not prove that the neural MLP dominates the linear sanity model; the linear baseline has lower aggregate validation and test RMSE in this run. The positive-premium construction guarantees obstacle consistency, but it does not guarantee monotonicity, convexity, boundary accuracy, Delta accuracy, or Gamma accuracy. The near-kink error remains large, and the selected model is scoped to the clean Stage 6 regimes.

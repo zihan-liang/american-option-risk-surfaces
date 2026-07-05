@@ -9,6 +9,14 @@ results\experiment_09_boundary_head\boundary_summary.json,present,525
 results\experiment_11_delta_validation\delta_validation_summary.json,present,532
 results\experiment_12_supervised_delta_head\delta_head_summary.json,present,535
 results\experiment_13_integrated_application_workflow\integrated_summary.json,present,650
-reports\final_report.tex,present,5237
-paper\manuscript_outline.tex,present,6427
+reports\final_report.tex,present,21299
+paper\manuscript_outline.tex,present,6790
+paper\manuscript.tex,present,16817
+paper\supplementary_material.tex,present,4859
 paper\references.bib,present,7450
+docs\journal_readiness_gap_audit.md,present,1533
+results\experiment_17_publication_audit\publication_audit_summary.json,present,569
+results\experiment_17_publication_audit\publication_gap_matrix.csv,present,5445
+results\figures\publication\figure_manifest.csv,present,2103
+configs\report_visualization_enrichment.yaml,present,27565
+results\figures\report_enrichment\figure_manifest.csv,present,34468

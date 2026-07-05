@@ -1,0 +1,16 @@
+{
+  "application_summary": "results/experiment_04_application_risk_surfaces/application_summary.json",
+  "baseline_metrics": "results/experiment_06_surrogate_baselines/baseline_metrics.csv",
+  "boundary_by_regime": "results/experiment_09_boundary_head/boundary_by_regime.csv",
+  "call_boundary_by_regime": "results/experiment_10_option_specific_call_boundary/call_boundary_by_regime.csv",
+  "claim_matrix": "results/tables/final_claim_matrix.csv",
+  "convergence_summary": "results/experiment_03_convergence_domain_runtime/convergence_summary.json",
+  "delta_head_summary": "results/experiment_12_supervised_delta_head/delta_head_summary.json",
+  "delta_validation_summary": "results/experiment_11_delta_validation/delta_validation_summary.json",
+  "integrated_by_regime": "results/experiment_13_integrated_application_workflow/integrated_by_regime.csv",
+  "integrated_summary": "results/experiment_13_integrated_application_workflow/integrated_summary.json",
+  "output_dir": "results/experiment_17_publication_audit",
+  "positive_premium_metrics": "results/experiment_07_positive_premium_tuning/positive_premium_metrics.csv",
+  "split_table": "results/experiment_05_surrogate_dataset/split_table.csv",
+  "target_integrated_test_regimes": 34
+}

@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath, amssymb, booktabs, graphicx, geometry}
+\usepackage{amsmath,amssymb,booktabs,geometry,graphicx,hyperref,longtable,url}
+\usepackage{subcaption,placeins}
+\hypersetup{hidelinks}
 \geometry{margin=1in}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
 \title{Free-Boundary-Aware Risk Surfaces for American Options}
 \author{Stage Report Template}
 \date{\today}
@@ -9,19 +13,29 @@
 
 \section{Stage X: Stage Title}
 \subsection{Purpose}
+State the stage objective, its place in the benchmark-first evidence flow, and
+what the stage does not claim.
 
 \subsection{Method}
+Describe the data, configurations, algorithms, and evaluation scope.
 
 \subsection{Mathematical Formulation}
+Define the quantities used in the stage with notation consistent with
+\texttt{docs/report\_style\_guide.md}.
 
 \subsection{Implementation Details}
+Identify the reproducible scripts, configurations, and output artifacts.
 
 \subsection{Validation and Diagnostics}
+Report the gate checks required before the next stage may use these outputs.
 
 \subsection{Results}
+Present rounded, evidence-linked results and retain weak or failed regimes.
 
 \subsection{Failure Modes and Limitations}
+State numerical, statistical, and claim limitations directly.
 
 \subsection{Conclusion and Next Step}
+State whether the stage gate passes and what remains outside the evidence.
 
 \end{document}

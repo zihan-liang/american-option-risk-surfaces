@@ -1,0 +1,618 @@
+output_dir: results/figures/report_enrichment
+latex_block_dir: reports/visual_blocks
+reports:
+  - path: reports/stage01_math_notes.tex
+    figures:
+      - figure_id: payoff_curves
+        kind: payoff
+        panel_group: formulation_overview
+        title: Payoff geometry
+        caption: Put and call payoff curves establish the obstacle that all American option values must respect.
+        source_artifact: reports/stage01_math_notes.tex
+      - figure_id: exercise_continuation_regions
+        kind: regions
+        panel_group: formulation_overview
+        title: Exercise and continuation regions
+        caption: The exercise and continuation regions show why the early-exercise boundary is a first-class diagnostic rather than a decorative price threshold.
+        source_artifact: docs/mathematical_formulation.md
+      - figure_id: complementarity_geometry
+        kind: lcp
+        panel_group: obstacle_geometry
+        title: Complementarity geometry
+        caption: The variational inequality couples obstacle contact with zero PDE residual in continuation.
+        source_artifact: docs/mathematical_formulation.md
+      - figure_id: continuation_premium
+        kind: premium
+        panel_group: obstacle_geometry
+        title: Continuation premium
+        caption: The continuation premium C equals U minus Phi and separates immediate-exercise payoff from the value of waiting; this motivates the later price-only surrogate.
+        source_artifact: docs/mathematical_formulation.md
+      - figure_id: spot_grid_stencil
+        kind: fd_stencil
+        panel_group: discretization
+        title: Spot grid finite difference stencil
+        caption: Three neighboring spot nodes show how first and second derivatives are approximated on the grid.
+        source_artifact: docs/mathematical_formulation.md
+      - figure_id: coefficient_decomposition
+        kind: operator_coefficients
+        panel_group: discretization
+        title: Operator coefficient decomposition
+        caption: The lower, diagonal, and upper coefficients show how diffusion, drift, and discounting enter one row of the finite-difference operator.
+        source_artifact: reports/stage01_math_notes.tex
+      - figure_id: interior_vector_layout
+        kind: workflow
+        layout: vertical
+        panel_group: matrix_layout
+        title: Interior vector layout
+        labels: ["Full grid S0 to SM", "Boundary nodes fixed", "Interior vector U1 to U M-1", "Matrix acts on interior", "Boundaries adjust RHS"]
+        caption: The solver matrix acts on interior unknowns while boundary values enter through the right hand side.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: annotated_operator_matrix
+        kind: operator_matrix_annotated
+        panel_group: matrix_layout
+        title: Annotated finite difference matrix
+        caption: The tridiagonal matrix layout maps the stencil coefficients into rows of the discrete operator.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: cn_matrix_pair
+        kind: cn_matrix_pair
+        panel_group: cn_lcp
+        title: Crank Nicolson matrix pair
+        caption: The Crank--Nicolson matrices A and B split the same spatial operator across the new and old time levels; the diagram explains construction rather than adding accuracy evidence.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: lcp_vector_form
+        kind: lcp_vector_form
+        panel_group: cn_lcp
+        title: LCP vector form
+        caption: The vector inequalities connect the payoff obstacle with the matrix residual at every interior node.
+        source_artifact: docs/mathematical_formulation.md
+      - figure_id: time_marching_grid
+        kind: time_marching_grid
+        panel_group: marching_boundary
+        title: Time marching grid
+        caption: The finite difference method starts from the payoff and advances through time to maturity.
+        source_artifact: reports/stage01_math_notes.tex
+      - figure_id: rhs_boundary_adjustment
+        kind: rhs_boundary_adjustment
+        panel_group: marching_boundary
+        title: Boundary adjusted right hand side
+        caption: Boundary values affect only the edge equations of the interior linear system.
+        source_artifact: src/solvers/cn_psor.py
+
+  - path: reports/stage02_solver_validation.tex
+    figures:
+      - figure_id: tridiagonal_operator
+        kind: matrix
+        panel_group: operator_audit
+        title: Tridiagonal finite difference operator
+        caption: The discretized Black Scholes operator has the expected sparse tridiagonal structure.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: fd_stencil_validation
+        kind: fd_stencil
+        panel_group: operator_audit
+        force_full_width: true
+        width: 0.92
+        title: Stencil used by the validation audit
+        caption: The validation audit checks that the implementation uses the intended three point stencil.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: coefficient_sign_audit
+        kind: operator_coefficients
+        panel_group: matrix_signs
+        force_full_width: true
+        width: 0.92
+        title: Coefficient sign audit
+        caption: The coefficient diagram helps connect operator sign conventions to implemented matrix rows.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: annotated_lh_matrix
+        kind: operator_matrix_annotated
+        panel_group: matrix_signs
+        title: Annotated L h matrix
+        caption: The labeled operator matrix makes the lower diagonal and upper entries explicit for implementation review.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: cn_a_b_matrices
+        kind: cn_matrix_pair
+        panel_group: cn_boundary
+        width: 0.82
+        title: A and B matrices in the CN step
+        caption: The Crank--Nicolson matrix pair makes the A and B sign convention explicit for the Stage 2 implementation audit.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: rhs_boundary_terms
+        kind: rhs_boundary_adjustment
+        panel_group: cn_boundary
+        force_full_width: true
+        width: 0.92
+        title: Boundary terms in the RHS
+        caption: The right hand side diagram shows why boundary conditions must be audited together with matrix construction.
+        source_artifact: src/solvers/boundary_conditions.py
+      - figure_id: psor_projection_step
+        kind: psor_update_flow
+        panel_group: psor_lcp
+        force_full_width: true
+        width: 0.92
+        title: PSOR projection step
+        caption: The projected update enforces the payoff obstacle after each relaxed candidate update.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: lcp_matrix_system
+        kind: lcp_vector_form
+        panel_group: psor_lcp
+        force_full_width: true
+        width: 0.92
+        title: Matrix LCP system
+        caption: The LCP diagram connects the CN matrices to obstacle and complementarity diagnostics.
+        source_artifact: reports/stage02_solver_validation.tex
+      - figure_id: time_step_flow
+        kind: time_marching_grid
+        panel_group: validation_flow
+        force_full_width: true
+        width: 0.92
+        title: Time step flow
+        caption: Time marching starts from the nonsmooth payoff and builds the American value surface step by step.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: validation_ladder
+        kind: workflow
+        layout: vertical
+        panel_group: validation_flow
+        force_full_width: true
+        width: 0.92
+        title: Solver validation ladder
+        labels: ["European put check", "No dividend call theorem", "Obstacle audit", "Complementarity audit", "Shape and runtime"]
+        caption: Validation proceeds from analytic checks to inequality and shape diagnostics before downstream experiments.
+        source_artifact: results/experiment_01_solver_validation/validation_summary.json
+      - figure_id: smoke_error_comparison
+        kind: bar_from_csv
+        panel_group: validation_metrics
+        orientation: horizontal
+        title: Closed form validation errors
+        source_artifact: results/experiment_01_solver_validation/validation_metrics.csv
+        x: check
+        y: max_error
+        caption: Closed-form European put and theorem-based no-dividend call checks quantify smoke-grid error before downstream classical experiments.
+      - figure_id: obstacle_complementarity
+        kind: bar_from_csv
+        panel_group: validation_metrics
+        orientation: horizontal
+        title: Complementarity residuals with zero obstacle violation
+        source_artifact: results/experiment_01_solver_validation/diagnostics_table.csv
+        x: case
+        y: complementarity_error
+        caption: Complementarity residuals remain near solver tolerance across the smoke cases; obstacle violation is zero for every case and is stated explicitly rather than shown as an empty bar chart.
+
+  - path: reports/stage03_boundary_greeks_diagnostics.tex
+    figures:
+      - figure_id: put_boundary_curve
+        kind: image_panel
+        panel_group: boundaries
+        title: American put boundary curve
+        source_artifact: results/figures/stage03_boundary_greeks/put/boundary_curve.png
+        caption: The put early-exercise boundary is extracted from low-spot exercise to continuation transitions in the CN/PSOR continuation premium.
+      - figure_id: call_boundary_curve
+        kind: image_panel
+        panel_group: boundaries
+        title: Dividend call boundary curve
+        source_artifact: results/figures/stage03_boundary_greeks/call/boundary_curve.png
+        caption: The dividend-paying call boundary uses the opposite high-spot exercise orientation and is evaluated separately from put boundaries.
+      - figure_id: put_delta_surface
+        kind: image_panel
+        panel_group: greeks
+        title: Put Delta surface
+        source_artifact: results/figures/stage03_boundary_greeks/put/delta_surface.png
+        caption: Delta surfaces are interpreted together with masks around nonsmooth regions.
+      - figure_id: put_gamma_surface
+        kind: image_panel
+        panel_group: greeks
+        title: Put Gamma surface
+        source_artifact: results/figures/stage03_boundary_greeks/put/gamma_surface.png
+        caption: Gamma spikes near kinks and free boundaries are shown as diagnostic limitations rather than hidden failures.
+
+  - path: reports/stage04_grid_domain_runtime.tex
+    figures:
+      - figure_id: put_price_error_grid
+        kind: image_panel
+        panel_group: convergence
+        title: Put price error versus grid
+        source_artifact: results/figures/stage04_convergence_runtime/put/price_error_vs_grid.png
+        caption: Grid refinement tracks price stability on the reporting region.
+      - figure_id: put_boundary_error_grid
+        kind: image_panel
+        panel_group: convergence
+        title: Put boundary error versus grid
+        source_artifact: results/figures/stage04_convergence_runtime/put/boundary_error_vs_grid.png
+        caption: Boundary convergence is audited separately from scalar price error.
+      - figure_id: put_delta_error_grid
+        kind: image_panel
+        panel_group: sensitivity_runtime
+        title: Strict mask Delta error versus grid
+        source_artifact: results/figures/stage04_convergence_runtime/put/delta_error_vs_grid.png
+        caption: Delta comparisons use strict masks to avoid overstating stability near nonsmooth regions.
+      - figure_id: put_runtime_grid
+        kind: image_panel
+        panel_group: sensitivity_runtime
+        title: Runtime scaling
+        source_artifact: results/figures/stage04_convergence_runtime/put/runtime_vs_grid.png
+        caption: Runtime and PSOR iteration scaling inform the engineering grid choice.
+
+  - path: reports/stage05_application_risk_surfaces.tex
+    figures:
+      - figure_id: put_price_surface
+        kind: image_panel
+        panel_group: boundary_gamma
+        title: Put initial boundary heatmap
+        source_artifact: results/figures/stage05_application_risk_surfaces/put/initial_boundary_heatmap.png
+        caption: The put initial boundary B over K is summarized across volatility and dividend regimes and remains paired with the Stage 5 solver diagnostics.
+      - figure_id: put_delta_surface
+        kind: image_panel
+        panel_group: boundary_gamma
+        title: Put strict-mask Gamma heatmap
+        source_artifact: results/figures/stage05_application_risk_surfaces/put/gamma_strict_mean_abs_heatmap.png
+        caption: Mean absolute put Gamma is summarized only under the strict Greek mask; the heatmap does not support an unmasked or surrogate Gamma claim.
+      - figure_id: put_exercise_heatmap
+        kind: image_panel
+        panel_group: exercise_maps
+        title: Put exercise heatmap
+        source_artifact: results/figures/stage05_application_risk_surfaces/put/exercise_fraction_heatmap.png
+        caption: The put exercise fraction summarizes how the audited application regimes change early-exercise prevalence across the parameter grid.
+      - figure_id: dividend_call_heatmap
+        kind: image_panel
+        panel_group: exercise_maps
+        title: Dividend call exercise heatmap
+        source_artifact: results/figures/stage05_application_risk_surfaces/dividend_call/exercise_fraction_heatmap.png
+        caption: Dividend-paying call exercise fractions are reported separately from no-dividend call controls so theorem cases are not mixed with boundary evidence.
+
+  - path: reports/stage06_surrogate_dataset.tex
+    figures:
+      - figure_id: dataset_flow
+        kind: workflow
+        title: Dataset construction flow
+        labels: ["Validated PSOR surfaces", "Diagnostics filter", "Feature and label schema", "Regime split", "Audit manifest"]
+        caption: Clean supervised labels are constructed only after CN/PSOR validation, application diagnostics, and explicit exclusion of control or flagged regimes.
+        source_artifact: results/experiment_05_surrogate_dataset/dataset_manifest.json
+      - figure_id: regime_split
+        kind: split_pie
+        width: 0.70
+        title: Regime split composition
+        source_artifact: results/experiment_05_surrogate_dataset/split_table.csv
+        key: split
+        caption: Training, validation, and test partitions are assigned by regime key so neighboring nodes from one PSOR surface cannot leak across splits.
+      - figure_id: label_summary
+        kind: bar_from_csv
+        panel_group: label_masks
+        orientation: horizontal
+        title: Label summary
+        source_artifact: results/experiment_05_surrogate_dataset/label_summary.csv
+        x: label
+        y: mean
+        caption: Label summaries document U over K, continuation premium C over K, Delta, and scaled Gamma K Gamma before neural training; Gamma remains mask-qualified.
+      - figure_id: mask_summary
+        kind: bar_from_csv
+        panel_group: label_masks
+        orientation: horizontal
+        title: Mask composition
+        source_artifact: results/experiment_05_surrogate_dataset/mask_summary.csv
+        x: mask
+        y: fraction
+        caption: Mask composition records how much data remains for strict Greek evaluation.
+
+  - path: reports/stage07_baseline_surrogates.tex
+    figures:
+      - figure_id: baseline_metric_comparison
+        kind: bar_from_csv
+        panel_group: baseline_metrics
+        orientation: horizontal
+        filter_key: option_type
+        filter_value: all
+        title: Baseline price errors
+        source_artifact: results/experiment_06_surrogate_baselines/baseline_metrics.csv
+        x: model
+        y: rmse
+        caption: Direct-price baselines are evaluated for price error and financial violations; low RMSE is not treated as payoff-obstacle consistency.
+      - figure_id: baseline_violation
+        kind: bar_from_csv
+        panel_group: baseline_metrics
+        orientation: horizontal
+        filter_key: split
+        filter_value: test
+        title: Baseline obstacle violations
+        source_artifact: results/experiment_06_surrogate_baselines/violation_table.csv
+        x: model
+        y: max_obstacle_violation
+        caption: Obstacle violations are retained in the evidence table instead of filtered out.
+      - figure_id: worst_regime
+        kind: bar_from_csv
+        panel_group: baseline_failures
+        orientation: horizontal
+        title: Worst baseline regimes
+        source_artifact: results/experiment_06_surrogate_baselines/baseline_by_regime.csv
+        x: regime_key
+        y: rmse
+        limit: 10
+        caption: Worst regime plots keep weak baseline behavior visible.
+      - figure_id: baseline_failure_schematic
+        kind: workflow
+        panel_group: baseline_failures
+        title: Direct price baseline audit
+        labels: ["Direct price prediction", "RMSE can improve", "Obstacle can fail", "Shape can fail", "Claim restricted"]
+        caption: Direct price baselines motivate the later hard obstacle construction without making final claims.
+        source_artifact: results/experiment_06_surrogate_baselines/baseline_summary.json
+
+  - path: reports/stage08_positive_premium_surrogate.tex
+    figures:
+      - figure_id: positive_premium_architecture
+        kind: premium
+        panel_group: premium_design
+        title: Positive premium architecture
+        caption: Softplus premium output enforces nonnegative continuation premium before price reconstruction.
+        source_artifact: src/models/premium_surrogate.py
+      - figure_id: price_reconstruction
+        kind: workflow
+        panel_group: premium_design
+        title: Price reconstruction rule
+        labels: ["Features", "Raw network output", "Softplus premium", "Payoff plus premium", "Obstacle checked"]
+        caption: Price is reconstructed as payoff plus nonnegative premium and remains a price only model.
+        source_artifact: src/models/premium_surrogate.py
+      - figure_id: premium_metrics
+        kind: bar_from_csv
+        panel_group: premium_evidence
+        orientation: horizontal
+        filter_key: option_type
+        filter_value: all
+        title: Positive premium price errors
+        source_artifact: results/experiment_07_positive_premium_tuning/positive_premium_metrics.csv
+        x: model
+        y: rmse
+        caption: Positive-premium models are compared on price and premium errors under regime-level splits; the linear sanity baseline retains lower aggregate RMSE in this run.
+      - figure_id: boundary_distance_profile
+        kind: bar_from_csv
+        panel_group: premium_evidence
+        orientation: horizontal
+        title: Boundary distance error profile
+        source_artifact: results/experiment_08_boundary_distance_profiles/boundary_distance_metrics.csv
+        x: band
+        y: price_rmse
+        caption: Boundary distance profiles show where the price surrogate is weak without treating it as a boundary model.
+
+  - path: reports/stage09_boundary_head.tex
+    figures:
+      - figure_id: boundary_head_architecture
+        kind: workflow
+        width: 0.82
+        title: Boundary diagnostic head
+        labels: ["Regime features", "Finite boundary labels", "Boundary MLP", "Put and call metrics", "Scoped diagnostic"]
+        caption: Boundary heads are trained directly from finite labels rather than inferred from price thresholds.
+        source_artifact: src/models/boundary_head.py
+      - figure_id: boundary_metrics
+        kind: bar_from_csv
+        panel_group: boundary_models
+        orientation: horizontal
+        filter_key: option_type
+        filter_value: all
+        title: Boundary error by model
+        source_artifact: results/experiment_09_boundary_head/boundary_metrics.csv
+        x: model
+        y: boundary_mae
+        caption: Boundary RMSE and MAE are reported separately from price evidence because the boundary remains the weakest supervised component.
+      - figure_id: call_refinement
+        kind: bar_from_csv
+        panel_group: boundary_models
+        orientation: horizontal
+        filter_key: split
+        filter_value: test
+        title: Call specific boundary refinement
+        source_artifact: results/experiment_10_option_specific_call_boundary/call_boundary_metrics.csv
+        x: model
+        y: boundary_mae
+        caption: Dividend call refinement is scoped to cases with genuine finite boundary labels.
+      - figure_id: boundary_worst_regimes
+        kind: bar_from_csv
+        orientation: horizontal
+        width: 0.88
+        title: Weak boundary regimes
+        source_artifact: results/experiment_09_boundary_head/boundary_by_regime.csv
+        x: regime_key
+        y: boundary_mae
+        limit: 10
+        caption: Weak boundary regimes remain visible and restrict the boundary claim.
+
+  - path: reports/stage10_delta_validation_head.tex
+    figures:
+      - figure_id: derivative_audit
+        kind: workflow
+        panel_group: delta_audit
+        title: Price model derivative audit
+        labels: ["Positive premium model", "Autograd Delta", "Finite difference check", "Strict mask comparison", "Do not use as final Greek claim"]
+        caption: Price model derivatives are audited before training a separate supervised Delta head.
+        source_artifact: results/experiment_11_delta_validation/delta_validation_summary.json
+      - figure_id: delta_validation
+        kind: bar_from_csv
+        panel_group: delta_audit
+        orientation: horizontal
+        filter_key: option_type
+        filter_value: all
+        title: Delta validation comparison
+        source_artifact: results/experiment_11_delta_validation/delta_validation_metrics.csv
+        x: model
+        y: delta_rmse
+        caption: Autograd and finite-difference Delta from the price model are compared with CN/PSOR Delta labels under the strict Greek mask.
+      - figure_id: bounded_delta_model
+        kind: workflow
+        panel_group: delta_head
+        title: Bounded Delta ranges
+        labels: ["Put range minus one to zero", "Call range zero to one", "Sigmoid mapping", "Bound check", "Strict mask metric"]
+        caption: The supervised Delta head enforces option specific bounds by construction.
+        source_artifact: src/models/delta_head.py
+      - figure_id: delta_head_metrics
+        kind: bar_from_csv
+        panel_group: delta_head
+        orientation: horizontal
+        filter_key: option_type
+        filter_value: all
+        title: Bounded Delta head errors
+        source_artifact: results/experiment_12_supervised_delta_head/delta_head_metrics.csv
+        x: model
+        y: delta_rmse
+        caption: Delta head metrics are reported as supervised diagnostics and not as Gamma evidence.
+
+  - path: reports/stage11_integrated_workflow.tex
+    figures:
+      - figure_id: modular_workflow
+        kind: workflow
+        layout: vertical
+        width: 0.64
+        title: Integrated modular workflow
+        labels: ["Price premium head", "Boundary head", "Delta head", "Fresh PSOR labels", "Scenario screening with audit"]
+        caption: Separate price, boundary, and Delta heads support scenario screening only when paired with fresh CN/PSOR audit cases.
+        source_artifact: src/workflow.py
+      - figure_id: integrated_price
+        kind: bar_from_csv
+        panel_group: integrated_errors
+        orientation: horizontal
+        title: Per regime price error
+        source_artifact: results/experiment_13_integrated_application_workflow/integrated_by_regime.csv
+        x: case_id
+        y: price_rmse
+        caption: Per regime price error is retained to avoid hiding weak integrated cases.
+      - figure_id: integrated_boundary
+        kind: bar_from_csv
+        panel_group: integrated_errors
+        orientation: horizontal
+        title: Per regime boundary error
+        source_artifact: results/experiment_13_integrated_application_workflow/integrated_by_regime.csv
+        x: case_id
+        y: boundary_mae
+        caption: Boundary error remains a limitation in the integrated workflow evidence.
+      - figure_id: integrated_speed
+        kind: bar_from_csv
+        orientation: horizontal
+        width: 0.82
+        title: Integrated timing
+        source_artifact: results/experiment_13_integrated_application_workflow/integrated_timing.csv
+        x: case_id
+        y: speedup
+        caption: Speedups are reported alongside PSOR audit rather than as solver replacement evidence.
+
+  - path: reports/stage13_future_extensions.tex
+    figures:
+      - figure_id: future_roadmap
+        kind: roadmap
+        title: Future work roadmap
+        caption: Extensions are explicitly marked as future work only and do not expand current claims.
+        source_artifact: results/experiment_15_future_extensions/future_extensions.csv
+      - figure_id: active_learning_loop
+        kind: workflow
+        panel_group: future_workflows
+        title: Active learning loop
+        labels: ["Candidate regimes", "Uncertainty or error score", "PSOR label request", "Dataset update", "New validation"]
+        caption: Active learning would require new PSOR labels and a fresh validation gate.
+        source_artifact: docs/active_learning_design.md
+      - figure_id: uq_workflow
+        kind: workflow
+        panel_group: future_workflows
+        title: Uncertainty quantification workflow
+        labels: ["Model ensemble", "Interval estimate", "Calibration check", "PSOR spot audit", "Claim gate"]
+        caption: Uncertainty quantification is a roadmap item and not a completed project result.
+        source_artifact: docs/uq_design.md
+      - figure_id: alternative_dynamics
+        kind: workflow
+        title: Alternative dynamics validation ladder
+        labels: ["New model", "New PDE or solver", "Boundary diagnostics", "Dataset rebuild", "Claim reset"]
+        caption: Local stochastic jump or rough volatility extensions require new mathematical and numerical validation.
+        source_artifact: docs/future_extensions.md
+
+  - path: reports/final_report.tex
+    figures:
+      - figure_id: visual_executive_summary
+        kind: workflow
+        layout: vertical
+        placement: inline
+        title: Visual executive summary
+        labels: ["Mathematical formulation", "CN PSOR benchmark", "Diagnostics", "Modular surrogates", "Claim audit"]
+        caption: The final report summarizes the benchmark-first evidence flow from mathematical formulation and CN/PSOR validation to scoped neural diagnostics and claim audit.
+        source_artifact: results/tables/final_claim_matrix.csv
+      - figure_id: claim_readiness_map
+        kind: claim_map
+        panel_group: claim_classes
+        orientation: horizontal
+        title: Claim readiness map
+        source_artifact: results/experiment_17_publication_audit/publication_gap_matrix.csv
+        caption: Claim readiness separates main evidence from supplementary and restricted claims.
+      - figure_id: strongest_weakest_evidence
+        kind: claim_map
+        panel_group: claim_classes
+        orientation: horizontal
+        title: Publication evidence classes
+        source_artifact: results/experiment_17_publication_audit/publication_gap_matrix.csv
+        caption: Evidence classes guide cautious final wording and keep boundary weakness visible.
+      - figure_id: student_contribution_focus
+        kind: contribution
+        placement: inline
+        orientation: horizontal
+        title: Student contribution focus
+        caption: The student contribution centers on AI/ML pipelines, numerical experiments, diagnostic plotting, reproducibility engineering, and LaTeX reporting rather than sole financial-theory authorship.
+        source_artifact: self_background
+      - figure_id: matrix_process_summary
+        kind: workflow
+        layout: vertical
+        placement: inline
+        panel_group: solver_teaching
+        title: Matrix process summary
+        labels: ["PDE operator", "Finite difference stencil", "L h matrix", "CN A and B matrices", "PSOR projection"]
+        caption: The summary figure shows the mathematical process from PDE notation to projected matrix iteration.
+        source_artifact: reports/stage02_solver_validation.tex
+      - figure_id: psor_teaching_summary
+        kind: psor_update_flow
+        placement: inline
+        panel_group: solver_teaching
+        title: PSOR teaching summary
+        caption: The PSOR teaching figure explains obstacle enforcement without adding new validation evidence.
+        source_artifact: src/solvers/cn_psor.py
+
+  - path: paper/supplementary_material.tex
+    figures:
+      - figure_id: full_gallery_workflow
+        kind: workflow
+        layout: vertical
+        panel_group: supplement_workflows
+        title: Full gallery workflow
+        labels: ["Stage reports", "Evidence figures", "Manifest", "Claim safe captions", "Compiled supplement"]
+        caption: The supplement collects report visual evidence with a manifest for traceability.
+        source_artifact: results/figures/report_enrichment/figure_manifest.csv
+      - figure_id: publication_workflow
+        kind: image_panel
+        panel_group: supplement_workflows
+        title: Publication workflow figure
+        source_artifact: results/figures/publication/fig01_workflow_schematic.png
+        caption: The publication workflow orients the supplement around CN/PSOR validation, clean labels, separate diagnostic heads, and continuing PSOR audit.
+      - figure_id: publication_validation
+        kind: image_panel
+        panel_group: publication_evidence
+        title: Solver validation publication figure
+        source_artifact: results/figures/publication/fig03_solver_validation.png
+        caption: Solver validation evidence remains the foundation for all surrogate labels.
+      - figure_id: publication_surrogate
+        kind: image_panel
+        panel_group: publication_evidence
+        title: Surrogate comparison publication figure
+        source_artifact: results/figures/publication/fig06_surrogate_comparison.png
+        caption: The surrogate comparison separates aggregate price error from payoff-obstacle consistency and does not treat the price model as a boundary or Greek estimator.
+      - figure_id: publication_delta
+        kind: image_panel
+        panel_group: limitations
+        title: Delta comparison publication figure
+        source_artifact: results/figures/publication/fig07_delta_comparison.png
+        caption: Delta evidence is separated from price model claims and evaluated under strict masks.
+      - figure_id: publication_failure
+        kind: image_panel
+        panel_group: limitations
+        title: Boundary failure publication figure
+        source_artifact: results/figures/publication/fig09_boundary_failure_modes.png
+        caption: Failure and weak regime figures are retained to keep the final claim audit honest.
+      - figure_id: supplement_matrix_pair
+        kind: cn_matrix_pair
+        panel_group: matrix_appendix
+        title: Supplementary CN matrix pair
+        caption: The supplementary matrix pair gives readers a compact view of the A and B matrices used in the solver.
+        source_artifact: src/solvers/cn_psor.py
+      - figure_id: supplement_lcp_vector
+        kind: lcp_vector_form
+        panel_group: matrix_appendix
+        title: Supplementary LCP vector form
+        caption: The supplementary LCP diagram records the matrix inequality structure behind the obstacle diagnostics.
+        source_artifact: reports/stage02_solver_validation.tex

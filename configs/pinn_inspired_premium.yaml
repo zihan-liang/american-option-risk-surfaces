@@ -1,0 +1,36 @@
+dataset: data/processed/surrogate_dataset.npz
+seed: 21
+option_scope: put
+train_cap: 12000
+validation_cap: 4000
+test_cap: 4000
+hidden: 64
+depth: 2
+batch_size: 2048
+epochs: 8
+learning_rate: 1.0e-3
+patience: 3
+device: auto
+training_dtype: float64
+lambda_sup: 1.0
+lambda_pde: 1.0e-4
+lambda_obs: 1.0
+pde_batch_cap: 512
+pde_huber_delta: 1.0
+gap_epsilon: 1.0e-5
+tau_min_for_pde: 0.08
+mask_exclusions:
+  - near_boundary
+  - near_kink
+  - near_maturity
+residual_eval_cap: 2048
+premium_boundary_threshold: 1.0e-3
+obstacle_tolerance: 1.0e-10
+feature_names:
+  - log_moneyness
+  - tau_over_T
+  - r
+  - q
+  - sigma
+  - T
+  - is_call

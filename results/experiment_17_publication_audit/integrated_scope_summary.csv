@@ -1,0 +1,5 @@
+scope,target_test_regimes,available_test_regimes,audited_cases,skipped_cases,disposition,reason,price_rmse_mean,price_rmse_median,price_rmse_p90,price_rmse_max,boundary_mae_mean,strict_delta_rmse_mean
+fresh_psor_integrated_audit,34,34,6,28,supplement_only,Fresh integrated audit remains six cases; manuscript must not make broad workflow-generalization claims.,,,,,,
+call,,,3,,descriptive_integrated_metrics,Grouped integrated audit summary.,0.008297877123597041,0.0095251779115762,0.0095251779115762,0.009558962549100491,0.11362225629184544,0.029242858082256594
+put,,,3,,descriptive_integrated_metrics,Grouped integrated audit summary.,0.010076943543743427,0.010788242759726395,0.010788242759726395,0.011367266248969813,0.19417168060547693,0.03071802087132029
+all,,,6,,descriptive_integrated_metrics,Grouped integrated audit summary.,0.009187410333670234,0.009542070230338345,0.010788242759726395,0.011367266248969813,0.1538969684486612,0.02998043947678844

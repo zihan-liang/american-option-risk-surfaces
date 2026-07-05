@@ -1,0 +1,9 @@
+stage,method,metric,metric_key,baseline_value,candidate_value,relative_change_percent
+Stage 22,terminal_plus_ramp_plus_residual_sampling,Price RMSE,mean_test_price_rmse,0.09383967225482094,0.05109927171632076,-45.54619545392159
+Stage 22,terminal_plus_ramp_plus_residual_sampling,Masked residual,mean_test_residual_mean_abs,0.06806043294736444,0.14929555751948062,119.35734325248943
+Stage 22,terminal_plus_ramp_plus_residual_sampling,Boundary RMSE,mean_test_boundary_rmse,0.08954452202375952,0.05277167214372758,-41.06655443453563
+Stage 22,terminal_plus_ramp_plus_residual_sampling,Strict Delta RMSE,mean_test_delta_rmse,0.10950415039450938,0.10205685698292184,-6.8009234214020715
+Stage 23,terminal_pde_weight_5,Price RMSE,mean_test_price_rmse,0.0636748569377359,0.022234376957616698,-65.08138686615588
+Stage 23,terminal_pde_weight_5,Masked residual,mean_test_residual_mean_abs,0.055138207980481774,0.028064283152143255,-49.10193098390565
+Stage 23,terminal_pde_weight_5,Boundary RMSE,mean_test_boundary_rmse,0.059735048669028845,0.011720606287582187,-80.3790127425492
+Stage 23,terminal_pde_weight_5,Strict Delta RMSE,mean_test_delta_rmse,0.10251319936031861,0.0970616110079414,-5.317937969349373

@@ -1,7 +1,7 @@
 {
-  "forbidden_tracked_files": 4,
+  "forbidden_tracked_files": 0,
   "missing_required_files": 0,
-  "release_gate": "fail",
+  "release_gate": "pass",
   "stage12_release_gate": "pass",
   "stage13_release_gate": "pass"
 }

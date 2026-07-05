@@ -23,6 +23,8 @@ from models.training import (
     train_linear_baseline,
     train_torch_regression_model,
 )
+from plotting.publication import save_bar_figure
+from plotting.report_visuals import format_display_label
 
 
 def run(
@@ -274,13 +276,20 @@ def _save_figures(metrics_rows: list[dict], violation_rows: list[dict], figure_r
     ensure_dir(figure_root)
     test_rows = [row for row in metrics_rows if row["split"] == "test" and row["option_type"] in {"put", "call"}]
     if test_rows:
-        fig, ax = plt.subplots(figsize=(7, 4))
-        ax.bar([f"{row['model']}\n{row['option_type']}" for row in test_rows], [row["delta_mae"] for row in test_rows])
-        ax.set_ylabel("test Delta MAE")
-        ax.tick_params(axis="x", rotation=30)
-        fig.tight_layout()
-        fig.savefig(figure_root / "test_delta_mae_by_option.png", dpi=160)
-        plt.close(fig)
+        labels = [f"{row['model']}|{row['option_type']}" for row in test_rows]
+        aliases = {
+            label: f"{format_display_label(row['model'])}: {row['option_type'].title()}"
+            for label, row in zip(labels, test_rows)
+        }
+        save_bar_figure(
+            figure_root / "test_delta_mae_by_option.png",
+            labels,
+            [row["delta_mae"] for row in test_rows],
+            r"Strict-mask test $\Delta$ MAE",
+            r"$\Delta$ MAE",
+            orientation="horizontal",
+            display_labels=aliases,
+        )
     test_violations = [row for row in violation_rows if row["split"] == "test"]
     if test_violations:
         fig, ax = plt.subplots(figsize=(6, 4))

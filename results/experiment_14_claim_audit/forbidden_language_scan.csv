@@ -1,1 +1,4 @@
 file,line,phrase,status,text
+reports\final_report.tex,160,Gamma surrogate,allowed_restricted_context,Gamma is treated cautiously. Finite-difference Gamma can spike near payoff kinks and exercise boundaries; the project therefore reports masked and unmasked behavior separately and does not train or claim a Gamma surrogate.
+paper\manuscript_outline.tex,64,Gamma surrogate,allowed_restricted_context,"generalization, no validated Gamma surrogate, no market calibration, and only"
+paper\supplementary_material.tex,74,Gamma surrogate,allowed_restricted_context,quantity. The price model is not a Greek engine. A Gamma surrogate has not been

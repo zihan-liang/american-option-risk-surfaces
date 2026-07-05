@@ -321,3 +321,64 @@ Use this file to record dated progress, commands, metrics, and decisions.
   - `manuscript_outline.pdf`
   - `paper/manuscript_outline.pdf`
 - Next step: remove the stale tracked generated files locally, rerun `python experiments/16_release_verification.py`, and commit the release freeze.
+
+## 2026-06-17
+
+- Stage: Journal-standard final report upgrade.
+- Commands:
+  - `python -m unittest discover -s tests -p "test_publication*.py"`
+  - `python -m unittest discover -s tests -p "test_manuscript*.py"`
+  - `python experiments/17_publication_evidence_audit.py --config configs/publication_evidence.yaml`
+  - `python experiments/18_publication_figures.py --config configs/publication_figures.yaml`
+- Key outputs:
+  - `paper/manuscript.tex`
+  - `paper/supplementary_material.tex`
+  - `docs/journal_readiness_gap_audit.md`
+  - `results/experiment_17_publication_audit/publication_gap_matrix.csv`
+  - `results/experiment_17_publication_audit/publication_audit_summary.json`
+  - `results/figures/publication/figure_manifest.csv`
+- Key metrics:
+  - Publication claims audited: `10`.
+  - Main-text-ready claims: `5`.
+  - Supplement-only or limited claims: `5`.
+  - Publication figures generated: `9`.
+  - Integrated fresh PSOR audit cases remain `6` against a target of `34`.
+- Decision: Stage 15 upgrades the final deliverable into a manuscript-plus-supplement package, but integrated workflow and boundary claims remain explicitly limited.
+- Failure modes retained: boundary-head performance is weak, integrated audit breadth is limited, Gamma is diagnostic-only, and PSOR remains required for new-regime trust.
+
+## 2026-06-17
+
+- Stage: Visualization enrichment for every report.
+- Commands:
+  - `python experiments/19_report_visualization_enrichment.py --config configs/report_visualization_enrichment.yaml`
+  - `python -m unittest discover -s tests -p "test_report_visualization*.py"`
+  - `python -m unittest discover -s tests -p "test_report_tex_figure_links.py"`
+  - `python -m unittest discover -s tests -p "test_visual_claim_language.py"`
+  - `python -m unittest discover -s tests -p "test_personal_background_positioning.py"`
+- Key outputs:
+  - `configs/report_visualization_enrichment.yaml`
+  - `src/plotting/report_visuals.py`
+  - `experiments/19_report_visualization_enrichment.py`
+  - `results/figures/report_enrichment/figure_manifest.csv`
+  - `reports/visual_blocks/`
+- Key metrics:
+  - Reports with enrichment plan: `14`.
+  - Evidence-linked enrichment figures generated: `58`.
+  - Caption language violations in focused scan: `0`.
+- Decision: Stage 16 improves visual communication, report readability, and student contribution positioning without changing the underlying claim matrix.
+- Failure modes retained: richer visuals do not make the neural surrogates better than CN/PSOR, do not remove boundary weakness, and do not expand Gamma or PSOR-replacement claims.
+
+## 2026-06-17
+
+- Stage: Mathematical process and matrix-calculation visualization upgrade.
+- Commands:
+  - `python experiments/19_report_visualization_enrichment.py --config configs/report_visualization_enrichment.yaml`
+  - `python -m unittest discover -s tests -p "test_math_process_visual_types.py"`
+  - `python -m unittest discover -s tests -p "test_report_visualization_manifest.py"`
+  - `python -m unittest discover -s tests -p "test_visual_claim_language.py"`
+- Key outputs:
+  - New explicit visual kinds in `src/plotting/report_visuals.py`.
+  - Expanded Stage 1 and Stage 2 figure plan in `configs/report_visualization_enrichment.yaml`.
+  - Regenerated `results/figures/report_enrichment/figure_manifest.csv`.
+- Decision: Stage 17 is an explanation upgrade only. It improves understanding of PDE-to-matrix translation, CN matrices, LCP form, and PSOR projection without changing solver behavior or scientific claims.
+- Failure modes retained: visual teaching figures are not new accuracy evidence and do not affect surrogate-performance claims.

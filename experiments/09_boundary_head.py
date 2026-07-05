@@ -28,6 +28,8 @@ from models.training import (
     train_linear_baseline,
     train_torch_regression_model,
 )
+from plotting.publication import save_bar_figure
+from plotting.report_visuals import format_display_label
 
 
 def run(
@@ -307,14 +309,20 @@ def _save_figures(metrics_rows: list[dict], range_rows: list[dict], figure_root:
     ensure_dir(figure_root)
     test_rows = [row for row in metrics_rows if row["split"] == "test" and row["option_type"] in {"put", "call"}]
     if test_rows:
-        fig, ax = plt.subplots(figsize=(7, 4))
-        labels = [f"{row['model']}\n{row['option_type']}" for row in test_rows]
-        ax.bar(labels, [row["boundary_mae"] for row in test_rows])
-        ax.set_ylabel("test boundary MAE")
-        ax.tick_params(axis="x", rotation=30)
-        fig.tight_layout()
-        fig.savefig(figure_root / "test_boundary_mae_by_option.png", dpi=160)
-        plt.close(fig)
+        labels = [f"{row['model']}|{row['option_type']}" for row in test_rows]
+        aliases = {
+            label: f"{format_display_label(row['model'])}: {row['option_type'].title()}"
+            for label, row in zip(labels, test_rows)
+        }
+        save_bar_figure(
+            figure_root / "test_boundary_mae_by_option.png",
+            labels,
+            [row["boundary_mae"] for row in test_rows],
+            "Test boundary MAE by option type",
+            "Boundary MAE",
+            orientation="horizontal",
+            display_labels=aliases,
+        )
     if range_rows:
         fig, ax = plt.subplots(figsize=(6, 4))
         labels = [f"{row['model']}\n{row['split']}" for row in range_rows]

@@ -1,0 +1,129 @@
+{
+  "best_combo_method": "terminal_plus_ramp_plus_residual_sampling",
+  "best_method": "terminal_plus_ramp_plus_residual_sampling",
+  "candidate_success": false,
+  "decision": "stage22_pinn_campaign",
+  "diagnostic_success": false,
+  "interpretation": "No tested Stage 22 method passed the capped candidate or diagnostic success gates; no PINN-inspired improvement claim is supported.",
+  "method_aggregates": [
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.08954140661595117,
+      "mean_test_delta_rmse": 0.1094985415690301,
+      "mean_test_price_rmse": 0.09383908796661485,
+      "mean_test_residual_mean_abs": 0.06806013461058869,
+      "method": "delta_loss"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.08954443305035693,
+      "mean_test_delta_rmse": 0.10950407303557712,
+      "mean_test_price_rmse": 0.09383957373754241,
+      "mean_test_residual_mean_abs": 0.06805940493301242,
+      "method": "pde_ramp"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.08954449218929679,
+      "mean_test_delta_rmse": 0.10950258989218327,
+      "mean_test_price_rmse": 0.09383857093358021,
+      "mean_test_residual_mean_abs": 0.06802351730202667,
+      "method": "pde_weight_1e-3"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.0895445181735166,
+      "mean_test_delta_rmse": 0.10950399195006492,
+      "mean_test_price_rmse": 0.09383956817806453,
+      "mean_test_residual_mean_abs": 0.06805675536856474,
+      "method": "pde_weight_1e-4"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.08954452162950495,
+      "mean_test_delta_rmse": 0.10950413450593162,
+      "mean_test_price_rmse": 0.09383966197309172,
+      "mean_test_residual_mean_abs": 0.0680600654796648,
+      "method": "pde_weight_1e-5"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.08954452198424483,
+      "mean_test_delta_rmse": 0.10950414880517056,
+      "mean_test_price_rmse": 0.09383967122804411,
+      "mean_test_residual_mean_abs": 0.06806039620381167,
+      "method": "pde_weight_1e-6"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.08954417915184591,
+      "mean_test_delta_rmse": 0.10950353604059665,
+      "mean_test_price_rmse": 0.09383927340653003,
+      "mean_test_residual_mean_abs": 0.06805296431321232,
+      "method": "residual_sampling"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.08954452202375952,
+      "mean_test_delta_rmse": 0.10950415039450938,
+      "mean_test_price_rmse": 0.09383967225482094,
+      "mean_test_residual_mean_abs": 0.06806043294736444,
+      "method": "supervised_baseline"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.05277714564404839,
+      "mean_test_delta_rmse": 0.10205747673175795,
+      "mean_test_price_rmse": 0.05110329735018271,
+      "mean_test_residual_mean_abs": 0.14931403248675648,
+      "method": "terminal_plus_ramp"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.05277167214372758,
+      "mean_test_delta_rmse": 0.10205685698292184,
+      "mean_test_price_rmse": 0.05109927171632076,
+      "mean_test_residual_mean_abs": 0.14929555751948062,
+      "method": "terminal_plus_ramp_plus_residual_sampling"
+    },
+    {
+      "candidate_success_count": 0,
+      "diagnostic_success_count": 0,
+      "mean_test_boundary_rmse": 0.052781414073110766,
+      "mean_test_delta_rmse": 0.102057607684043,
+      "mean_test_price_rmse": 0.05110669012468474,
+      "mean_test_residual_mean_abs": 0.14933035567369293,
+      "method": "terminal_premium"
+    }
+  ],
+  "methods": [
+    "delta_loss",
+    "pde_ramp",
+    "pde_weight_1e-3",
+    "pde_weight_1e-4",
+    "pde_weight_1e-5",
+    "pde_weight_1e-6",
+    "residual_sampling",
+    "supervised_baseline",
+    "terminal_plus_ramp",
+    "terminal_plus_ramp_plus_residual_sampling",
+    "terminal_premium"
+  ],
+  "note": "Stage 22 compares PINN-inspired neural variants against the matched supervised surrogate baseline; CN/PSOR remains the benchmark and label generator.",
+  "pde_total_mask_samples": 684188,
+  "seeds": [
+    21,
+    22,
+    23
+  ]
+}
