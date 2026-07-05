@@ -1,0 +1,25 @@
+method,metric,metric_key,baseline_value,candidate_value,relative_change_percent,candidate_success_count
+terminal_pde_weight_2,Price RMSE,mean_test_price_rmse,0.0636748569377359,0.022970176237385526,-63.925829845449385,3
+terminal_pde_weight_2,Masked residual,mean_test_residual_mean_abs,0.055138207980481774,0.03559164834915827,-35.45011770829175,3
+terminal_pde_weight_2,Boundary RMSE,mean_test_boundary_rmse,0.059735048669028845,0.014823288641009687,-75.1849392085702,3
+terminal_pde_weight_2,Strict Delta RMSE,mean_test_delta_rmse,0.10251319936031861,0.09719677684972337,-5.186085834575116,3
+terminal_pde_weight_5,Price RMSE,mean_test_price_rmse,0.0636748569377359,0.022234376957616698,-65.08138686615588,3
+terminal_pde_weight_5,Masked residual,mean_test_residual_mean_abs,0.055138207980481774,0.028064283152143255,-49.10193098390565,3
+terminal_pde_weight_5,Boundary RMSE,mean_test_boundary_rmse,0.059735048669028845,0.011720606287582187,-80.3790127425492,3
+terminal_pde_weight_5,Strict Delta RMSE,mean_test_delta_rmse,0.10251319936031861,0.0970616110079414,-5.317937969349373,3
+terminal_pde_weight_10,Price RMSE,mean_test_price_rmse,0.0636748569377359,0.023264542449494444,-63.46353400959575,3
+terminal_pde_weight_10,Masked residual,mean_test_residual_mean_abs,0.055138207980481774,0.025116896069504832,-54.447384147130975,3
+terminal_pde_weight_10,Boundary RMSE,mean_test_boundary_rmse,0.059735048669028845,0.01054195199815982,-82.35214964573125,3
+terminal_pde_weight_10,Strict Delta RMSE,mean_test_delta_rmse,0.10251319936031861,0.0971081162050068,-5.272572887237425,3
+terminal_pde_weight_25,Price RMSE,mean_test_price_rmse,0.0636748569377359,0.027821008177579334,-56.3077021047979,3
+terminal_pde_weight_25,Masked residual,mean_test_residual_mean_abs,0.055138207980481774,0.0234731463270245,-57.42852880649713,3
+terminal_pde_weight_25,Boundary RMSE,mean_test_boundary_rmse,0.059735048669028845,0.01018327110121566,-82.95260265436858,3
+terminal_pde_weight_25,Strict Delta RMSE,mean_test_delta_rmse,0.10251319936031861,0.09741766406400404,-4.970613860566897,3
+terminal_pde_weight_10_residual_sampling,Price RMSE,mean_test_price_rmse,0.0636748569377359,0.024995131541233524,-60.745680880484954,3
+terminal_pde_weight_10_residual_sampling,Masked residual,mean_test_residual_mean_abs,0.055138207980481774,0.02194725178668391,-60.19592839423987,3
+terminal_pde_weight_10_residual_sampling,Boundary RMSE,mean_test_boundary_rmse,0.059735048669028845,0.008182070302130116,-86.30273100225611,3
+terminal_pde_weight_10_residual_sampling,Strict Delta RMSE,mean_test_delta_rmse,0.10251319936031861,0.09684112797199784,-5.533015673800479,3
+terminal_pde_weight_25_residual_sampling,Price RMSE,mean_test_price_rmse,0.0636748569377359,0.031332518863077814,-50.79294972941024,3
+terminal_pde_weight_25_residual_sampling,Masked residual,mean_test_residual_mean_abs,0.055138207980481774,0.021206923015628612,-61.5386067259647,3
+terminal_pde_weight_25_residual_sampling,Boundary RMSE,mean_test_boundary_rmse,0.059735048669028845,0.00815016988611946,-86.35613418300416,3
+terminal_pde_weight_25_residual_sampling,Strict Delta RMSE,mean_test_delta_rmse,0.10251319936031861,0.09706386088632585,-5.315743248670978,3

@@ -66,6 +66,13 @@ The PDE mask is PSOR-derived:
 \]
 In the campaign configuration, \(\epsilon=10^{-5}\) and \(\theta_{\min}=0.08\). This policy avoids exercise-region points, near-boundary samples, payoff-kink samples, near-maturity samples through the \(\theta\) threshold, and calls. The residual evaluation reports \path{psor_continuation_not_boundary_not_kink_not_maturity} as the mask source.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\linewidth]{pinn_psor_premium_mask_panel.pdf}
+\caption{Representative American put PSOR surface used to explain the masked continuation residual. The left panel shows normalized continuation premium \(C/K\) with the PSOR free boundary and payoff kink; the right panel shows where the auxiliary Black--Scholes residual is evaluated after continuation, boundary, kink, and maturity exclusions. This figure describes the residual support used by the surrogate diagnostics, not an independently learned exercise policy.}
+\label{fig:mask-panel}
+\end{figure}
+
 \section{Experiment Design}
 
 \textbf{Stage 21.} The first run implemented the Option-B design: a small PSOR-supervised positive-premium MLP with a masked residual term. It used capped put samples, matched initialization against the supervised positive-premium baseline, and a small PDE weight. The run was diagnostic. Price RMSE and masked residual mean absolute value were slightly worse than the supervised baseline, so no improvement claim was supported.
@@ -76,7 +83,7 @@ In the campaign configuration, \(\epsilon=10^{-5}\) and \(\theta_{\min}=0.08\). 
 
 \section{Results}
 
-Table~\ref{tab:full-method-coverage} lists the full method coverage before any best-method filtering. Stage 21 was a single matched diagnostic run, so it did not use the multi-seed candidate-success gate. Stage 22 and Stage 23 report candidate-success counts over three seeds.
+Table~\ref{tab:full-method-coverage} lists the full method coverage before any best-method filtering. Stage 21 was a single matched diagnostic run, so it did not use the multi-seed candidate-success gate. Stage 22 and Stage 23 report candidate-success counts over three seeds. Figure~\ref{fig:stage23-tradeoff} then focuses on the Stage 23 terminal-scaled sweep, while Table~\ref{tab:stage-comparison} and Figure~\ref{fig:relative-changes} summarize the selected best methods after the search.
 
 \begin{table}[H]
 \centering
@@ -116,6 +123,13 @@ Stage & Method & Gate count & Price RMSE & Masked residual \\
 \label{tab:full-method-coverage}
 \end{table}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\linewidth]{pinn_stage23_metric_tradeoff.pdf}
+\caption{Stage 23 terminal-scaled methods compared with the matched supervised neural baseline. Entries are relative metric changes; negative values are improvements because all displayed metrics are errors. Counts in the row labels report capped candidate-success seeds out of three. The panel shows that the successful Stage 23 claim comes from a sweep across PDE weights and residual-sampling variants, not from a single uncontextualized run.}
+\label{fig:stage23-tradeoff}
+\end{figure}
+
 \begin{table}[H]
 \centering
 \begingroup
@@ -153,9 +167,16 @@ Stage & Best method & Successes & Price RMSE & Masked residual & Boundary RMSE &
 \label{fig:relative-changes}
 \end{figure}
 
-Tables~\ref{tab:full-method-coverage}--\ref{tab:stage-comparison} and Figure~\ref{fig:relative-changes} show the central contrast. Stage 22 identified terminal premium scaling as useful for supervised diagnostics but did not produce a residual-safe method. Stage 23 preserved the terminal scaling and increased the masked PDE regularization strength enough to improve the residual as well.
+Tables~\ref{tab:full-method-coverage}--\ref{tab:stage-comparison} and Figures~\ref{fig:stage23-tradeoff}--\ref{fig:relative-changes} show the central contrast. Stage 22 identified terminal premium scaling as useful for supervised diagnostics but did not produce a residual-safe method. Stage 23 preserved the terminal scaling and increased the masked PDE regularization strength enough to improve the residual as well.
 
 The Stage 23 method \path{terminal_pde_weight_5} improved mean price RMSE by about \(65.1\%\), masked residual mean absolute value by about \(49.1\%\), boundary RMSE by about \(80.4\%\), and strict-\(\Delta\) RMSE by about \(5.3\%\) against the matched supervised neural baseline. The largest gains are in price and boundary diagnostics. The Delta gain is modest but directionally favorable under the strict Greek mask.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.94\linewidth]{pinn_stage23_training_curves.pdf}
+\caption{Stage 23 capped put training traces across seeds 21--23. The best method reduces validation premium RMSE while training with a nonzero masked PDE loss; these curves are optimization diagnostics for the PSOR-supervised surrogate, not independent solver evidence.}
+\label{fig:stage23-training}
+\end{figure}
 
 \section{Interpretation}
 
@@ -181,7 +202,7 @@ The PINN-inspired campaign progressed from negative evidence in Stage 21, throug
 
 \section*{Reproducibility Artifacts}
 
-\begin{itemize}\footnotesize
+\begin{itemize}\footnotesize\raggedright
   \item Experiment plans and configuration:
   \path{docs/pinn_inspired_premium_experiment_plan.md};
   \path{configs/pinn_campaign.yaml};
@@ -197,8 +218,10 @@ The PINN-inspired campaign progressed from negative evidence in Stage 21, throug
   \path{results/experiment_23_pinn_strong_terminal/pinn_campaign_summary.json}.
   \item Figure and table generation:
   \path{scripts/plot_pinn_experiment_report.py};
+  \path{scripts/plot_pinn_visualization_prototypes.py};
+  \path{docs/pinn_report_visualization_brief.md};
   CSV outputs are under \path{results/figures/pinn_experiment_report/},
-  and the comparison figure is under \path{output/figures/}.
+  and the comparison figures are under \path{output/figures/}.
 \end{itemize}
 
 \end{document}
