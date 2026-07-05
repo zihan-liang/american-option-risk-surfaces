@@ -13,6 +13,15 @@ deliverables/
 id.png
 /manuscript_outline.*
 *.egg-info/
+# Root-level LaTeX build sidecars
+/*.aux
+/*.fdb_latexmk
+/*.fls
+/*.log
+/*.out
+/*.synctex.gz
+/*.toc
+/*.xdv
 results/**/*.npz
 results/**/*.pt
 results/**/*.png
