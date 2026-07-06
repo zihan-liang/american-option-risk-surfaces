@@ -376,10 +376,10 @@ def save_pinn_project_mechanism_illustration() -> None:
         xy=(0.555, 0.71),
         width=0.37,
         height=0.08,
-        text="$L_{\\mathrm{sup}}$: match PSOR price / premium labels",
+        text="$L_{\\mathrm{sup}}$: $\\widehat u,\\widehat C$ vs PSOR labels\n(price / premium)",
         facecolor=colors["loss"],
         edgecolor="#815681",
-        fontsize=6.9,
+        fontsize=6.35,
         weight="bold",
     )
     add_box(
@@ -452,8 +452,17 @@ def save_pinn_project_mechanism_illustration() -> None:
     add_arrow(ax, (0.305, 0.695), (0.265, 0.613))
     add_arrow(ax, (0.245, 0.525), (0.228, 0.515))
     add_arrow(ax, (0.270, 0.47), (0.405, 0.55), color="#516287")
-    add_arrow(ax, (0.46, 0.745), (0.555, 0.75), color="#516287")
+    add_arrow(
+        ax,
+        (0.270, 0.495),
+        (0.555, 0.75),
+        color="#815681",
+        connectionstyle="arc3,rad=-0.20",
+        zorder=0.7,
+    )
+    add_arrow(ax, (0.46, 0.745), (0.555, 0.65), color="#516287")
     add_arrow(ax, (0.46, 0.645), (0.555, 0.625), color="#516287")
+    add_arrow(ax, (0.46, 0.545), (0.555, 0.60), color="#516287")
     add_arrow(ax, (0.46, 0.445), (0.555, 0.505), color="#516287")
     add_arrow(ax, (0.73, 0.36), (0.55, 0.19), color="#477a52")
     add_arrow(
