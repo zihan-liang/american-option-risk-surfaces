@@ -156,6 +156,36 @@ def add_arrow(
         )
 
 
+def add_elbow_arrow(
+    ax: plt.Axes,
+    points: list[tuple[float, float]],
+    *,
+    color: str = "#405469",
+    linewidth: float = 1.25,
+    zorder: float = 2.0,
+) -> None:
+    if len(points) < 2:
+        return
+    for start, end in zip(points[:-2], points[1:-1]):
+        ax.plot(
+            [start[0], end[0]],
+            [start[1], end[1]],
+            color=color,
+            linewidth=linewidth,
+            solid_capstyle="round",
+            transform=ax.transAxes,
+            zorder=zorder,
+        )
+    add_arrow(
+        ax,
+        points[-2],
+        points[-1],
+        color=color,
+        connectionstyle="arc3",
+        zorder=zorder,
+    )
+
+
 def add_group(
     ax: plt.Axes,
     *,
@@ -281,7 +311,7 @@ def draw_compact_network(
 
 
 def save_pinn_project_mechanism_illustration() -> None:
-    fig, ax = plt.subplots(figsize=(8.0, 4.6))
+    fig, ax = plt.subplots(figsize=(8.6, 4.6))
     ax.set_axis_off()
     ax.text(
         0.5,
@@ -310,8 +340,8 @@ def save_pinn_project_mechanism_illustration() -> None:
     }
 
     add_group(ax, xy=(0.035, 0.30), width=0.33, height=0.56, title="Premium Surrogate Network")
-    add_group(ax, xy=(0.385, 0.30), width=0.11, height=0.56, title="AutoDiff", edgecolor="#78aaa4")
-    add_group(ax, xy=(0.525, 0.30), width=0.44, height=0.56, title="PINN-inspired Regularization")
+    add_group(ax, xy=(0.425, 0.30), width=0.10, height=0.56, title="AutoDiff", edgecolor="#78aaa4")
+    add_group(ax, xy=(0.555, 0.30), width=0.41, height=0.56, title="PINN-inspired Regularization")
 
     input_nodes = [
         (0.065, 0.805, "$x$"),
@@ -361,7 +391,7 @@ def save_pinn_project_mechanism_illustration() -> None:
     ]:
         add_box(
             ax,
-            xy=(0.405, y),
+            xy=(0.445, y),
             width=0.055,
             height=0.055,
             text=label,
@@ -373,8 +403,8 @@ def save_pinn_project_mechanism_illustration() -> None:
 
     add_box(
         ax,
-        xy=(0.555, 0.71),
-        width=0.37,
+        xy=(0.590, 0.71),
+        width=0.34,
         height=0.08,
         text="$L_{\\mathrm{sup}}$: $\\widehat u,\\widehat C$ vs PSOR labels\n(price / premium)",
         facecolor=colors["loss"],
@@ -384,8 +414,8 @@ def save_pinn_project_mechanism_illustration() -> None:
     )
     add_box(
         ax,
-        xy=(0.555, 0.58),
-        width=0.37,
+        xy=(0.590, 0.58),
+        width=0.34,
         height=0.09,
         text="$L_{\\mathrm{PDE}}$: masked Black-Scholes residual\nPSOR continuation mask;\naway from boundary/kink/maturity",
         facecolor=colors["loss"],
@@ -395,8 +425,8 @@ def save_pinn_project_mechanism_illustration() -> None:
     )
     add_box(
         ax,
-        xy=(0.555, 0.47),
-        width=0.37,
+        xy=(0.590, 0.47),
+        width=0.34,
         height=0.07,
         text="$L_\\Delta$ optional: Delta loss / Sobolev-style method",
         facecolor=colors["loss"],
@@ -406,8 +436,8 @@ def save_pinn_project_mechanism_illustration() -> None:
     )
     add_box(
         ax,
-        xy=(0.555, 0.36),
-        width=0.37,
+        xy=(0.590, 0.36),
+        width=0.34,
         height=0.075,
         text="Structure: $\\theta$ terminal scaling + softplus premium\nobstacle consistency by reconstruction",
         facecolor="#eaddec",
@@ -451,27 +481,25 @@ def save_pinn_project_mechanism_illustration() -> None:
 
     add_arrow(ax, (0.305, 0.695), (0.265, 0.613))
     add_arrow(ax, (0.245, 0.525), (0.228, 0.515))
-    add_arrow(ax, (0.270, 0.47), (0.405, 0.55), color="#516287")
-    add_arrow(
+    add_arrow(ax, (0.270, 0.455), (0.425, 0.385), color="#516287", connectionstyle="arc3,rad=-0.10")
+    add_elbow_arrow(
         ax,
-        (0.270, 0.495),
-        (0.555, 0.75),
+        [(0.270, 0.505), (0.400, 0.505), (0.400, 0.842), (0.570, 0.842), (0.590, 0.75)],
         color="#815681",
-        connectionstyle="arc3,rad=-0.20",
-        zorder=0.7,
+        linewidth=1.15,
+        zorder=1.0,
     )
-    add_arrow(ax, (0.46, 0.745), (0.555, 0.65), color="#516287")
-    add_arrow(ax, (0.46, 0.645), (0.555, 0.625), color="#516287")
-    add_arrow(ax, (0.46, 0.545), (0.555, 0.60), color="#516287")
-    add_arrow(ax, (0.46, 0.445), (0.555, 0.505), color="#516287")
-    add_arrow(ax, (0.73, 0.36), (0.55, 0.19), color="#477a52")
-    add_arrow(
+    add_arrow(ax, (0.50, 0.745), (0.590, 0.65), color="#516287")
+    add_arrow(ax, (0.50, 0.645), (0.590, 0.625), color="#516287")
+    add_arrow(ax, (0.50, 0.545), (0.590, 0.60), color="#516287")
+    add_arrow(ax, (0.50, 0.445), (0.590, 0.505), color="#516287")
+    add_arrow(ax, (0.76, 0.36), (0.55, 0.19), color="#477a52")
+    add_elbow_arrow(
         ax,
-        (0.495, 0.19),
-        (0.145, 0.755),
+        [(0.365, 0.19), (0.374, 0.26), (0.374, 0.645), (0.145, 0.645), (0.145, 0.675)],
         color="#d95f2a",
-        connectionstyle="arc3,rad=-0.36",
-        zorder=0.2,
+        linewidth=1.2,
+        zorder=0.8,
     )
     add_arrow(ax, (0.685, 0.125), (0.715, 0.125), color="#718096")
 
