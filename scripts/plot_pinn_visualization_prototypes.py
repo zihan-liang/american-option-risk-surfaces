@@ -10,6 +10,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap, TwoSlopeNorm
+from matplotlib.patches import FancyBboxPatch
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -71,6 +72,315 @@ def save_all(fig: plt.Figure, stem: str) -> None:
     fig.savefig(FIGURE_DIR / f"{stem}.pdf")
     fig.savefig(FIGURE_DIR / f"{stem}.png")
     plt.close(fig)
+
+
+def add_box(
+    ax: plt.Axes,
+    *,
+    xy: tuple[float, float],
+    width: float,
+    height: float,
+    text: str,
+    facecolor: str,
+    edgecolor: str = "#2d3748",
+    fontsize: float = 8.7,
+    weight: str = "normal",
+    linestyle: str = "-",
+) -> None:
+    box = FancyBboxPatch(
+        xy,
+        width,
+        height,
+        boxstyle="round,pad=0.018,rounding_size=0.012",
+        linewidth=1.05,
+        linestyle=linestyle,
+        facecolor=facecolor,
+        edgecolor=edgecolor,
+        transform=ax.transAxes,
+    )
+    ax.add_patch(box)
+    ax.text(
+        xy[0] + width / 2,
+        xy[1] + height / 2,
+        text,
+        ha="center",
+        va="center",
+        fontsize=fontsize,
+        weight=weight,
+        color="#172033",
+        transform=ax.transAxes,
+        linespacing=1.22,
+    )
+
+
+def add_arrow(
+    ax: plt.Axes,
+    start: tuple[float, float],
+    end: tuple[float, float],
+    *,
+    label: str | None = None,
+    label_offset: tuple[float, float] = (0.0, 0.0),
+    color: str = "#405469",
+    connectionstyle: str = "arc3",
+) -> None:
+    ax.annotate(
+        "",
+        xy=end,
+        xytext=start,
+        xycoords=ax.transAxes,
+        textcoords=ax.transAxes,
+        arrowprops={
+            "arrowstyle": "->",
+            "lw": 1.35,
+            "color": color,
+            "shrinkA": 2,
+            "shrinkB": 2,
+            "connectionstyle": connectionstyle,
+        },
+    )
+    if label:
+        x = (start[0] + end[0]) / 2 + label_offset[0]
+        y = (start[1] + end[1]) / 2 + label_offset[1]
+        ax.text(
+            x,
+            y,
+            label,
+            ha="center",
+            va="center",
+            fontsize=7.2,
+            color=color,
+            transform=ax.transAxes,
+            bbox={"boxstyle": "round,pad=0.12", "fc": "white", "ec": "none", "alpha": 0.78},
+        )
+
+
+def add_group(
+    ax: plt.Axes,
+    *,
+    xy: tuple[float, float],
+    width: float,
+    height: float,
+    title: str,
+    edgecolor: str = "#8a8f98",
+) -> None:
+    group = FancyBboxPatch(
+        xy,
+        width,
+        height,
+        boxstyle="round,pad=0.012,rounding_size=0.008",
+        linewidth=1.25,
+        linestyle=(0, (5, 4)),
+        facecolor="none",
+        edgecolor=edgecolor,
+        transform=ax.transAxes,
+    )
+    ax.add_patch(group)
+    ax.text(
+        xy[0],
+        xy[1] + height + 0.018,
+        title,
+        ha="left",
+        va="bottom",
+        fontsize=9.2,
+        color="#172033",
+        transform=ax.transAxes,
+    )
+
+
+def save_pinn_project_mechanism_illustration() -> None:
+    fig, ax = plt.subplots(figsize=(8.0, 4.6))
+    ax.set_axis_off()
+    ax.text(
+        0.5,
+        0.975,
+        "Project-specific PINN-inspired mechanism",
+        ha="center",
+        va="center",
+        fontsize=11.5,
+        weight="bold",
+        transform=ax.transAxes,
+    )
+
+    colors = {
+        "input": "#edf2f7",
+        "psor": "#eef3ff",
+        "model": "#e8f5f3",
+        "price": "#f1f8e9",
+        "residual": "#fff4e6",
+        "objective": "#f7eef8",
+        "gate": "#f5f7fa",
+        "claim": "#fbfbfd",
+        "loss": "#d8b4d8",
+        "autodiff": "#e9f7f5",
+        "premium": "#f7c948",
+        "network": "#3f8fc5",
+    }
+
+    add_group(ax, xy=(0.035, 0.30), width=0.31, height=0.56, title="Premium Surrogate Network")
+    add_group(ax, xy=(0.375, 0.30), width=0.12, height=0.56, title="AutoDiff", edgecolor="#78aaa4")
+    add_group(ax, xy=(0.525, 0.30), width=0.44, height=0.56, title="PINN-inspired Regularization")
+
+    add_box(
+        ax,
+        xy=(0.055, 0.69),
+        width=0.15,
+        height=0.12,
+        text="Inputs\n$x=\\log(S/K)$\n$\\theta=\\tau/T$, $r$, $q$, $\\sigma$, $T$",
+        facecolor=colors["input"],
+        fontsize=6.7,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.215, 0.67),
+        width=0.075,
+        height=0.15,
+        text="MLP\n+\nsoftplus",
+        facecolor=colors["network"],
+        edgecolor="#2c5f86",
+        fontsize=6.8,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.255, 0.50),
+        width=0.075,
+        height=0.105,
+        text="$\\widehat C_\\theta\\geq0$\nterminal\nscaling",
+        facecolor=colors["premium"],
+        edgecolor="#8a6411",
+        fontsize=6.1,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.075, 0.42),
+        width=0.19,
+        height=0.10,
+        text="Reconstruct price\n$\\widehat u=\\Phi/K+\\widehat C_\\theta$",
+        facecolor=colors["price"],
+        fontsize=6.8,
+        weight="bold",
+    )
+
+    for y, label in [
+        (0.72, "$\\widehat u_\\theta$"),
+        (0.62, "$\\widehat u_x$"),
+        (0.52, "$\\widehat u_{xx}$"),
+        (0.42, "$\\Delta$"),
+    ]:
+        add_box(
+            ax,
+            xy=(0.405, y),
+            width=0.055,
+            height=0.055,
+            text=label,
+            facecolor=colors["autodiff"],
+            edgecolor="#3d8a83",
+            fontsize=7.0,
+            weight="bold",
+        )
+
+    add_box(
+        ax,
+        xy=(0.555, 0.71),
+        width=0.37,
+        height=0.08,
+        text="$L_{\\mathrm{sup}}$: match PSOR price / premium labels",
+        facecolor=colors["loss"],
+        edgecolor="#815681",
+        fontsize=6.9,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.555, 0.58),
+        width=0.37,
+        height=0.09,
+        text="$L_{\\mathrm{PDE}}$: masked Black-Scholes residual\nPSOR continuation mask;\naway from boundary/kink/maturity",
+        facecolor=colors["loss"],
+        edgecolor="#815681",
+        fontsize=6.1,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.555, 0.47),
+        width=0.37,
+        height=0.07,
+        text="$L_\\Delta$ optional: Delta / Sobolev diagnostic methods",
+        facecolor=colors["loss"],
+        edgecolor="#815681",
+        fontsize=6.6,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.555, 0.36),
+        width=0.37,
+        height=0.075,
+        text="Structure: $\\theta$ terminal scaling + softplus premium\nobstacle consistency by reconstruction",
+        facecolor="#eaddec",
+        edgecolor="#815681",
+        fontsize=6.3,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.075, 0.32),
+        width=0.22,
+        height=0.065,
+        text="CN/PSOR remains benchmark\nand label generator",
+        facecolor=colors["psor"],
+        edgecolor="#516287",
+        fontsize=6.2,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.305, 0.06),
+        width=0.38,
+        height=0.13,
+        text="$L(\\theta)=L_{\\mathrm{sup}}+\\lambda_{\\mathrm{PDE}}L_{\\mathrm{PDE}}+\\lambda_\\Delta L_\\Delta$\noptimizer updates neural parameters",
+        facecolor="#98c8a4",
+        edgecolor="#477a52",
+        fontsize=7.2,
+        weight="bold",
+    )
+    add_box(
+        ax,
+        xy=(0.715, 0.055),
+        width=0.245,
+        height=0.14,
+        text="Evaluation gates vs matched\nsupervised neural baseline\nprice RMSE | residual\nboundary RMSE | strict $\\Delta$ RMSE",
+        facecolor=colors["gate"],
+        edgecolor="#718096",
+        fontsize=6.2,
+        weight="bold",
+    )
+
+    add_arrow(ax, (0.205, 0.75), (0.215, 0.75))
+    add_arrow(ax, (0.285, 0.69), (0.295, 0.59))
+    add_arrow(ax, (0.255, 0.50), (0.265, 0.47))
+    add_arrow(ax, (0.265, 0.47), (0.405, 0.55), color="#516287")
+    add_arrow(ax, (0.46, 0.745), (0.555, 0.75), color="#516287")
+    add_arrow(ax, (0.46, 0.645), (0.555, 0.625), color="#516287")
+    add_arrow(ax, (0.46, 0.445), (0.555, 0.505), color="#516287")
+    add_arrow(ax, (0.73, 0.36), (0.55, 0.19), color="#477a52")
+    add_arrow(ax, (0.495, 0.19), (0.255, 0.67), color="#d95f2a", connectionstyle="arc3,rad=-0.36")
+    add_arrow(ax, (0.685, 0.125), (0.715, 0.125), color="#718096")
+
+    ax.text(
+        0.50,
+        0.225,
+        "feedback objective",
+        ha="center",
+        va="bottom",
+        fontsize=6.7,
+        color="#477a52",
+        transform=ax.transAxes,
+    )
+    save_all(fig, "pinn_project_mechanism_illustration")
 
 
 def save_stage23_metric_tradeoff() -> None:
@@ -258,10 +568,12 @@ def save_premium_mask_panel() -> None:
 
 def main() -> None:
     apply_style()
+    save_pinn_project_mechanism_illustration()
     save_stage23_metric_tradeoff()
     save_stage23_training_curves()
     save_premium_mask_panel()
     for name in [
+        "pinn_project_mechanism_illustration",
         "pinn_stage23_metric_tradeoff",
         "pinn_stage23_training_curves",
         "pinn_psor_premium_mask_panel",

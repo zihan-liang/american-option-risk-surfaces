@@ -38,6 +38,13 @@ The campaign is scoped to American puts from the Stage 05 surrogate dataset, usi
 \]
 where \(x=\log(S/K)\), \(\theta=\tau/T\), and \(\Phi/K\) is the normalized payoff obstacle. The positive-premium baseline uses a softplus output, so predicted price is obstacle-consistent by construction. The terminal-scaled model used in Stage 22 and Stage 23 multiplies the softplus premium by \(\theta\), enforcing zero continuation premium at expiry.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\linewidth]{pinn_project_mechanism_illustration.pdf}
+\caption{Mechanism of the project-specific PINN-inspired premium surrogate. The neural model maps American put features to a nonnegative, terminal-scaled continuation premium, reconstructs the normalized price, and uses automatic differentiation to form the derivatives needed by the masked Black--Scholes residual. Training combines PSOR-supervised label fit with the PSOR-derived continuation-mask residual and, for selected campaign methods, an optional \(\Delta\) loss. CN/PSOR remains the benchmark and label generator; the neural surrogate does not replace the free-boundary solver.}
+\label{fig:pinn-mechanism}
+\end{figure}
+
 \section{Masked Residual Formulation}
 
 The auxiliary residual is the log-space Black--Scholes continuation residual applied to the reconstructed normalized price:
