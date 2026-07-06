@@ -122,8 +122,9 @@ def add_arrow(
     label_offset: tuple[float, float] = (0.0, 0.0),
     color: str = "#405469",
     connectionstyle: str = "arc3",
+    zorder: float = 3.0,
 ) -> None:
-    ax.annotate(
+    annotation = ax.annotate(
         "",
         xy=end,
         xytext=start,
@@ -138,6 +139,7 @@ def add_arrow(
             "connectionstyle": connectionstyle,
         },
     )
+    annotation.set_zorder(zorder)
     if label:
         x = (start[0] + end[0]) / 2 + label_offset[0]
         y = (start[1] + end[1]) / 2 + label_offset[1]
@@ -187,6 +189,97 @@ def add_group(
     )
 
 
+def draw_compact_network(
+    ax: plt.Axes,
+    *,
+    input_nodes: list[tuple[float, float, str]],
+    hidden_layers: list[list[tuple[float, float]]],
+    output_node: tuple[float, float, str],
+) -> None:
+    """Draw a small fully connected MLP glyph in axes coordinates."""
+
+    def connect(source: list[tuple[float, float]], target: list[tuple[float, float]]) -> None:
+        for x0, y0 in source:
+            for x1, y1 in target:
+                ax.plot(
+                    [x0, x1],
+                    [y0, y1],
+                    color="#8b97a8",
+                    linewidth=0.42,
+                    alpha=0.62,
+                    transform=ax.transAxes,
+                    zorder=1,
+                )
+
+    input_points = [(x, y) for x, y, _ in input_nodes]
+    output_points = [(output_node[0], output_node[1])]
+    connect(input_points, hidden_layers[0])
+    for left, right in zip(hidden_layers[:-1], hidden_layers[1:]):
+        connect(left, right)
+    connect(hidden_layers[-1], output_points)
+
+    def add_node(
+        x: float,
+        y: float,
+        *,
+        label: str | None = None,
+        size: float = 92,
+        facecolor: str = "#e8f5f3",
+        edgecolor: str = "#2c7a7b",
+        fontsize: float = 5.7,
+    ) -> None:
+        ax.scatter(
+            [x],
+            [y],
+            s=size,
+            marker="o",
+            facecolor=facecolor,
+            edgecolor=edgecolor,
+            linewidth=0.85,
+            transform=ax.transAxes,
+            zorder=3,
+        )
+        if label:
+            ax.text(
+                x,
+                y,
+                label,
+                ha="center",
+                va="center",
+                fontsize=fontsize,
+                weight="bold",
+                color="#172033",
+                transform=ax.transAxes,
+                zorder=4,
+            )
+
+    for x, y, label in input_nodes:
+        add_node(x, y, label=label, size=112, facecolor="#edf2f7", edgecolor="#344154")
+    for layer in hidden_layers:
+        for x, y in layer:
+            add_node(x, y, size=78, facecolor="#cfe8f3", edgecolor="#2c5f86")
+    add_node(
+        output_node[0],
+        output_node[1],
+        label=output_node[2],
+        size=160,
+        facecolor="#f7c948",
+        edgecolor="#8a6411",
+        fontsize=5.2,
+    )
+
+    ax.text(
+        0.168,
+        0.832,
+        "fully connected neural net",
+        ha="center",
+        va="bottom",
+        fontsize=5.4,
+        color="#52616f",
+        transform=ax.transAxes,
+    )
+
+
 def save_pinn_project_mechanism_illustration() -> None:
     fig, ax = plt.subplots(figsize=(8.0, 4.6))
     ax.set_axis_off()
@@ -216,48 +309,45 @@ def save_pinn_project_mechanism_illustration() -> None:
         "network": "#3f8fc5",
     }
 
-    add_group(ax, xy=(0.035, 0.30), width=0.31, height=0.56, title="Premium Surrogate Network")
-    add_group(ax, xy=(0.375, 0.30), width=0.12, height=0.56, title="AutoDiff", edgecolor="#78aaa4")
+    add_group(ax, xy=(0.035, 0.30), width=0.33, height=0.56, title="Premium Surrogate Network")
+    add_group(ax, xy=(0.385, 0.30), width=0.11, height=0.56, title="AutoDiff", edgecolor="#78aaa4")
     add_group(ax, xy=(0.525, 0.30), width=0.44, height=0.56, title="PINN-inspired Regularization")
 
-    add_box(
+    input_nodes = [
+        (0.065, 0.805, "$x$"),
+        (0.065, 0.775, "$\\theta$"),
+        (0.065, 0.745, "$r$"),
+        (0.065, 0.715, "$q$"),
+        (0.065, 0.685, "$\\sigma$"),
+        (0.065, 0.655, "$T$"),
+    ]
+    hidden_y = [0.795, 0.755, 0.715, 0.675]
+    draw_compact_network(
         ax,
-        xy=(0.055, 0.69),
-        width=0.15,
-        height=0.12,
-        text="Inputs\n$x=\\log(S/K)$\n$\\theta=\\tau/T$, $r$, $q$, $\\sigma$, $T$",
-        facecolor=colors["input"],
-        fontsize=6.7,
-        weight="bold",
+        input_nodes=input_nodes,
+        hidden_layers=[
+            [(0.145, y) for y in hidden_y],
+            [(0.225, y) for y in hidden_y],
+        ],
+        output_node=(0.305, 0.735, "$N_\\vartheta$"),
     )
     add_box(
         ax,
-        xy=(0.215, 0.67),
-        width=0.075,
-        height=0.15,
-        text="MLP\n+\nsoftplus",
-        facecolor=colors["network"],
-        edgecolor="#2c5f86",
-        fontsize=6.8,
-        weight="bold",
-    )
-    add_box(
-        ax,
-        xy=(0.255, 0.50),
-        width=0.075,
-        height=0.105,
-        text="$\\widehat C_\\theta\\geq0$\nterminal\nscaling",
+        xy=(0.185, 0.525),
+        width=0.155,
+        height=0.088,
+        text="softplus + $\\theta$ scaling\n$\\widehat C=\\theta\\,\\mathrm{softplus}(N_\\vartheta(z))$\n$\\widehat C\\geq0$",
         facecolor=colors["premium"],
         edgecolor="#8a6411",
-        fontsize=6.1,
+        fontsize=4.65,
         weight="bold",
     )
     add_box(
         ax,
-        xy=(0.075, 0.42),
-        width=0.19,
-        height=0.10,
-        text="Reconstruct price\n$\\widehat u=\\Phi/K+\\widehat C_\\theta$",
+        xy=(0.065, 0.43),
+        width=0.205,
+        height=0.085,
+        text="Reconstruct price\n$\\widehat u=\\Phi/K+\\widehat C$",
         facecolor=colors["price"],
         fontsize=6.8,
         weight="bold",
@@ -308,7 +398,7 @@ def save_pinn_project_mechanism_illustration() -> None:
         xy=(0.555, 0.47),
         width=0.37,
         height=0.07,
-        text="$L_\\Delta$ optional: Delta / Sobolev diagnostic methods",
+        text="$L_\\Delta$ optional: Delta loss / Sobolev-style method",
         facecolor=colors["loss"],
         edgecolor="#815681",
         fontsize=6.6,
@@ -327,8 +417,8 @@ def save_pinn_project_mechanism_illustration() -> None:
     )
     add_box(
         ax,
-        xy=(0.075, 0.32),
-        width=0.22,
+        xy=(0.065, 0.32),
+        width=0.225,
         height=0.065,
         text="CN/PSOR remains benchmark\nand label generator",
         facecolor=colors["psor"],
@@ -341,7 +431,7 @@ def save_pinn_project_mechanism_illustration() -> None:
         xy=(0.305, 0.06),
         width=0.38,
         height=0.13,
-        text="$L(\\theta)=L_{\\mathrm{sup}}+\\lambda_{\\mathrm{PDE}}L_{\\mathrm{PDE}}+\\lambda_\\Delta L_\\Delta$\noptimizer updates neural parameters",
+        text="$L(\\vartheta)=L_{\\mathrm{sup}}+\\lambda_{\\mathrm{PDE}}L_{\\mathrm{PDE}}+\\lambda_\\Delta L_\\Delta$\noptimizer updates network parameters $\\vartheta$",
         facecolor="#98c8a4",
         edgecolor="#477a52",
         fontsize=7.2,
@@ -359,15 +449,21 @@ def save_pinn_project_mechanism_illustration() -> None:
         weight="bold",
     )
 
-    add_arrow(ax, (0.205, 0.75), (0.215, 0.75))
-    add_arrow(ax, (0.285, 0.69), (0.295, 0.59))
-    add_arrow(ax, (0.255, 0.50), (0.265, 0.47))
-    add_arrow(ax, (0.265, 0.47), (0.405, 0.55), color="#516287")
+    add_arrow(ax, (0.305, 0.695), (0.265, 0.613))
+    add_arrow(ax, (0.245, 0.525), (0.228, 0.515))
+    add_arrow(ax, (0.270, 0.47), (0.405, 0.55), color="#516287")
     add_arrow(ax, (0.46, 0.745), (0.555, 0.75), color="#516287")
     add_arrow(ax, (0.46, 0.645), (0.555, 0.625), color="#516287")
     add_arrow(ax, (0.46, 0.445), (0.555, 0.505), color="#516287")
     add_arrow(ax, (0.73, 0.36), (0.55, 0.19), color="#477a52")
-    add_arrow(ax, (0.495, 0.19), (0.255, 0.67), color="#d95f2a", connectionstyle="arc3,rad=-0.36")
+    add_arrow(
+        ax,
+        (0.495, 0.19),
+        (0.145, 0.755),
+        color="#d95f2a",
+        connectionstyle="arc3,rad=-0.36",
+        zorder=0.2,
+    )
     add_arrow(ax, (0.685, 0.125), (0.715, 0.125), color="#718096")
 
     ax.text(
