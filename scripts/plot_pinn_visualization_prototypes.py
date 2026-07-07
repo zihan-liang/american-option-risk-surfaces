@@ -311,7 +311,7 @@ def draw_compact_network(
 
 
 def save_pinn_project_mechanism_illustration() -> None:
-    fig, ax = plt.subplots(figsize=(8.6, 4.6))
+    fig, ax = plt.subplots(figsize=(10.0, 4.8))
     ax.set_axis_off()
     ax.text(
         0.5,
@@ -339,9 +339,9 @@ def save_pinn_project_mechanism_illustration() -> None:
         "network": "#3f8fc5",
     }
 
-    add_group(ax, xy=(0.035, 0.30), width=0.33, height=0.56, title="Premium Surrogate Network")
-    add_group(ax, xy=(0.425, 0.30), width=0.10, height=0.56, title="AutoDiff", edgecolor="#78aaa4")
-    add_group(ax, xy=(0.555, 0.30), width=0.41, height=0.56, title="PINN-inspired Regularization")
+    add_group(ax, xy=(0.035, 0.35), width=0.315, height=0.51, title="Premium Surrogate Network")
+    add_group(ax, xy=(0.435, 0.37), width=0.11, height=0.49, title="AutoDiff", edgecolor="#78aaa4")
+    add_group(ax, xy=(0.635, 0.37), width=0.33, height=0.49, title="PINN-inspired Regularization")
 
     input_nodes = [
         (0.065, 0.805, "$x$"),
@@ -382,6 +382,17 @@ def save_pinn_project_mechanism_illustration() -> None:
         fontsize=6.8,
         weight="bold",
     )
+    add_box(
+        ax,
+        xy=(0.365, 0.790),
+        width=0.055,
+        height=0.055,
+        text="$\\widehat u$\n$\\widehat C$",
+        facecolor="#fff7dc",
+        edgecolor="#8a6411",
+        fontsize=5.8,
+        weight="bold",
+    )
 
     for y, label in [
         (0.72, "$\\widehat u_\\theta$"),
@@ -391,7 +402,7 @@ def save_pinn_project_mechanism_illustration() -> None:
     ]:
         add_box(
             ax,
-            xy=(0.445, y),
+            xy=(0.465, y),
             width=0.055,
             height=0.055,
             text=label,
@@ -400,49 +411,60 @@ def save_pinn_project_mechanism_illustration() -> None:
             fontsize=7.0,
             weight="bold",
         )
+    add_box(
+        ax,
+        xy=(0.550, 0.555),
+        width=0.085,
+        height=0.125,
+        text="$\\widehat u_\\theta$\n$\\widehat u_x$, $\\widehat u_{xx}$\nBS residual\ninputs",
+        facecolor="#fffaf0",
+        edgecolor="#516287",
+        fontsize=4.9,
+        weight="bold",
+    )
 
     add_box(
         ax,
-        xy=(0.590, 0.71),
-        width=0.34,
+        xy=(0.660, 0.71),
+        width=0.285,
         height=0.08,
         text="$L_{\\mathrm{sup}}$: $\\widehat u,\\widehat C$ vs PSOR labels\n(price / premium)",
         facecolor=colors["loss"],
         edgecolor="#815681",
-        fontsize=6.35,
+        fontsize=6.05,
         weight="bold",
     )
     add_box(
         ax,
-        xy=(0.590, 0.58),
-        width=0.34,
+        xy=(0.660, 0.58),
+        width=0.285,
         height=0.09,
         text="$L_{\\mathrm{PDE}}$: masked Black-Scholes residual\nPSOR continuation mask;\naway from boundary/kink/maturity",
         facecolor=colors["loss"],
         edgecolor="#815681",
-        fontsize=6.1,
+        fontsize=5.75,
         weight="bold",
     )
     add_box(
         ax,
-        xy=(0.590, 0.47),
-        width=0.34,
+        xy=(0.660, 0.47),
+        width=0.285,
         height=0.07,
         text="$L_\\Delta$ optional: Delta loss / Sobolev-style method",
         facecolor=colors["loss"],
         edgecolor="#815681",
-        fontsize=6.6,
+        fontsize=6.05,
         weight="bold",
     )
     add_box(
         ax,
-        xy=(0.590, 0.36),
-        width=0.34,
+        xy=(0.660, 0.36),
+        width=0.285,
         height=0.075,
         text="Structure: $\\theta$ terminal scaling + softplus premium\nobstacle consistency by reconstruction",
         facecolor="#eaddec",
         edgecolor="#815681",
-        fontsize=6.3,
+        fontsize=5.85,
         weight="bold",
     )
     add_box(
@@ -458,8 +480,8 @@ def save_pinn_project_mechanism_illustration() -> None:
     )
     add_box(
         ax,
-        xy=(0.305, 0.06),
-        width=0.38,
+        xy=(0.315, 0.06),
+        width=0.42,
         height=0.13,
         text="$L(\\vartheta)=L_{\\mathrm{sup}}+\\lambda_{\\mathrm{PDE}}L_{\\mathrm{PDE}}+\\lambda_\\Delta L_\\Delta$\noptimizer updates network parameters $\\vartheta$",
         facecolor="#98c8a4",
@@ -469,42 +491,50 @@ def save_pinn_project_mechanism_illustration() -> None:
     )
     add_box(
         ax,
-        xy=(0.715, 0.055),
-        width=0.245,
+        xy=(0.755, 0.055),
+        width=0.21,
         height=0.14,
         text="Evaluation gates vs matched\nsupervised neural baseline\nprice RMSE | residual\nboundary RMSE | strict $\\Delta$ RMSE",
         facecolor=colors["gate"],
         edgecolor="#718096",
-        fontsize=6.2,
+        fontsize=5.7,
         weight="bold",
     )
 
     add_arrow(ax, (0.305, 0.695), (0.265, 0.613))
     add_arrow(ax, (0.245, 0.525), (0.228, 0.515))
-    add_arrow(ax, (0.270, 0.455), (0.425, 0.385), color="#516287", connectionstyle="arc3,rad=-0.10")
     add_elbow_arrow(
         ax,
-        [(0.270, 0.505), (0.400, 0.505), (0.400, 0.842), (0.570, 0.842), (0.590, 0.75)],
+        [(0.270, 0.485), (0.355, 0.485), (0.355, 0.818), (0.365, 0.818)],
+        color="#815681",
+        linewidth=1.1,
+        zorder=1.0,
+    )
+    add_arrow(ax, (0.392, 0.790), (0.465, 0.748), color="#516287", connectionstyle="arc3,rad=-0.10")
+    add_elbow_arrow(
+        ax,
+        [(0.420, 0.830), (0.640, 0.830), (0.660, 0.750)],
         color="#815681",
         linewidth=1.15,
         zorder=1.0,
     )
-    add_arrow(ax, (0.50, 0.745), (0.590, 0.65), color="#516287")
-    add_arrow(ax, (0.50, 0.645), (0.590, 0.625), color="#516287")
-    add_arrow(ax, (0.50, 0.545), (0.590, 0.60), color="#516287")
-    add_arrow(ax, (0.50, 0.445), (0.590, 0.505), color="#516287")
-    add_arrow(ax, (0.76, 0.36), (0.55, 0.19), color="#477a52")
+    add_arrow(ax, (0.520, 0.748), (0.550, 0.645), color="#516287")
+    add_arrow(ax, (0.520, 0.648), (0.550, 0.620), color="#516287")
+    add_arrow(ax, (0.520, 0.548), (0.550, 0.595), color="#516287")
+    add_arrow(ax, (0.635, 0.620), (0.660, 0.625), color="#516287")
+    add_arrow(ax, (0.520, 0.448), (0.660, 0.505), color="#516287")
+    add_arrow(ax, (0.805, 0.36), (0.575, 0.19), color="#477a52")
     add_elbow_arrow(
         ax,
-        [(0.365, 0.19), (0.374, 0.26), (0.374, 0.645), (0.145, 0.645), (0.145, 0.675)],
+        [(0.315, 0.125), (0.020, 0.125), (0.020, 0.350), (0.120, 0.350)],
         color="#d95f2a",
         linewidth=1.2,
         zorder=0.8,
     )
-    add_arrow(ax, (0.685, 0.125), (0.715, 0.125), color="#718096")
+    add_arrow(ax, (0.735, 0.125), (0.755, 0.125), color="#718096")
 
     ax.text(
-        0.50,
+        0.52,
         0.225,
         "feedback objective",
         ha="center",
