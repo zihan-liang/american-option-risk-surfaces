@@ -70,3 +70,35 @@ These are ignored test artifacts and explicitly non-evidence smoke outputs.
 
 Manager review of the scoped code/config and report, followed by serialized
 canonical execution only after approval.
+
+## Manager Review Round 1 Follow-Up
+
+- Added a fixed `selection_seed`; whole train, validation, and `legacy_test`
+  regime selections are now made once before the model-seed loop and recorded
+  once in the manifest.
+- Added the valid-VI collocation mask. Complementarity and
+  Fischer--Burmeister training uses only put, non-maturity, non-kink,
+  non-boundary points while retaining both exercise and continuation samples.
+  Masked-PDE training continues to use the narrower PSOR continuation mask.
+- Residual diagnostics now use fixed per-regime valid-VI indices, capped at
+  `2048` in the canonical config and shared across methods and model seeds.
+  Output rows report both valid-VI and masked-PDE sample counts.
+- Promotion now requires defined scenario-level price, Delta, K*Gamma,
+  boundary, continuation-violation, complementarity, and masked-PDE metrics;
+  ordinary diagnostics use the 2% no-regression gate, masked PDE uses 5%, and
+  obstacle violation must not exceed `1e-10`. Missing diagnostics block
+  promotion explicitly.
+- M02 now emits the registry-standard `config_manifest.json`,
+  `run_metrics.csv`, `training_history.csv`, `decision.json`, and
+  `artifact_hashes.json`, in addition to M02 detail files. The final hash
+  manifest covers every compact output except itself.
+- Added `experiments/26_independent_method_campaign.py --method M02 --phase
+  screen --smoke` dispatch. Smoke records are always
+  `diagnostic_only` / `smoke_non_evidence`.
+- Added an unmeasured forward/backward/residual warm-up before per-method
+  timing, preventing PyTorch first-use overhead from being charged solely to
+  the supervised baseline.
+
+Follow-up verification: focused M02/PINN tests passed (13 tests); shared
+campaign registry/output/statistics/leakage tests passed (42 tests); compileall
+and `git diff --check` passed. Canonical execution remains unlaunched.

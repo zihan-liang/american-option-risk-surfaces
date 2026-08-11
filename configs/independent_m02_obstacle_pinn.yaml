@@ -20,6 +20,7 @@ premium_boundary_threshold: 1.0e-3
 obstacle_tolerance: 1.0e-10
 bootstrap_iterations: 10000
 bootstrap_seed: 2702
+selection_seed: 2703
 canonical_settings:
   seeds: [101, 203, 307, 409, 503]
   epochs: 30
@@ -29,6 +30,7 @@ canonical_settings:
   train_cap: 150000
   validation_cap: 75000
   legacy_test_cap: 75000
+  residual_eval_cap: 2048
 smoke_settings:
   seeds: [101]
   epochs: 2
@@ -38,4 +40,5 @@ smoke_settings:
   train_cap: 4096
   validation_cap: 2048
   legacy_test_cap: 2048
+  residual_eval_cap: 128
   bootstrap_iterations: 200
