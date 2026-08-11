@@ -6,7 +6,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from campaign.holdout import verify_public_commitment
+from campaign.holdout import generate_holdout_regimes, verify_public_commitment
 
 
 DEVELOPMENT_SPLITS = frozenset({"train", "validation", "legacy_test"})
@@ -24,7 +24,6 @@ class CampaignSplits:
     train: Sequence[Mapping[str, Any]]
     validation: Sequence[Mapping[str, Any]]
     legacy_test: Sequence[Mapping[str, Any]]
-    _blind_holdout: tuple[Mapping[str, Any], ...]
     public_commitment_sha256: str
 
     def __init__(
@@ -33,17 +32,15 @@ class CampaignSplits:
         train: Sequence[Mapping[str, Any]],
         validation: Sequence[Mapping[str, Any]],
         legacy_test: Sequence[Mapping[str, Any]],
-        blind_holdout: Sequence[Mapping[str, Any]],
         public_commitment_sha256: str,
     ) -> None:
         object.__setattr__(self, "train", tuple(train))
         object.__setattr__(self, "validation", tuple(validation))
         object.__setattr__(self, "legacy_test", tuple(legacy_test))
-        object.__setattr__(self, "_blind_holdout", tuple(blind_holdout))
         object.__setattr__(self, "public_commitment_sha256", public_commitment_sha256)
         scenario_ids = [
             scenario["scenario_id"]
-            for scenarios in (self.train, self.validation, self.legacy_test, self._blind_holdout)
+            for scenarios in (self.train, self.validation, self.legacy_test)
             for scenario in scenarios
         ]
         if len(scenario_ids) != len(set(scenario_ids)):
@@ -67,7 +64,7 @@ class CampaignSplits:
             raise BlindHoldoutAccessError("blind holdout requires an evaluator seed")
         if not verify_public_commitment(evaluator_seed, self.public_commitment_sha256):
             raise BlindHoldoutAccessError("holdout commitment verification failed")
-        return self._blind_holdout
+        return generate_holdout_regimes(evaluator_seed)
 
     def _non_final_access(self, split: str) -> tuple[Mapping[str, Any], ...]:
         if split == "blind_holdout":

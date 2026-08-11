@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from collections.abc import Mapping, Sequence
+from numbers import Real
 from typing import Any
 
 import numpy as np
@@ -22,6 +24,8 @@ PARAMETER_BOUNDS = {
     "sigma": (0.05, 1.0),
 }
 _PARAMETER_NAMES = tuple(PARAMETER_BOUNDS)
+_REQUIRED_REGIME_KEYS = frozenset({"scenario_id", "source", "option_type", "strike", *_PARAMETER_NAMES})
+_VALID_SOURCES = frozenset({"sobol_in_domain", "stress"})
 _STRESS_VALUES = {
     "T": (0.01, 0.05, 2.0, 4.0),
     "r": (-0.02, 0.12),
@@ -126,6 +130,8 @@ def _regime(scenario_id: str, source: str, parameters: Mapping[str, float]) -> d
 def _validate_generated_regimes(regimes: Sequence[Mapping[str, Any]]) -> None:
     if len(regimes) != IN_DOMAIN_COUNT + STRESS_COUNT:
         raise ValueError("holdout must contain exactly 128 regimes")
+    for regime in regimes:
+        _validate_regime(regime)
     scenario_ids = [regime.get("scenario_id") for regime in regimes]
     parameter_tuples = [
         tuple(regime.get(name) for name in (*_PARAMETER_NAMES, "strike", "option_type"))
@@ -137,6 +143,29 @@ def _validate_generated_regimes(regimes: Sequence[Mapping[str, Any]]) -> None:
         raise ValueError("holdout parameter tuples must be unique")
     if any(regime.get("option_type") != "put" or regime.get("strike", 0) <= 0 for regime in regimes):
         raise ValueError("holdout regimes must be normalized positive-strike puts")
+
+
+def _validate_regime(regime: Mapping[str, Any]) -> None:
+    if not isinstance(regime, Mapping):
+        raise ValueError("holdout regimes must be mappings")
+    missing_keys = _REQUIRED_REGIME_KEYS - set(regime)
+    if missing_keys:
+        raise ValueError("holdout regime is missing required fields")
+    if regime["source"] not in _VALID_SOURCES:
+        raise ValueError("holdout regime has an invalid source")
+    if regime["option_type"] != "put" or not _is_finite_number(regime["strike"]) or regime["strike"] <= 0:
+        raise ValueError("holdout regimes must be normalized positive-strike puts")
+    for name in _PARAMETER_NAMES:
+        if not _is_finite_number(regime[name]):
+            raise ValueError("holdout regime parameters must be finite")
+    if regime["source"] == "sobol_in_domain":
+        for name, (lower, upper) in PARAMETER_BOUNDS.items():
+            if not lower <= regime[name] <= upper:
+                raise ValueError("Sobol regime parameter is outside the declared bounds")
+
+
+def _is_finite_number(value: Any) -> bool:
+    return isinstance(value, Real) and not isinstance(value, bool) and math.isfinite(value)
 
 
 def _validate_seed(seed: int) -> None:

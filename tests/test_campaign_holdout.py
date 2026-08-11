@@ -1,6 +1,11 @@
 import hashlib
+import math
+
+import pytest
 
 from campaign.holdout import (
+    PARAMETER_BOUNDS,
+    _validate_generated_regimes,
     build_holdout_manifest,
     canonical_regime_bytes,
     generate_holdout_regimes,
@@ -63,3 +68,40 @@ def test_manifest_records_generator_contract_and_canonical_regime_hash():
     assert set(manifest["parameter_bounds"]) == {"T", "r", "q", "sigma"}
     assert manifest["public_commitment_sha256"] == commitment
     assert manifest["canonical_regimes_sha256"] == hashlib.sha256(canonical_regime_bytes(regimes)).hexdigest()
+
+
+@pytest.mark.parametrize(
+    "missing_key",
+    ("scenario_id", "source", "option_type", "strike", "T", "r", "q", "sigma"),
+)
+def test_regime_validation_rejects_missing_required_keys(missing_key):
+    regimes = [dict(regime) for regime in generate_holdout_regimes(77)]
+    del regimes[0][missing_key]
+
+    with pytest.raises(ValueError):
+        _validate_generated_regimes(regimes)
+
+
+@pytest.mark.parametrize("parameter,value", (("T", math.nan), ("sigma", math.inf)))
+def test_regime_validation_rejects_non_finite_numeric_parameters(parameter, value):
+    regimes = [dict(regime) for regime in generate_holdout_regimes(77)]
+    regimes[0][parameter] = value
+
+    with pytest.raises(ValueError):
+        _validate_generated_regimes(regimes)
+
+
+def test_regime_validation_rejects_invalid_source_labels():
+    regimes = [dict(regime) for regime in generate_holdout_regimes(77)]
+    regimes[0]["source"] = "unclassified"
+
+    with pytest.raises(ValueError):
+        _validate_generated_regimes(regimes)
+
+
+def test_regime_validation_rejects_out_of_domain_sobol_parameters():
+    regimes = [dict(regime) for regime in generate_holdout_regimes(77)]
+    regimes[0]["T"] = PARAMETER_BOUNDS["T"][1] + 0.01
+
+    with pytest.raises(ValueError):
+        _validate_generated_regimes(regimes)

@@ -12,12 +12,10 @@ def _commitment_for(seed: int) -> str:
 
 
 def _splits() -> CampaignSplits:
-    holdout = generate_holdout_regimes(41)
     return CampaignSplits(
         train=({"scenario_id": "train-001"}, {"scenario_id": "train-002"}),
         validation=({"scenario_id": "validation-001"},),
         legacy_test=({"scenario_id": "legacy-001"},),
-        blind_holdout=holdout,
         public_commitment_sha256=_commitment_for(41),
     )
 
@@ -41,7 +39,7 @@ def test_legacy_split_is_exposed_under_its_campaign_name():
         splits.development("test")
 
 
-def test_development_and_model_selection_cannot_read_blind_holdout():
+def test_development_and_model_selection_have_no_holdout_payload_before_final_access():
     splits = _splits()
 
     with pytest.raises(BlindHoldoutAccessError):
@@ -50,6 +48,8 @@ def test_development_and_model_selection_cannot_read_blind_holdout():
         splits.model_selection("blind_holdout")
     with pytest.raises(AttributeError):
         _ = splits.blind_holdout
+    with pytest.raises(AttributeError):
+        _ = splits._blind_holdout
 
 
 def test_final_holdout_access_requires_frozen_configs_and_verified_seed():
@@ -62,4 +62,4 @@ def test_final_holdout_access_requires_frozen_configs_and_verified_seed():
 
     holdout = splits.final_evaluation(configs_frozen=True, evaluator_seed=41)
 
-    assert len(holdout) == 128
+    assert holdout == generate_holdout_regimes(41)
