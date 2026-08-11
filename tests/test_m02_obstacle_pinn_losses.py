@@ -34,6 +34,26 @@ class ObstaclePinnLossTests(unittest.TestCase):
         )
 
         self.assertEqual(mask.tolist(), [True, False, False, False, False])
+
+    def test_vi_collocation_mask_excludes_spatial_and_near_zero_boundaries(self):
+        features = np.array(
+            [
+                [-1.0, 0.50, 0.05, 0.0, 0.2, 1.0, 0.0],
+                [-0.2, 0.50, 0.05, 0.0, 0.2, 1.0, 0.0],
+                [0.2, 0.50, 0.05, 0.0, 0.2, 1.0, 0.0],
+                [1.0, 0.50, 0.05, 0.0, 0.2, 1.0, 0.0],
+            ],
+            dtype=np.float64,
+        )
+
+        mask = build_vi_collocation_mask(
+            features,
+            domain_boundary=np.array([True, False, False, True]),
+            near_zero_spot=np.array([False, True, False, False]),
+            option_scope="put",
+        )
+
+        self.assertEqual(mask.tolist(), [False, False, True, False])
     def test_masked_pde_loss_uses_only_predeclared_continuation_points(self):
         residual = torch.tensor([1.0, 10.0], dtype=torch.float64)
         mask = torch.tensor([True, False])

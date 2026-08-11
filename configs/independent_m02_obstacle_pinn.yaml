@@ -21,6 +21,7 @@ obstacle_tolerance: 1.0e-10
 bootstrap_iterations: 10000
 bootstrap_seed: 2702
 selection_seed: 2703
+screen_budget_seconds: 3600
 canonical_settings:
   seeds: [101, 203, 307, 409, 503]
   epochs: 30
@@ -31,14 +32,22 @@ canonical_settings:
   validation_cap: 75000
   legacy_test_cap: 75000
   residual_eval_cap: 2048
+  timing_warmups: 5
+  timing_repetitions: 30
+  timing_validation_cap: 8192
 smoke_settings:
   seeds: [101]
-  epochs: 2
-  batch_size: 64
+  epochs: 1
+  batch_size: 16384
   collocation_cap: 64
-  patience: 2
-  train_cap: 4096
-  validation_cap: 2048
-  legacy_test_cap: 2048
-  residual_eval_cap: 128
+  patience: 1
+  train_cap: 14641
+  validation_cap: 14641
+  legacy_test_cap: 14641
+  residual_eval_cap: 64
   bootstrap_iterations: 200
+  hidden: 8
+  depth: 1
+  timing_warmups: 0
+  timing_repetitions: 1
+  timing_validation_cap: 256

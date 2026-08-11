@@ -10,6 +10,8 @@ def build_vi_collocation_mask(
     *,
     near_boundary: np.ndarray | None = None,
     near_kink: np.ndarray | None = None,
+    domain_boundary: np.ndarray | None = None,
+    near_zero_spot: np.ndarray | None = None,
     tau_min_for_pde: float = 0.05,
     option_scope: str = "put",
 ) -> np.ndarray:
@@ -20,7 +22,9 @@ def build_vi_collocation_mask(
         raise ValueError("features must have shape (n, >=7)")
     boundary_mask = _optional_bool_mask(near_boundary, len(values), "near_boundary")
     kink_mask = _optional_bool_mask(near_kink, len(values), "near_kink")
-    mask = (values[:, 1] > float(tau_min_for_pde)) & (~boundary_mask) & (~kink_mask)
+    domain_mask = _optional_bool_mask(domain_boundary, len(values), "domain_boundary")
+    zero_spot_mask = _optional_bool_mask(near_zero_spot, len(values), "near_zero_spot")
+    mask = (values[:, 1] > float(tau_min_for_pde)) & (~boundary_mask) & (~kink_mask) & (~domain_mask) & (~zero_spot_mask)
     if option_scope == "put":
         mask &= values[:, 6] <= 0.5
     elif option_scope == "call":
