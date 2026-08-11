@@ -8,6 +8,7 @@ Implementation commits:
 
 - `526f3e9 Add independent campaign registry contract`
 - `86fcca8 Refine campaign registry output contract`
+- `c920cb5 Support multi-record campaign metric outputs`
 
 ## Changed Files
 
@@ -23,7 +24,7 @@ Implementation commits:
 
 - Registered exactly M01 through M24 with plan-aligned names, scopes, explicit final-scoreboard categories, baselines, primary metrics, directions, second-based budgets, stochastic flags, bounded predeclared configurations, output requirements, and method-specific gates.
 - Defined `RunPhase` (`screen`, `confirm`, `final`) and validated `MethodRunRecord` states, including completed finite-metric requirements and the required failure/diagnostic/resource/not-implemented statuses.
-- Added deterministic `config_manifest.json`, `run_metrics.csv`, `decision.json`, optional `training_history.csv`, and `artifact_hashes.json` generation. The SHA-256 manifest covers every generated evidence file except itself.
+- Added deterministic `config_manifest.json`, multi-row `run_metrics.csv`, `decision.json`, optional `training_history.csv`, and `artifact_hashes.json` generation. The SHA-256 manifest covers every generated evidence file except itself.
 - Added the foundation CLI. `--list-methods` and `--verify-all` return machine-readable registry data. A normal method invocation exits with a clear not-implemented error; only a config containing `dry_run: true` produces a `not_implemented` scaffold.
 
 ## TDD Evidence
@@ -51,6 +52,7 @@ Observed GREEN result: `11 passed`.
 - Tightened `MethodRunRecord` validation to accept only exact IDs M01 through M24.
 - Made output reruns idempotent for training history. Completed methods whose spec requires history reject missing history; any empty supplied history rejects clearly; scaffolds may omit history and remove stale history from a reused output directory.
 - Added `config_sha256` over canonical JSON plus record branch/commit under `provenance` in `config_manifest.json`; all JSON serialization retains `allow_nan=False`.
+- Extended `write_method_outputs` so its canonical `records=` API accepts an ordered record sequence while preserving single-record positional and `record=` compatibility. Every record must match the method spec and a common phase; multi-record output requires an explicit `decision_record` from the supplied sequence. `decision.json` records that selection explicitly instead of treating a run row as an implicit decision.
 
 Review RED command:
 
@@ -62,6 +64,16 @@ Observed review RED result: seven focused failures, covering obsolete categories
 
 Review GREEN result: `14 passed`.
 
+Supplemental output-contract RED command:
+
+```sh
+env PYTHONPATH=src:experiments /Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-pilot/bin/python -m pytest tests/test_campaign_outputs.py -q
+```
+
+Observed supplemental RED result: three expected failures because the prior single-record API rejected a record list and did not accept or require `decision_record`.
+
+Supplemental GREEN result: `17 passed` for the full registry/output contract suite.
+
 ## Commands Run
 
 ```sh
@@ -72,7 +84,7 @@ env PYTHONPATH=src:experiments /Users/liangzihan/Documents/SURF_0159/SURF/.workt
 git diff --check
 ```
 
-Results: harness startup passed; compileall passed with the temporary bytecode cache; registry verification returned 24 valid methods with category counts `6/8/6/4`; method listing returned M01 through M24; and `git diff --check` passed.
+Results: harness startup passed; the latest focused suite passed with `17` tests; compileall passed with the temporary bytecode cache; registry verification returned 24 valid methods with category counts `6/8/6/4`; method listing returned M01 through M24; and `git diff --check` passed.
 
 ## Result Paths And Metrics
 
@@ -82,7 +94,7 @@ Metric table: not applicable. This task supplies infrastructure only and does no
 
 ## Manifest And Provenance Evidence
 
-`MethodRunRecord` preserves scenario count, seed, split, branch, commit, timing breakdown, memory, claim status, and notes. `config_manifest.json` contains the supplied config, a canonical `config_sha256`, record branch/commit provenance, and the complete frozen `MethodSpec`; `run_metrics.csv` uses fixed field ordering; `decision.json` records the decision state; and `artifact_hashes.json` records SHA-256 hashes for the other generated files.
+`MethodRunRecord` preserves scenario count, seed, split, branch, commit, timing breakdown, memory, claim status, and notes. `config_manifest.json` contains the supplied config, a canonical `config_sha256`, selected-record branch/commit provenance, and the complete frozen `MethodSpec`; `run_metrics.csv` uses fixed field ordering and preserves caller order for every supplied record; `decision.json` records the explicitly selected decision record and total row count; and `artifact_hashes.json` records SHA-256 hashes for the other generated files.
 
 ## Risks And Limitations
 
