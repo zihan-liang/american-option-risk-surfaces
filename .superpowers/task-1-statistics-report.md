@@ -12,11 +12,22 @@ Initial RED command:
 PYTHONPATH=src /Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-pilot/bin/python -m pytest tests/test_campaign_statistics.py -q
 ```
 
-It failed as expected because `campaign.statistics` did not yet exist. Subsequent RED runs covered the missing public gate/timing API, the undefined one-scenario sample standard deviation, and non-boolean direction input.
+It failed as expected because `campaign.statistics` did not yet exist. Subsequent RED runs covered the missing public gate/timing API, the undefined one-scenario sample standard deviation, non-boolean direction input, the missing paired p-value, and explicit negative-seed validation.
+
+## Review Correction
+
+`PairedScenarioSummary.paired_p_value` is a deterministic, two-sided paired
+scenario-bootstrap p-value. It reuses the configured bootstrap iteration
+count, seed, and complete-scenario draw matrix. The null distribution resamples
+the scenario differences after centering them at their observed mean; the
+reported p-value uses `(extreme_count + 1) / (iterations + 1)` smoothing.
+
+Tests cover a balanced null case (`p = 1`) and a clear nonzero paired effect
+(`p = 1/201` at 200 resamples), as well as the explicit negative-seed error.
 
 ## Verification
 
-- `PYTHONPATH=src $PY -m pytest tests/test_campaign_statistics.py -q`: 19 passed.
+- `PYTHONPATH=src $PY -m pytest tests/test_campaign_statistics.py -q`: 21 passed.
 - `PYTHONPATH=src PYTHONPYCACHEPREFIX=/private/tmp/american_option_pycache $PY -m compileall -q src/campaign tests/test_campaign_statistics.py`: passed.
 - `git diff --check` and `git diff --cached --check`: passed.
 

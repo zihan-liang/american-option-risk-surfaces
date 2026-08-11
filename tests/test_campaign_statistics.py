@@ -61,6 +61,37 @@ def test_paired_summary_is_deterministic_and_uses_explicit_direction() -> None:
     assert higher.relative_percent_change == pytest.approx(-33.3333333333)
 
 
+def test_paired_summary_reports_two_sided_centered_bootstrap_p_values() -> None:
+    null_case = summarize_paired_scenarios(
+        {"put|seed=101": [10.0], "put|seed=203": [10.0], "put|seed=307": [10.0], "put|seed=409": [10.0]},
+        {"put|seed=101": [9.0], "put|seed=203": [11.0], "put|seed=307": [9.0], "put|seed=409": [11.0]},
+        lower_is_better=True,
+        bootstrap_iterations=200,
+        random_seed=23,
+    )
+    nonzero_case = summarize_paired_scenarios(
+        {"put|seed=101": [10.0], "put|seed=203": [10.0], "put|seed=307": [10.0], "put|seed=409": [10.0]},
+        {"put|seed=101": [12.0], "put|seed=203": [13.0], "put|seed=307": [14.0], "put|seed=409": [15.0]},
+        lower_is_better=True,
+        bootstrap_iterations=200,
+        random_seed=23,
+    )
+
+    assert null_case.paired_p_value == pytest.approx(1.0)
+    assert nonzero_case.paired_p_value == pytest.approx(1.0 / 201.0)
+    assert 0.0 <= nonzero_case.paired_p_value <= 1.0
+
+
+def test_paired_summary_rejects_negative_bootstrap_random_seed() -> None:
+    with pytest.raises(ValueError, match="random_seed must be a non-negative integer"):
+        summarize_paired_scenarios(
+            {"put|seed=101": [1.0], "put|seed=203": [2.0]},
+            {"put|seed=101": [2.0], "put|seed=203": [3.0]},
+            lower_is_better=True,
+            random_seed=-1,
+        )
+
+
 @pytest.mark.parametrize(
     ("baseline", "candidate", "message"),
     [

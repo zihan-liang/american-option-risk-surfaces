@@ -21,13 +21,14 @@ class ScenarioObservation:
 
 @dataclass(frozen=True)
 class PairedScenarioSummary:
-    """Paired scenario statistics with a deterministic bootstrap interval."""
+    """Paired scenario statistics with deterministic bootstrap inference."""
 
     scenario_ids: tuple[str, ...]
     scenario_count: int
     mean_difference: float
     sample_standard_deviation: float
     confidence_interval: tuple[float, float]
+    paired_p_value: float
     relative_percent_change: float
     lower_is_better: bool
 
@@ -85,7 +86,12 @@ def summarize_paired_scenarios(
     bootstrap_iterations: int = 10_000,
     random_seed: int = 0,
 ) -> PairedScenarioSummary:
-    """Aggregate each scenario, then calculate paired campaign statistics."""
+    """Aggregate scenarios before resampling for paired campaign statistics.
+
+    The confidence interval resamples complete scenario differences. The
+    two-sided p-value reuses those draws after centering the differences at
+    their observed mean, which supplies the paired null distribution.
+    """
     if not isinstance(lower_is_better, bool):
         raise ValueError("lower_is_better must be a boolean")
     baseline_means = _scenario_means(baseline, "baseline")
@@ -104,6 +110,8 @@ def summarize_paired_scenarios(
         raise ValueError("bootstrap_iterations must be a positive integer")
     if not isinstance(random_seed, Integral) or isinstance(random_seed, bool):
         raise ValueError("random_seed must be an integer")
+    if random_seed < 0:
+        raise ValueError("random_seed must be a non-negative integer")
 
     scenario_ids = tuple(baseline_means)
     if len(scenario_ids) < 2:
@@ -113,16 +121,24 @@ def summarize_paired_scenarios(
     differences = candidate_values - baseline_values
     mean_difference = float(np.mean(differences))
     standard_deviation = float(np.std(differences, ddof=1))
-    confidence_interval = _bootstrap_confidence_interval(
-        differences, int(bootstrap_iterations), int(random_seed)
+    bootstrap_draws = _scenario_bootstrap_draws(
+        differences.size, int(bootstrap_iterations), int(random_seed)
     )
+    confidence_interval = _bootstrap_confidence_interval(differences, bootstrap_draws)
+    paired_p_value = _paired_bootstrap_p_value(differences, bootstrap_draws)
     baseline_mean = float(np.mean(baseline_values))
     if baseline_mean == 0.0:
         raise ValueError("relative percentage change is undefined for a zero baseline mean")
     direction = -1.0 if lower_is_better else 1.0
     relative_percent_change = direction * mean_difference / abs(baseline_mean) * 100.0
     _require_finite(
-        [mean_difference, standard_deviation, *confidence_interval, relative_percent_change],
+        [
+            mean_difference,
+            standard_deviation,
+            *confidence_interval,
+            paired_p_value,
+            relative_percent_change,
+        ],
         "summary values",
     )
     return PairedScenarioSummary(
@@ -131,6 +147,7 @@ def summarize_paired_scenarios(
         mean_difference=mean_difference,
         sample_standard_deviation=standard_deviation,
         confidence_interval=confidence_interval,
+        paired_p_value=paired_p_value,
         relative_percent_change=float(relative_percent_change),
         lower_is_better=lower_is_better,
     )
@@ -298,14 +315,33 @@ def _validate_count(value: int, label: str, *, allow_zero: bool) -> None:
         raise ValueError(f"{label} must be at least {lower_bound}")
 
 
-def _bootstrap_confidence_interval(
-    differences: np.ndarray, iterations: int, random_seed: int) -> tuple[float, float]:
+def _scenario_bootstrap_draws(
+    scenario_count: int, iterations: int, random_seed: int
+) -> np.ndarray:
     generator = np.random.default_rng(random_seed)
-    draws = generator.integers(0, differences.size, size=(iterations, differences.size))
+    return generator.integers(0, scenario_count, size=(iterations, scenario_count))
+
+
+def _bootstrap_confidence_interval(
+    differences: np.ndarray, draws: np.ndarray
+) -> tuple[float, float]:
     bootstrap_means = np.mean(differences[draws], axis=1)
     interval = np.quantile(bootstrap_means, [0.025, 0.975])
     _require_finite(interval, "bootstrap confidence interval")
     return float(interval[0]), float(interval[1])
+
+
+def _paired_bootstrap_p_value(differences: np.ndarray, draws: np.ndarray) -> float:
+    """Compute a two-sided scenario-bootstrap p-value under a centered null."""
+    observed_mean = float(np.mean(differences))
+    centered_differences = differences - observed_mean
+    null_means = np.mean(centered_differences[draws], axis=1)
+    extreme_count = int(np.count_nonzero(np.abs(null_means) >= abs(observed_mean)))
+    p_value = (extreme_count + 1.0) / (draws.shape[0] + 1.0)
+    _require_finite([p_value], "paired bootstrap p_value")
+    if not 0.0 <= p_value <= 1.0:
+        raise ValueError("paired bootstrap p_value must lie in [0, 1]")
+    return float(p_value)
 
 
 def _require_finite(values: Any, label: str) -> None:
