@@ -6,7 +6,7 @@ import numpy as np
 
 from diagnostics.shape import obstacle_violation
 from solvers.black_scholes import black_scholes_price
-from solvers.cn_psor import SolverConfig, SolverResult, cn_matrices, time_boundary_values
+from solvers.cn_psor import SolverResult
 
 
 def closed_form_error(result: SolverResult) -> dict[str, float]:
@@ -28,28 +28,20 @@ def closed_form_error_in_region(result: SolverResult, s_min: float, s_max: float
 
 
 def complementarity_error(result: SolverResult) -> float:
-    cfg = result.config
-    spots, lower, upper, a, b_mat = cn_matrices(cfg)
-    max_error = 0.0
-    for step in range(1, len(result.taus)):
-        tau_old = result.taus[step - 1]
-        tau_new = result.taus[step]
-        left_old, right_old = time_boundary_values(cfg, tau_old)
-        left_new, right_new = time_boundary_values(cfg, tau_new)
-        rhs = b_mat @ result.values[step - 1, 1:-1]
-        dt = cfg.t / cfg.n
-        rhs[0] += 0.5 * dt * lower[0] * (left_old + left_new)
-        rhs[-1] += 0.5 * dt * upper[-1] * (right_old + right_new)
-        residual = a @ result.values[step, 1:-1] - rhs
-        gap = result.values[step, 1:-1] - result.payoff[1:-1]
-        max_error = max(max_error, float(np.max(np.abs(gap * residual))))
-    return max_error
+    return max(result.lcp_complementarity_errors, default=0.0)
 
 
 def solver_summary(result: SolverResult) -> dict[str, float | int | bool]:
-    return {
+    summary = {
         "obstacle_violation": obstacle_violation(result.values, result.payoff),
         "complementarity_error": complementarity_error(result),
+        "max_lcp_natural_residual": max(result.lcp_residuals, default=0.0),
+        "max_lcp_continuation_violation": max(
+            result.lcp_continuation_violations, default=0.0
+        ),
+        "max_lcp_iterations": max(result.lcp_iterations) if result.lcp_iterations else 0,
+        "all_lcp_converged": all(result.lcp_converged),
         "max_psor_iterations": max(result.psor_iterations) if result.psor_iterations else 0,
         "all_psor_converged": all(result.psor_converged),
     }
+    return summary
