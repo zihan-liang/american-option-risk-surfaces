@@ -1,6 +1,8 @@
 import csv
+import hashlib
 import importlib.util
 import json
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -48,6 +50,7 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
                 "train_cap": 24,
                 "validation_cap": 12,
                 "legacy_test_cap": 12,
+                "selection_seed": 991,
                 "collocation_cap": 8,
                 "residual_eval_cap": 8,
                 "hidden": 8,
@@ -65,6 +68,11 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
         )
         self.assertEqual(summary["split_names"], ["train", "validation", "legacy_test"])
         for name in [
+            "config_manifest.json",
+            "run_metrics.csv",
+            "training_history.csv",
+            "decision.json",
+            "artifact_hashes.json",
             "m02_config_manifest.json",
             "m02_metrics_by_regime.csv",
             "m02_training_history.csv",
@@ -79,11 +87,128 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
             rows = list(csv.DictReader(fh))
         self.assertEqual({row["method"] for row in rows}, set(summary["methods"]))
         self.assertIn("legacy_test", {row["split"] for row in rows})
+        self.assertIn("vi_collocation_samples", rows[0])
         self.assertIn("masked_pde_residual_mean_abs", rows[0])
         self.assertIn("complementarity_product_mean_abs", rows[0])
         with open(output_root / "m02_summary.json", encoding="utf-8") as fh:
             loaded = json.load(fh)
         self.assertEqual(loaded["mode"], "smoke")
+        self.assertEqual(loaded["selection"]["selection_seed"], 991)
+        self.assertEqual(loaded["selection"]["train"]["samples"], 24)
+        self.assertEqual(loaded["promotion"]["comparisons"]["masked_pde"]["status"], "diagnostic_only")
+        decision = json.loads((output_root / "decision.json").read_text(encoding="utf-8"))
+        self.assertEqual(decision["status"], "diagnostic_only")
+        hashes = json.loads((output_root / "artifact_hashes.json").read_text(encoding="utf-8"))
+        self.assertIn("m02_metrics_by_regime.csv", hashes["files"])
+        for name, expected_hash in hashes["files"].items():
+            self.assertEqual(hashlib.sha256((output_root / name).read_bytes()).hexdigest(), expected_hash)
+
+    def test_predeclared_selections_and_residual_indices_ignore_training_seed(self):
+        _, _, split, regime_keys = _tiny_dataset()
+        features, _, _, _ = _tiny_dataset()
+        selections = experiment._predeclared_split_selections(
+            split,
+            np.ones(len(split), dtype=bool),
+            regime_keys,
+            {
+                "selection_seed": 13,
+                "train_cap": 24,
+                "validation_cap": 12,
+                "legacy_test_cap": 12,
+            },
+        )
+        np.random.seed(101)
+        first_selection = experiment._predeclared_split_selections(
+            split,
+            np.ones(len(split), dtype=bool),
+            regime_keys,
+            {
+                "selection_seed": 13,
+                "train_cap": 24,
+                "validation_cap": 12,
+                "legacy_test_cap": 12,
+            },
+        )
+        np.random.seed(203)
+        second_selection = experiment._predeclared_split_selections(
+            split,
+            np.ones(len(split), dtype=bool),
+            regime_keys,
+            {
+                "selection_seed": 13,
+                "train_cap": 24,
+                "validation_cap": 12,
+                "legacy_test_cap": 12,
+            },
+        )
+        first = experiment._predeclared_residual_indices(
+            selections["validation"][0],
+            regime_keys,
+            np.ones(len(split), dtype=bool),
+            cap=2,
+            selection_seed=13,
+            split_name="validation",
+        )
+        second = experiment._predeclared_residual_indices(
+            selections["validation"][0],
+            regime_keys,
+            np.ones(len(split), dtype=bool),
+            cap=2,
+            selection_seed=13,
+            split_name="validation",
+        )
+
+        self.assertEqual(first_selection["train"][0].tolist(), second_selection["train"][0].tolist())
+        self.assertEqual(first_selection["validation"][1], second_selection["validation"][1])
+        self.assertEqual({key: value.tolist() for key, value in first.items()}, {key: value.tolist() for key, value in second.items()})
+        self.assertTrue(all(len(indices) == 2 for indices in first.values()))
+        self.assertEqual(features.shape[0], len(split))
+
+    def test_promotion_blocks_missing_boundary_diagnostics(self):
+        baseline, candidate = _promotion_rows()
+
+        promotion = experiment._paired_promotion(baseline, candidate, _promotion_cfg())
+
+        self.assertEqual(promotion["status"], "insufficient_diagnostics")
+        self.assertEqual(promotion["metrics"]["boundary_rmse"]["status"], "unavailable")
+
+    def test_shared_cli_dispatches_m02_smoke(self):
+        root = Path("results/test_m02_obstacle_pinn")
+        dataset = root / "cli_dataset.npz"
+        features, labels, split, regime_key = _tiny_dataset()
+        np.savez_compressed(
+            dataset,
+            features=features,
+            labels=labels,
+            split=split,
+            regime_key=regime_key,
+            near_boundary=np.zeros(len(features), dtype=bool),
+            near_kink=np.zeros(len(features), dtype=bool),
+            boundary=np.full(len(features), 0.9, dtype=np.float64),
+        )
+        from common import load_config
+
+        config = load_config("configs/independent_m02_obstacle_pinn.yaml")
+        config["dataset"] = str(dataset)
+        config["smoke_settings"].update({"epochs": 1, "batch_size": 8, "collocation_cap": 8, "train_cap": 24, "validation_cap": 12, "legacy_test_cap": 12, "residual_eval_cap": 2})
+        config_path = root / "cli_config.json"
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        output_root = root / "cli_out"
+
+        result = subprocess.run(
+            [
+                "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-campaign/bin/python",
+                "experiments/26_independent_method_campaign.py",
+                "--method", "M02", "--phase", "screen", "--smoke", "--config", str(config_path), "--output-root", str(output_root),
+            ],
+            text=True,
+            capture_output=True,
+            check=True,
+            env={**__import__("os").environ, "PYTHONPATH": "src:experiments", "MPLBACKEND": "Agg"},
+        )
+
+        self.assertEqual(json.loads(result.stdout)["mode"], "smoke")
+        self.assertTrue((output_root / "M02" / "decision.json").exists())
 
 
 def _tiny_dataset():
@@ -122,6 +247,31 @@ def _tiny_dataset():
     price = payoff + premium
     labels = np.column_stack([price, premium, payoff, np.zeros(n), np.zeros(n)])
     return features, labels, np.asarray(split), np.asarray(regime_key)
+
+
+def _promotion_cfg():
+    return {"bootstrap_iterations": 20, "bootstrap_seed": 3, "obstacle_tolerance": 1.0e-10, "mode": "canonical"}
+
+
+def _promotion_rows():
+    rows = []
+    for method in ("supervised", "masked_pde"):
+        for regime_index, regime_id in enumerate(("a", "b", "c")):
+            rows.append(
+                {
+                    "method": method,
+                    "regime_id": regime_id,
+                    "price_rmse": 1.0,
+                    "delta_rmse": 1.0,
+                    "k_gamma_rmse": 1.0,
+                    "boundary_rmse": None,
+                    "continuation_violation_mean": 0.1,
+                    "complementarity_product_mean_abs": 0.1,
+                    "masked_pde_residual_mean_abs": 0.1,
+                    "max_obstacle_violation": 0.0,
+                }
+            )
+    return [row for row in rows if row["method"] == "supervised"], [row for row in rows if row["method"] == "masked_pde"]
 
 
 if __name__ == "__main__":

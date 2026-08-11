@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 from pathlib import Path
 from typing import Any
@@ -25,6 +26,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", help="Optional JSON or YAML config; set dry_run: true to write a scaffold")
     parser.add_argument("--list-methods", action="store_true", help="List the fixed M01--M24 registry")
     parser.add_argument("--verify-all", action="store_true", help="Validate all registry entries")
+    parser.add_argument("--smoke", action="store_true", help="Run the implemented M02 non-evidence smoke screen")
     return parser
 
 
@@ -35,6 +37,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         return verify_registry()
     if not args.method or not args.phase:
         raise ValueError("--method and --phase are required unless --list-methods or --verify-all is used")
+
+    if args.smoke:
+        if args.method != "M02" or args.phase != RunPhase.SCREEN.value:
+            raise ValueError("--smoke is currently available only for M02 screen")
+        return _run_m02_smoke(args)
 
     config = load_config(args.config) if args.config else {}
     if not bool(config.get("dry_run", False)):
@@ -60,6 +67,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     )
     paths = write_method_outputs(Path(args.output_root) / spec.method_id, spec, record, config=config_manifest)
     return {"method_id": spec.method_id, "output_dir": str(Path(args.output_root) / spec.method_id), "status": record.status.value, "files": {key: str(value) for key, value in paths.items()}}
+
+
+def _run_m02_smoke(args: argparse.Namespace) -> dict[str, Any]:
+    experiment_path = Path(__file__).with_name("27_m02_obstacle_aware_pinn.py")
+    spec = importlib.util.spec_from_file_location("campaign_m02_obstacle_aware_pinn", experiment_path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    config_path = args.config or "configs/independent_m02_obstacle_pinn.yaml"
+    return module.run(config_path, output_root=Path(args.output_root) / "M02", overrides={"mode": "smoke"})
 
 
 def main() -> None:

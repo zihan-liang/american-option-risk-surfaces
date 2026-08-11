@@ -5,6 +5,31 @@ from __future__ import annotations
 import numpy as np
 
 
+def build_vi_collocation_mask(
+    features: np.ndarray,
+    *,
+    near_boundary: np.ndarray | None = None,
+    near_kink: np.ndarray | None = None,
+    tau_min_for_pde: float = 0.05,
+    option_scope: str = "put",
+) -> np.ndarray:
+    """Select valid obstacle-VI points without excluding exercise samples."""
+
+    values = np.asarray(features)
+    if values.ndim != 2 or values.shape[1] < 7:
+        raise ValueError("features must have shape (n, >=7)")
+    boundary_mask = _optional_bool_mask(near_boundary, len(values), "near_boundary")
+    kink_mask = _optional_bool_mask(near_kink, len(values), "near_kink")
+    mask = (values[:, 1] > float(tau_min_for_pde)) & (~boundary_mask) & (~kink_mask)
+    if option_scope == "put":
+        mask &= values[:, 6] <= 0.5
+    elif option_scope == "call":
+        mask &= values[:, 6] > 0.5
+    elif option_scope != "all":
+        raise ValueError(f"unknown option_scope: {option_scope}")
+    return mask.astype(bool)
+
+
 def masked_pde_loss(residual, mask, *, residual_scale: float):
     """Return normalized squared PDE residual on a predeclared mask."""
 
@@ -118,3 +143,10 @@ def _finite_tensor(value, name: str):
 def _positive_finite(value: float, name: str) -> None:
     if not np.isfinite(value) or float(value) <= 0.0:
         raise ValueError(f"{name} must be finite and positive")
+
+
+def _optional_bool_mask(mask: np.ndarray | None, length: int, name: str) -> np.ndarray:
+    values = np.zeros(length, dtype=bool) if mask is None else np.asarray(mask, dtype=bool)
+    if len(values) != length:
+        raise ValueError(f"{name} must match feature rows")
+    return values
