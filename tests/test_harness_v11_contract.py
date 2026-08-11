@@ -30,6 +30,15 @@ class HarnessV11ContractTests(unittest.TestCase):
 
         self.assertEqual(missing, [])
 
+    def test_artifact_bootstrap_forces_a_headless_matplotlib_backend(self):
+        script = (REPO_ROOT / "scripts/bootstrap_artifacts.sh").read_text(encoding="utf-8")
+
+        self.assertIn('export MPLBACKEND="${MPLBACKEND:-Agg}"', script)
+        self.assertIn(
+            'export MPLCONFIGDIR="${MPLCONFIGDIR:-${TMPDIR:-/tmp}/codex_mplconfig}"',
+            script,
+        )
+
     def test_feature_list_schema_requires_operational_fields_and_wip_limit(self):
         result = subprocess.run(
             [sys.executable, "scripts/validate_feature_list.py", "feature_list.json"],
