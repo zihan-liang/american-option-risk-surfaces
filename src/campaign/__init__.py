@@ -1,1 +1,1 @@
-"""Campaign contracts for the independent-method evaluation protocol."""
+"""Contracts and utilities for the independent-method evaluation campaign."""
