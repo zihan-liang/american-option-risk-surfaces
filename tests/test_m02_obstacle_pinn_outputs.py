@@ -19,6 +19,27 @@ _SPEC.loader.exec_module(experiment)
 
 
 class M02ObstaclePinnOutputTests(unittest.TestCase):
+    def test_real_smoke_config_admits_one_complete_surface_per_development_split(self):
+        from common import load_config
+
+        cfg = load_config("configs/independent_m02_obstacle_pinn.yaml")
+        data = np.load(cfg["dataset"])
+        split = data["split"].astype(str)
+        regimes = data["regime_key"].astype(str)
+        selections = experiment._predeclared_split_selections(
+            split,
+            np.ones(len(split), dtype=bool),
+            regimes,
+            {**cfg, **cfg["smoke_settings"]},
+        )
+
+        self.assertEqual(cfg["smoke_settings"]["epochs"], 1)
+        self.assertEqual(cfg["smoke_settings"]["hidden"], 8)
+        self.assertEqual(cfg["smoke_settings"]["depth"], 1)
+        for indices, regime_ids in selections.values():
+            self.assertEqual(len(regime_ids), 1)
+            self.assertEqual(len(indices), 14_641)
+
     def test_smoke_run_writes_labeled_outputs_with_all_four_methods(self):
         root = Path("results/test_m02_obstacle_pinn")
         root.mkdir(parents=True, exist_ok=True)
@@ -90,6 +111,8 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
         self.assertIn("vi_collocation_samples", rows[0])
         self.assertIn("masked_pde_residual_mean_abs", rows[0])
         self.assertIn("complementarity_product_mean_abs", rows[0])
+        self.assertIn("dual_feasibility_violation_mean", rows[0])
+        self.assertNotIn("continuation_violation_mean", rows[0])
         with open(output_root / "m02_summary.json", encoding="utf-8") as fh:
             loaded = json.load(fh)
         self.assertEqual(loaded["mode"], "smoke")
@@ -98,10 +121,39 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
         self.assertEqual(loaded["promotion"]["comparisons"]["masked_pde"]["status"], "diagnostic_only")
         decision = json.loads((output_root / "decision.json").read_text(encoding="utf-8"))
         self.assertEqual(decision["status"], "diagnostic_only")
+        self.assertEqual(decision["budget_seconds"], 3600)
+        self.assertIn("elapsed_screen_seconds", decision)
         hashes = json.loads((output_root / "artifact_hashes.json").read_text(encoding="utf-8"))
         self.assertIn("m02_metrics_by_regime.csv", hashes["files"])
         for name, expected_hash in hashes["files"].items():
             self.assertEqual(hashlib.sha256((output_root / name).read_bytes()).hexdigest(), expected_hash)
+        self.assertEqual(loaded["blind_holdout_accessed"], False)
+        timing = loaded["costs"]["methods"]["supervised"]["per_seed"][0]["inference"]
+        self.assertEqual(timing["warmups"], 0)
+        self.assertEqual(timing["repetitions"], 1)
+        self.assertIn("preprocessing_seconds", loaded["costs"])
+        self.assertEqual(loaded["costs"]["reused_psor_label_generation_seconds"], None)
+        self.assertIn("training_seconds", loaded["costs"]["methods"]["supervised"]["per_seed"][0])
+        self.assertIn("residual_diagnostic_seconds", loaded["costs"]["methods"]["supervised"]["per_seed"][0])
+
+    def test_holm_correction_downgrades_an_otherwise_promoted_primary_comparison(self):
+        comparisons = {
+            method: {
+                "status": "promote",
+                "raw_status": "promote",
+                "claim_status": "screen_candidate",
+                "metrics": {"price_rmse": {"status": "defined", "paired_p_value": p_value}},
+            }
+            for method, p_value in zip(
+                ("masked_pde", "separate_complementarity", "fischer_burmeister"),
+                (0.02, 0.03, 0.04),
+            )
+        }
+
+        experiment._apply_price_holm(comparisons, {"mode": "canonical"})
+
+        self.assertFalse(comparisons["masked_pde"]["primary_price_holm"]["reject"])
+        self.assertEqual(comparisons["masked_pde"]["status"], "inconclusive_holm")
 
     def test_predeclared_selections_and_residual_indices_ignore_training_seed(self):
         _, _, split, regime_keys = _tiny_dataset()
@@ -265,7 +317,7 @@ def _promotion_rows():
                     "delta_rmse": 1.0,
                     "k_gamma_rmse": 1.0,
                     "boundary_rmse": None,
-                    "continuation_violation_mean": 0.1,
+                    "dual_feasibility_violation_mean": 0.1,
                     "complementarity_product_mean_abs": 0.1,
                     "masked_pde_residual_mean_abs": 0.1,
                     "max_obstacle_violation": 0.0,
