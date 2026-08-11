@@ -35,10 +35,20 @@ The standard contract includes config, multi-row run metrics, history,
 decision, and hashes. The decision contains a 3,600-second canonical screen
 budget; a canonical overrun is `resource_blocked` and cannot promote. Costs
 record preprocessing, training, deterministic price inference, residual
-diagnostics, model/working-memory definitions, and a null reused-label cost
-with an explicit reason. Canonical timing is fixed at five warmups and 30
+diagnostics, model/working-memory definitions, zero fallback cost with an
+explicit no-fallback reason, and a null reused-label cost with an explicit
+reason. Canonical timing is fixed at five warmups and 30
 repetitions; smoke records its 0/1 timing counts and is always
 `diagnostic_only` / `smoke_non_evidence`.
+
+## Review Round 3 Resolution
+
+The primary-price Holm family now downgrades every raw promotion to
+`inconclusive_holm_unavailable` when any of the three predeclared comparisons
+is unavailable. Both the standard config manifest and decision explicitly
+record `blind_holdout_accessed: false`. The post-fix smoke below was run only
+after code commit `4fa45e9a7fa544ae04808a45104b70151b639e25` existed; every
+run record and provenance field names that exact implementation commit.
 
 ## Actual-Data Smoke Evidence
 
@@ -48,19 +58,23 @@ Command:
 MPLBACKEND=Agg $PY experiments/26_independent_method_campaign.py \
   --method M02 --phase screen --smoke \
   --config configs/independent_m02_obstacle_pinn.yaml \
-  --output-root /private/tmp/m02-manager-smoke-round2-final
+  --output-root /private/tmp/m02-manager-smoke-round3-final
 ```
 
-- Completed in `6.021486707963049` seconds.
+- Completed in `5.8572572090197355` seconds.
 - Selected one complete regime per split: 14,641 train, 14,641 validation,
   and 14,641 `legacy_test` points.
 - The selected validation regime retained 13,340 valid-VI points; residual
   diagnostics used the fixed 64-point cap.
 - Every comparison is `diagnostic_only` with claim status
   `smoke_non_evidence`; no blind holdout was accessed.
-- Artifacts: `/private/tmp/m02-manager-smoke-round2-final/M02/`.
-- Six JSON files passed strict `allow_nan=False` parsing and all populated
-  numeric values across four CSV files were finite.
+- Artifacts: `/private/tmp/m02-manager-smoke-round3-final/M02/`.
+- All nine compact artifact hashes matched. Six JSON files passed strict
+  `allow_nan=False` parsing and all populated numeric values across four CSV
+  files were finite.
+- The five standard run records, config manifest, and decision all record
+  commit `4fa45e9a7fa544ae04808a45104b70151b639e25` and
+  `blind_holdout_accessed: false`.
 
 ## Verification
 
