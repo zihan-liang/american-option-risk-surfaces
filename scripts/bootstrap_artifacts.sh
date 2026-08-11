@@ -33,6 +33,9 @@ fi
 
 export PYTHONPATH="${PYTHONPATH:-src:experiments}"
 export PYTHONPYCACHEPREFIX="${PYTHONPYCACHEPREFIX:-${TMPDIR:-/tmp}/american_option_pycache}"
+export MPLBACKEND="${MPLBACKEND:-Agg}"
+export MPLCONFIGDIR="${MPLCONFIGDIR:-${TMPDIR:-/tmp}/codex_mplconfig}"
+mkdir -p "$MPLCONFIGDIR"
 
 if [[ "$FORCE" != true ]] && bash scripts/verify_report_artifacts.sh >/dev/null 2>&1; then
   echo "report artifacts already present"
