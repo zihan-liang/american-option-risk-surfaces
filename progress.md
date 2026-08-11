@@ -4,10 +4,10 @@ This is the short current-session state file for agent continuity. The long rese
 
 ## Current State
 
-- Last updated: 2026-06-25
-- Active feature: none
-- Branch: `exp/harness-v1.2-feature-lifecycle`
-- Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/harness-v1.2-feature-lifecycle`
+- Last updated: 2026-08-11
+- Active feature: `independent-all-method-campaign`
+- Branch: `campaign/independent-methods`
+- Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/campaign-independent-methods`
 
 ## What Is Done
 
@@ -16,22 +16,28 @@ This is the short current-session state file for agent continuity. The long rese
 - The initial v1 harness has been implemented on `exp/initial-harness-v1`.
 - The v1.1 operational harness has been implemented on `exp/harness-v1.1-operational`.
 - The v1.2 feature lifecycle helper has been implemented on `exp/harness-v1.2-feature-lifecycle`.
+- The reviewed v1, v1.1, and v1.2 harness commits have been imported into the campaign branch.
+- The current `stage-13-future-extensions` branch was pushed before campaign setup.
+- The blind-holdout SHA-256 commitment was created before method development; the seed is stored outside Git.
+- The inherited suite passes after ignored report assets are bootstrapped with `MPLBACKEND=Agg`.
 
 ## In Progress
 
-- None. Next work should start from a new explicit feature or lesson-by-lesson harness correction.
+- Wave 0 campaign foundation: registry, result contracts, statistics, leakage controls, and CLI.
 
 ## Next Step
 
-- Commit or review `exp/harness-v1.2-feature-lifecycle`.
-- When the user provides the next Learn Harness Engineering lesson, update only the relevant harness subsystem and append `docs/harness/harness_changelog.md`.
+- Complete and review the shared campaign foundation.
+- Implement M01 as the numerical oracle before running neural or diagnostic methods.
 
 ## Blockers / Risks
 
-- Main checkout is intentionally dirty/ahead and must not be cleaned by the harness implementation.
+- The campaign is large and compute-heavy; heavy screening runs must remain serialized.
 - Some Round-2 evidence lives in sibling external worktrees, not in this harness branch.
 - Fresh worktrees may need ignored figure artifacts regenerated before the legacy full report-link tests pass.
 - `scripts/bootstrap_artifacts.sh` can rewrite tracked result summaries through path/timestamp/line-ending churn; keep commits scoped.
+- The inherited suite emits numerical overflow warnings in legacy dry-run/extreme-regime paths even when tests pass; campaign diagnostics must reject non-finite metrics explicitly.
+- A first baseline test invocation crashed in the macOS interactive Matplotlib backend; all headless commands must set `MPLBACKEND=Agg` and a writable `MPLCONFIGDIR`.
 
 ## Decisions Made
 
@@ -41,6 +47,8 @@ This is the short current-session state file for agent continuity. The long rese
 - Keep `AGENTS.md` as a router; detailed harness rules live under `docs/harness/`.
 - Treat `feature_list.json` as the system of record and keep at most one active feature.
 - Use `scripts/update_feature_status.py` for routine status transitions.
+- Run all 24 methods independently; do not test combinations in this campaign.
+- Treat the existing test split as `legacy_test`; use the committed blind holdout only once after freezing configurations.
 
 ## Evidence of Completion
 
@@ -52,3 +60,4 @@ This is the short current-session state file for agent continuity. The long rese
 - `bash scripts/verify_report_artifacts.sh` passed after `bash scripts/bootstrap_artifacts.sh`.
 - `$PY experiments/16_release_verification.py` passed with `release_gate: pass`.
 - `$PY -m pytest tests/test_feature_lifecycle_tools.py -q` passed.
+- `MPLBACKEND=Agg MPLCONFIGDIR=/private/tmp/codex_mplconfig $PY -m pytest tests -q` passed on the campaign worktree after artifact bootstrap (150 tests).

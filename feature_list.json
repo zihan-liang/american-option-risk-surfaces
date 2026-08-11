@@ -114,6 +114,21 @@
       "verification": "bash scripts/verify_harness.sh",
       "evidence": "docs/harness/harness_changelog.md",
       "notes": "Use docs/harness/decision-log.md and harness_changelog.md for incremental changes.\n2026-06-25T08:51:50+00:00: v1.2 added feature lifecycle helper; future lesson updates still not started."
+    },
+    {
+      "id": "independent-all-method-campaign",
+      "name": "Independent 24-method experiment campaign",
+      "description": "Implement, screen, review, and blindly evaluate all 24 approved methods independently before any combination study.",
+      "dependencies": [
+        "harness-v1.2-feature-lifecycle"
+      ],
+      "status": "in-progress",
+      "priority": "high",
+      "area": "research-campaign",
+      "user_visible_behavior": "The project produces reproducible independent decisions for M01-M24 and a bilingual evidence-backed comparison report.",
+      "verification": "MPLBACKEND=Agg $PY -m pytest tests -q; bash scripts/verify_harness.sh; $PY experiments/26_independent_method_campaign.py --verify-all; LaTeX and rendered-PDF inspection",
+      "evidence": "docs/superpowers/plans/2026-08-11-independent-all-method-campaign.md; configs/independent_campaign_holdout_commitment.json",
+      "notes": "Started 2026-08-11. Existing Stage 21-23 and pilot branches are historical only. Blind seed stays outside Git until all configurations are frozen."
     }
   ]
 }

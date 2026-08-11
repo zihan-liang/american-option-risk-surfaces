@@ -1,0 +1,15 @@
+{
+  "campaign": "independent-methods-v1",
+  "commitment_scheme": "sha256_utf8_line",
+  "canonical_template": "american-option-risk-surfaces:independent-methods:v1:<decimal_seed>\\n",
+  "sha256": "8ad98bbb56515be3248086b5151358bc89d786c7d4eb091726d1c40feb7884ce",
+  "committed_at": "2026-08-11T17:20:00+08:00",
+  "seed_revealed": false,
+  "holdout_policy": {
+    "total_regimes": 128,
+    "sobol_in_domain": 96,
+    "stress": 32,
+    "evaluation_count": 1,
+    "generate_after_configs_frozen": true
+  }
+}
