@@ -1,0 +1,22 @@
+campaign: independent-methods-v1
+created_at: 2026-08-11T17:45:00+08:00
+platform:
+  machine: Apple MacBook Pro M5
+  memory_gb: 16
+  architecture: arm64
+runtime:
+  python: 3.12.13
+  environment_path: /Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-campaign
+  lock_file: requirements-campaign.lock
+canonical_numerics:
+  device: cpu
+  dtype: float64
+  heavy_runs_serialized: true
+hardware_probe:
+  torch_version: 2.13.0
+  mps_built: true
+  mps_available_in_codex_environment: false
+  policy: MPS is used only by M14 and must be marked resource_blocked when it cannot be accessed.
+headless_plotting:
+  MPLBACKEND: Agg
+  MPLCONFIGDIR: /private/tmp/codex_mplconfig

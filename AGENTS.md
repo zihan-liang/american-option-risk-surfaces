@@ -55,6 +55,18 @@ export PYTHONPATH=src:experiments
 export PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/american_option_pycache"
 ```
 
+For the independent-method campaign, use the pinned Python 3.12 environment:
+
+```bash
+PY=/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-campaign/bin/python
+export PYTHONPATH=src:experiments
+export PYTHONPYCACHEPREFIX="${TMPDIR:-/tmp}/american_option_pycache"
+export MPLBACKEND=Agg
+export MPLCONFIGDIR="${TMPDIR:-/tmp}/codex_mplconfig"
+```
+
+The exact package set is recorded in `requirements-campaign.lock`; environment and MPS probe details are in `configs/campaign_environment.yaml`.
+
 Core checks:
 
 ```bash
