@@ -48,3 +48,4 @@ reports/*.synctex.gz
 reports/*.toc
 reports/*.xdv
 results/test_stage*/
+results/test_m02_obstacle_pinn/
