@@ -1,0 +1,38 @@
+method_id: M03
+run_mode: canonical_screen
+seeds: [101, 203, 307, 409, 503]
+budget_seconds: 3600
+sampling:
+  generation_seed: 1701
+  train_regimes: 20
+  validation_regimes: 10
+  parameter_ranges:
+    t: [0.25, 2.0]
+    r: [0.0, 0.10]
+    q: [0.0, 0.06]
+    sigma: [0.10, 0.60]
+solver:
+  m: 76
+  n: 100
+  k: 1.0
+  s_max: 4.0
+  residual_tolerance: 1.0e-10
+  label_residual_tolerance: 1.0e-12
+  max_iter: 20000
+  omega_candidates: [1.0, 1.2, 1.4, 1.6]
+network:
+  hidden: 128
+  depth: 3
+  epochs: 30
+  batch_size: 8192
+  patience: 8
+  learning_rate: 0.001
+  dtype: float64
+  device: cpu
+  blend_candidates: [0.5, 1.0]
+timing:
+  warmups: 5
+  repetitions: 30
+statistics:
+  bootstrap_iterations: 10000
+  bootstrap_seed: 1703

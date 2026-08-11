@@ -25,6 +25,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--phase", choices=[phase.value for phase in RunPhase], help="Campaign phase")
     parser.add_argument("--output-root", help="Override the method output directory")
     parser.add_argument("--config", help="Optional JSON or YAML config; set dry_run: true to write a scaffold")
+    parser.add_argument("--smoke", action="store_true", help="Run a reduced diagnostic, non-evidence screen when supported")
     parser.add_argument("--list-methods", action="store_true", help="List the fixed M01--M24 registry")
     parser.add_argument("--verify-all", action="store_true", help="Validate all registry entries")
     parser.add_argument("--smoke", action="store_true", help="Run an explicitly non-evidence smoke configuration")
@@ -40,6 +41,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("--method and --phase are required unless --list-methods or --verify-all is used")
 
     config = load_config(args.config) if args.config else {}
+    if args.method == "M03" and args.phase == RunPhase.SCREEN.value and not bool(config.get("dry_run", False)):
+        from campaign.m03 import run_m03_screen
+
+        return run_m03_screen(
+            output_dir=Path(args.output_root) / "M03",
+            smoke=bool(args.smoke),
+            config_overrides=config,
+        )
+    if args.smoke:
+        raise ValueError("--smoke is currently implemented only for M03 screen")
     if not bool(config.get("dry_run", False)):
         return _dispatch_implemented_method(args)
 
