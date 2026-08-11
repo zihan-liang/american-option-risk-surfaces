@@ -20,15 +20,20 @@ This is the short current-session state file for agent continuity. The long rese
 - The current `stage-13-future-extensions` branch was pushed before campaign setup.
 - The blind-holdout SHA-256 commitment was created before method development; the seed is stored outside Git.
 - The inherited suite passes after ignored report assets are bootstrapped with `MPLBACKEND=Agg`.
+- The campaign registry contains exactly M01--M24 with category, budget, gate, provenance, and multi-record output contracts.
+- Scenario-level statistics, paired bootstrap intervals and p-values, Holm correction, promotion rules, and deterministic timing helpers are implemented and tested.
+- Development splits cannot access the blind holdout; final generation requires a verified committed seed after configurations are frozen.
+- The missing M22--M24 research reports have been primary-source audited, including the corrected 24/24/24 M23 comparison.
 
 ## In Progress
 
-- Wave 0 campaign foundation: registry, result contracts, statistics, leakage controls, and CLI.
+- M01 classical oracle corrections after independent numerical review.
+- M02 obstacle-aware PINN implementation and contract refinement.
 
 ## Next Step
 
-- Complete and review the shared campaign foundation.
-- Implement M01 as the numerical oracle before running neural or diagnostic methods.
+- Correct and re-review the M01 numerical issues before accepting oracle evidence.
+- Review the corrected M02 implementation, then run only its predeclared screening protocol.
 
 ## Blockers / Risks
 
@@ -38,6 +43,8 @@ This is the short current-session state file for agent continuity. The long rese
 - `scripts/bootstrap_artifacts.sh` can rewrite tracked result summaries through path/timestamp/line-ending churn; keep commits scoped.
 - The inherited suite emits numerical overflow warnings in legacy dry-run/extreme-regime paths even when tests pass; campaign diagnostics must reject non-finite metrics explicitly.
 - A first baseline test invocation crashed in the macOS interactive Matplotlib backend; all headless commands must set `MPLBACKEND=Agg` and a writable `MPLCONFIGDIR`.
+- The first M01 review blocked integration because of negative-rate boundary handling, an incomplete SDIRK2 obstacle reaction, an invalid Brennan--Schwartz control, and inconsistent LCP convergence semantics.
+- M23 may be resource-blocked if its calibrated trial time exceeds the predeclared 50-second average ceiling.
 
 ## Decisions Made
 
@@ -61,3 +68,6 @@ This is the short current-session state file for agent continuity. The long rese
 - `$PY experiments/16_release_verification.py` passed with `release_gate: pass`.
 - `$PY -m pytest tests/test_feature_lifecycle_tools.py -q` passed.
 - `MPLBACKEND=Agg MPLCONFIGDIR=/private/tmp/codex_mplconfig $PY -m pytest tests -q` passed on the campaign worktree after artifact bootstrap (150 tests).
+- `MPLBACKEND=Agg MPLCONFIGDIR=/private/tmp/codex_mplconfig PYTHONPATH=src:experiments $PY -m pytest tests -q` passed after the reviewed foundation and M22--M24 audit (209 tests).
+- `bash scripts/verify_harness.sh` passed after the reviewed foundation integration.
+- `$PY -m compileall -q src tests experiments` and `git diff --check` passed.

@@ -3,7 +3,7 @@
 ## Current Objective
 
 - Goal: execute the approved independent 24-method experiment campaign and produce a bilingual comparison report.
-- Current status: Wave 0 campaign foundation in progress after harness import and baseline verification.
+- Current status: Wave 0 campaign foundation complete; M01 and M02 are in implementation/review.
 - Branch: `campaign/independent-methods`.
 - Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/campaign-independent-methods`.
 
@@ -23,7 +23,8 @@
 - [x] Cherry-pick reviewed harness commits `a343c78`, `6c6d4c3`, and `ec3e694`.
 - [x] Create the pre-development blind-holdout SHA-256 commitment.
 - [x] Bootstrap ignored report assets and establish a passing inherited baseline.
-- [ ] Implement and review the campaign foundation.
+- [x] Implement and review the campaign registry, output contracts, statistics, leakage controls, and CLI.
+- [x] Complete and primary-source audit the missing M22--M24 research reports.
 - [ ] Implement and screen M01-M24 independently.
 - [ ] Freeze configurations and run the blind final evaluation once.
 - [ ] Produce and inspect the bilingual final report.
@@ -41,6 +42,9 @@
 | Report artifacts | `bash scripts/verify_report_artifacts.sh` | passed | Passed after `bash scripts/bootstrap_artifacts.sh`. |
 | Release gate | `$PY experiments/16_release_verification.py` | passed | Reported `release_gate: pass`. |
 | Campaign inherited baseline | `MPLBACKEND=Agg MPLCONFIGDIR=/private/tmp/codex_mplconfig PYTHONPATH=src:experiments $PY -m pytest tests -q` | passed | 150 tests passed after ignored artifact bootstrap. |
+| Reviewed campaign foundation | `MPLBACKEND=Agg MPLCONFIGDIR=/private/tmp/codex_mplconfig PYTHONPATH=src:experiments $PY -m pytest tests -q` | passed | 209 tests passed after registry, statistics, holdout, and M22--M24 audit integration. |
+| Foundation compilation | `$PY -m compileall -q src tests experiments` | passed | No compilation errors. |
+| Foundation diff hygiene | `git diff --check` | passed | No whitespace errors. |
 
 ## Files Changed
 
@@ -70,6 +74,8 @@
 - Artifact bootstrap may rewrite tracked result summaries; this branch keeps the commit scoped to harness files.
 - Headless plotting must use `MPLBACKEND=Agg`; the macOS interactive backend aborts inside the Codex test environment.
 - Legacy dry-run paths emit non-finite arithmetic warnings, so campaign schemas and gates must reject non-finite metrics.
+- Independent M01 review found blocking mathematical issues; no M01 campaign result may be accepted until those regressions are fixed and re-reviewed.
+- M23's approved 72-call comparison implies a 50-second average ceiling and may correctly end as `resource_blocked` after calibration.
 
 ## Next Session Startup
 
@@ -81,4 +87,4 @@
 
 ## Recommended Next Step
 
-Finish Wave 0 campaign contracts, review them, and then implement M01 as the numerical oracle.
+Finish the M01 correction/re-review loop and the M02 contract review, then run their canonical screening jobs serially.
