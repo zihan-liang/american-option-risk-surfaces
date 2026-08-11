@@ -123,6 +123,9 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
         self.assertEqual(decision["status"], "diagnostic_only")
         self.assertEqual(decision["budget_seconds"], 3600)
         self.assertIn("elapsed_screen_seconds", decision)
+        self.assertEqual(decision["blind_holdout_accessed"], False)
+        config_manifest = json.loads((output_root / "config_manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(config_manifest["config"]["blind_holdout_accessed"], False)
         hashes = json.loads((output_root / "artifact_hashes.json").read_text(encoding="utf-8"))
         self.assertIn("m02_metrics_by_regime.csv", hashes["files"])
         for name, expected_hash in hashes["files"].items():
@@ -133,6 +136,8 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
         self.assertEqual(timing["repetitions"], 1)
         self.assertIn("preprocessing_seconds", loaded["costs"])
         self.assertEqual(loaded["costs"]["reused_psor_label_generation_seconds"], None)
+        self.assertEqual(loaded["costs"]["fallback_seconds"], 0.0)
+        self.assertIn("fallback_reason", loaded["costs"])
         self.assertIn("training_seconds", loaded["costs"]["methods"]["supervised"]["per_seed"][0])
         self.assertIn("residual_diagnostic_seconds", loaded["costs"]["methods"]["supervised"]["per_seed"][0])
 
@@ -154,6 +159,25 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
 
         self.assertFalse(comparisons["masked_pde"]["primary_price_holm"]["reject"])
         self.assertEqual(comparisons["masked_pde"]["status"], "inconclusive_holm")
+
+    def test_missing_primary_family_member_downgrades_every_raw_promotion(self):
+        comparisons = {
+            "masked_pde": _promoted_price_comparison(0.01),
+            "separate_complementarity": _promoted_price_comparison(0.02),
+            "fischer_burmeister": {
+                "status": "insufficient_diagnostics",
+                "raw_status": "insufficient_diagnostics",
+                "claim_status": "diagnostic_only",
+                "metrics": {"price_rmse": {"status": "unavailable"}},
+            },
+        }
+
+        experiment._apply_price_holm(comparisons, {"mode": "canonical"})
+
+        for method in ("masked_pde", "separate_complementarity"):
+            self.assertEqual(comparisons[method]["raw_status"], "inconclusive_holm_unavailable")
+            self.assertEqual(comparisons[method]["status"], "inconclusive_holm_unavailable")
+            self.assertEqual(comparisons[method]["claim_status"], "diagnostic_only")
 
     def test_predeclared_selections_and_residual_indices_ignore_training_seed(self):
         _, _, split, regime_keys = _tiny_dataset()
@@ -303,6 +327,15 @@ def _tiny_dataset():
 
 def _promotion_cfg():
     return {"bootstrap_iterations": 20, "bootstrap_seed": 3, "obstacle_tolerance": 1.0e-10, "mode": "canonical"}
+
+
+def _promoted_price_comparison(p_value):
+    return {
+        "status": "promote",
+        "raw_status": "promote",
+        "claim_status": "screen_candidate",
+        "metrics": {"price_rmse": {"status": "defined", "paired_p_value": p_value}},
+    }
 
 
 def _promotion_rows():

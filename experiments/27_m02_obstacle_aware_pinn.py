@@ -219,7 +219,7 @@ def run(config_path: str, *, output_root: str | Path | None = None, overrides: d
         get_method_spec("M02"),
         records,
         decision_record=decision_record,
-        config={**cfg, "config_path": config_path},
+        config={**cfg, "config_path": config_path, "blind_holdout_accessed": False},
         training_history=history_rows,
     )
     _update_decision_budget(out_dir, cfg, elapsed_screen_seconds)
@@ -614,6 +614,8 @@ def _cost_summary(preprocessing_seconds, cost_rows):
         "preprocessing_seconds": preprocessing_seconds,
         "methods": methods,
         "residual_diagnostic_cost_definition": "wall-clock time spent evaluating fixed valid-VI residual diagnostic samples",
+        "fallback_seconds": 0.0,
+        "fallback_reason": "M02 has no fallback path; no fallback computation was invoked.",
         "reused_psor_label_generation_seconds": None,
         "reused_psor_label_generation_reason": "CN/PSOR labels are reused benchmark data; label generation was not remeasured by M02.",
     }
@@ -626,6 +628,7 @@ def _update_decision_budget(output_dir, cfg, elapsed_screen_seconds):
         "budget_seconds": int(cfg["screen_budget_seconds"]),
         "elapsed_screen_seconds": elapsed_screen_seconds,
         "budget_exceeded": bool(cfg["mode"] == "canonical" and elapsed_screen_seconds > float(cfg["screen_budget_seconds"])),
+        "blind_holdout_accessed": False,
     })
     write_json(path, decision)
 
@@ -663,7 +666,12 @@ def _apply_price_holm(comparisons, cfg):
     methods = [method for method in METHODS[1:] if comparisons[method]["metrics"].get("price_rmse", {}).get("status") == "defined"]
     if len(methods) != len(METHODS) - 1:
         for method in METHODS[1:]:
-            comparisons[method]["primary_price_holm"] = {"status": "unavailable"}
+            comparison = comparisons[method]
+            comparison["primary_price_holm"] = {"status": "unavailable"}
+            if comparison["raw_status"] == "promote":
+                comparison["raw_status"] = "inconclusive_holm_unavailable"
+                comparison["status"] = "diagnostic_only" if cfg["mode"] == "smoke" else "inconclusive_holm_unavailable"
+                comparison["claim_status"] = "diagnostic_only" if cfg["mode"] != "smoke" else "smoke_non_evidence"
         return
     correction = holm_adjust([comparisons[method]["metrics"]["price_rmse"]["paired_p_value"] for method in methods], alpha=0.05)
     for method, raw_p_value, adjusted, reject in zip(methods, [comparisons[method]["metrics"]["price_rmse"]["paired_p_value"] for method in methods], correction.adjusted_p_values, correction.reject):
