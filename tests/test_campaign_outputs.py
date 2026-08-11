@@ -132,6 +132,68 @@ class CampaignOutputTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "training_history"):
                 write_method_outputs(Path(temp_dir), get_method_spec("M02"), record, config={}, training_history=[])
 
+    def test_writer_emits_multiple_config_seed_records_in_caller_order_and_selects_decision_record(self):
+        candidate = MethodRunRecord(
+            method_id="M01",
+            phase=RunPhase.SCREEN,
+            status=RunStatus.COMPLETED,
+            config_id="candidate-a",
+            primary_metric_value=0.25,
+            baseline_metric_value=0.3,
+            seed=101,
+            branch="feature/campaign-m01",
+            commit="candidate",
+        )
+        selected = MethodRunRecord(
+            method_id="M01",
+            phase=RunPhase.SCREEN,
+            status=RunStatus.COMPLETED,
+            config_id="candidate-b",
+            primary_metric_value=0.2,
+            baseline_metric_value=0.3,
+            seed=203,
+            branch="feature/campaign-m01",
+            commit="selected",
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_dir = Path(temp_dir) / "M01"
+            write_method_outputs(
+                output_dir,
+                get_method_spec("M01"),
+                [candidate, selected],
+                decision_record=selected,
+                config={},
+            )
+
+            with (output_dir / "run_metrics.csv").open(newline="", encoding="utf-8") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual([(row["config_id"], row["seed"]) for row in rows], [("candidate-a", "101"), ("candidate-b", "203")])
+            decision = json.loads((output_dir / "decision.json").read_text(encoding="utf-8"))
+            self.assertEqual(decision["record_count"], 2)
+            self.assertEqual(decision["decision_record"]["config_id"], "candidate-b")
+            self.assertEqual(decision["decision_record"]["seed"], 203)
+            manifest = json.loads((output_dir / "config_manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["provenance"], {"branch": "feature/campaign-m01", "commit": "selected"})
+
+    def test_multiple_records_require_an_explicit_decision_record(self):
+        records = [
+            MethodRunRecord("M01", RunPhase.SCREEN, RunStatus.DIAGNOSTIC_ONLY, config_id="a"),
+            MethodRunRecord("M01", RunPhase.SCREEN, RunStatus.DIAGNOSTIC_ONLY, config_id="b"),
+        ]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with self.assertRaisesRegex(ValueError, "decision_record"):
+                write_method_outputs(Path(temp_dir), get_method_spec("M01"), records, config={})
+
+    def test_writer_rejects_records_with_a_method_or_phase_mismatch(self):
+        valid = MethodRunRecord("M01", RunPhase.SCREEN, RunStatus.DIAGNOSTIC_ONLY)
+        wrong_method = MethodRunRecord("M02", RunPhase.SCREEN, RunStatus.DIAGNOSTIC_ONLY)
+        wrong_phase = MethodRunRecord("M01", RunPhase.CONFIRM, RunStatus.DIAGNOSTIC_ONLY)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with self.assertRaisesRegex(ValueError, "method_id"):
+                write_method_outputs(Path(temp_dir), get_method_spec("M01"), [valid, wrong_method], decision_record=valid, config={})
+            with self.assertRaisesRegex(ValueError, "phase"):
+                write_method_outputs(Path(temp_dir), get_method_spec("M01"), [valid, wrong_phase], decision_record=valid, config={})
+
 
 class CampaignCliTests(unittest.TestCase):
     def test_list_methods_and_verify_all_expose_the_campaign_contract(self):
