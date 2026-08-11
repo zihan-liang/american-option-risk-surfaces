@@ -59,6 +59,15 @@ class SolverTimeSchemeTests(unittest.TestCase):
         self.assertEqual(result.lcp_converged, result.psor_converged)
         self.assertEqual(len(result.lcp_iterations), result.config.n)
 
+    def test_solver_summary_preserves_recorded_substage_obstacle_violation(self):
+        result = solve_option(SolverConfig(m=12, n=2, tol=1e-9))
+        result.lcp_obstacle_violations = [0.0, 2.5e-7]
+
+        summary = solver_summary(result)
+
+        self.assertIn("max_lcp_obstacle_violation", summary)
+        self.assertEqual(summary["max_lcp_obstacle_violation"], 2.5e-7)
+
     def test_all_time_schemes_produce_finite_european_prices(self):
         for scheme, rannacher_steps in [
             ("cn", 0),

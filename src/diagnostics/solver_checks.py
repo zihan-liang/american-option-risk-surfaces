@@ -36,6 +36,7 @@ def solver_summary(result: SolverResult) -> dict[str, float | int | bool]:
         "obstacle_violation": obstacle_violation(result.values, result.payoff),
         "complementarity_error": complementarity_error(result),
         "max_lcp_natural_residual": max(result.lcp_residuals, default=0.0),
+        "max_lcp_obstacle_violation": max(result.lcp_obstacle_violations, default=0.0),
         "max_lcp_continuation_violation": max(
             result.lcp_continuation_violations, default=0.0
         ),

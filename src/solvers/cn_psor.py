@@ -129,18 +129,21 @@ def psor_lcp(
             x[i] = max(obstacle[i], relaxed)
         diff = float(np.max(np.abs(x - old)))
         residual = lcp_natural_residual(a, x, b, obstacle)
-        if diff < tol and residual < tol:
+        if residual <= tol:
             return x, {
                 "iterations": iteration,
                 "converged": True,
                 "last_update": diff,
+                "update_converged": diff <= tol,
                 "natural_residual": residual,
             }
+    residual = lcp_natural_residual(a, x, b, obstacle)
     return x, {
         "iterations": max_iter,
-        "converged": False,
+        "converged": residual <= tol,
         "last_update": diff,
-        "natural_residual": lcp_natural_residual(a, x, b, obstacle),
+        "update_converged": diff <= tol,
+        "natural_residual": residual,
     }
 
 
@@ -209,19 +212,22 @@ def policy_iteration_lcp(
         x = candidate
         residual = lcp_natural_residual(a, x, b, obstacle)
         stable = previous_policy is not None and np.array_equal(exercise, previous_policy)
-        if residual <= tol and (update <= tol or stable):
+        if residual <= tol:
             return x, {
                 "iterations": iteration,
                 "converged": True,
                 "last_update": update,
+                "policy_stable": stable,
                 "natural_residual": residual,
             }
         previous_policy = exercise
+    residual = lcp_natural_residual(a, x, b, obstacle)
     return x, {
         "iterations": max_iter,
-        "converged": False,
+        "converged": residual <= tol,
         "last_update": update,
-        "natural_residual": lcp_natural_residual(a, x, b, obstacle),
+        "policy_stable": stable,
+        "natural_residual": residual,
     }
 
 
@@ -256,21 +262,24 @@ def penalty_newton_lcp(
         equation_residual = float(np.max(np.abs(equation)))
         natural_residual = lcp_natural_residual(a, x, b, obstacle)
         stable = previous_active is not None and np.array_equal(active, previous_active)
-        if stable and (equation_residual <= tol or update <= tol):
+        if natural_residual <= tol or (stable and (equation_residual <= tol or update <= tol)):
             return x, {
                 "iterations": iteration,
-                "converged": True,
+                "converged": natural_residual <= tol,
                 "last_update": update,
+                "active_set_stable": stable,
                 "equation_residual": equation_residual,
                 "natural_residual": natural_residual,
             }
         previous_active = active
+    natural_residual = lcp_natural_residual(a, x, b, obstacle)
     return x, {
         "iterations": max_iter,
-        "converged": False,
+        "converged": natural_residual <= tol,
         "last_update": update,
+        "active_set_stable": stable,
         "equation_residual": equation_residual,
-        "natural_residual": lcp_natural_residual(a, x, b, obstacle),
+        "natural_residual": natural_residual,
     }
 
 
@@ -280,30 +289,155 @@ def brennan_schwartz_lcp(
     obstacle: np.ndarray,
     *,
     tol: float = 1e-10,
-) -> tuple[np.ndarray, dict[str, float | int | bool]]:
-    """Projected tridiagonal Brennan--Schwartz solve for ordered put-style LCPs."""
+    exercise_direction: Literal["put", "call", "auto"] = "auto",
+    interest_rate: float | None = None,
+) -> tuple[np.ndarray, dict[str, float | int | bool | str]]:
+    """Solve an applicable one-boundary LCP by a directional projected sweep."""
     _validate_lcp_inputs(a, b, obstacle)
+    if exercise_direction not in ("put", "call", "auto"):
+        raise ValueError("exercise_direction must be 'put', 'call', or 'auto'")
+    if interest_rate is not None and not np.isfinite(interest_rate):
+        raise ValueError("interest_rate must be finite when supplied")
     if not np.allclose(a, np.triu(np.tril(a, 1), -1)):
         raise ValueError("Brennan-Schwartz requires a tridiagonal matrix")
-    diagonal = np.diag(a).copy()
-    lower = np.diag(a, -1).copy()
-    upper = np.diag(a, 1).copy()
-    rhs = b.copy()
-    for i in range(1, len(diagonal)):
-        multiplier = lower[i - 1] / diagonal[i - 1]
-        diagonal[i] -= multiplier * upper[i - 1]
-        rhs[i] -= multiplier * rhs[i - 1]
-    x = np.empty_like(rhs)
-    x[-1] = max(obstacle[-1], rhs[-1] / diagonal[-1])
-    for i in range(len(x) - 2, -1, -1):
-        x[i] = max(obstacle[i], (rhs[i] - upper[i] * x[i + 1]) / diagonal[i])
-    residual = lcp_natural_residual(a, x, b, obstacle)
-    return x, {
+    obstacle_residual = lcp_natural_residual(a, obstacle, b, obstacle)
+    if interest_rate is not None and interest_rate < 0.0:
+        return obstacle.copy(), {
+            "iterations": 0,
+            "converged": False,
+            "applicable": False,
+            "applicability_reason": "negative_interest_rate",
+            "exercise_direction": exercise_direction,
+            "last_update": 0.0,
+            "natural_residual": obstacle_residual,
+        }
+
+    matrix_tolerance = 100.0 * np.finfo(float).eps * max(1.0, float(np.max(np.abs(a))))
+    lower = np.diag(a, -1)
+    upper = np.diag(a, 1)
+    if np.any(lower > matrix_tolerance) or np.any(upper > matrix_tolerance):
+        return obstacle.copy(), {
+            "iterations": 0,
+            "converged": False,
+            "applicable": False,
+            "applicability_reason": "matrix_not_m_matrix",
+            "exercise_direction": exercise_direction,
+            "last_update": 0.0,
+            "natural_residual": obstacle_residual,
+        }
+
+    directions = ("put", "call") if exercise_direction == "auto" else (exercise_direction,)
+    candidates = []
+    for direction in directions:
+        if not _ordered_convex_obstacle(obstacle, direction, matrix_tolerance):
+            continue
+        try:
+            candidate = _brennan_schwartz_candidate(a, b, obstacle, direction=direction)
+        except ValueError:
+            continue
+        residual = lcp_natural_residual(a, candidate, b, obstacle)
+        candidates.append((residual, direction, candidate))
+        if residual <= tol and _has_one_sided_gap(candidate - obstacle, direction):
+            return candidate, {
+                "iterations": 1,
+                "converged": True,
+                "applicable": True,
+                "applicability_reason": "applicable_one_sided_lcp",
+                "exercise_direction": direction,
+                "last_update": 0.0,
+                "natural_residual": residual,
+            }
+    if not candidates:
+        return obstacle.copy(), {
+            "iterations": 0,
+            "converged": False,
+            "applicable": False,
+            "applicability_reason": "structural_conditions_failed",
+            "exercise_direction": exercise_direction,
+            "last_update": 0.0,
+            "natural_residual": obstacle_residual,
+        }
+    residual, _, candidate = min(candidates, key=lambda item: item[0])
+    return candidate, {
         "iterations": 1,
-        "converged": residual <= tol,
+        "converged": False,
+        "applicable": False,
+        "applicability_reason": "one_sided_structure_not_satisfied",
+        "exercise_direction": exercise_direction,
         "last_update": 0.0,
         "natural_residual": residual,
     }
+
+
+def _ordered_convex_obstacle(
+    obstacle: np.ndarray,
+    direction: Literal["put", "call"],
+    tol: float,
+) -> bool:
+    differences = np.diff(obstacle)
+    ordered = np.all(differences <= tol) if direction == "put" else np.all(differences >= -tol)
+    return bool(ordered and np.all(np.diff(obstacle, n=2) >= -tol))
+
+
+def _has_one_sided_gap(gap: np.ndarray, direction: Literal["put", "call"]) -> bool:
+    continuation = gap > 0.0
+    indices = np.flatnonzero(continuation)
+    if indices.size == 0:
+        return True
+    if direction == "put":
+        return bool(np.all(continuation[indices[0] :]))
+    return bool(np.all(continuation[: indices[-1] + 1]))
+
+
+def _brennan_schwartz_candidate(
+    a: np.ndarray,
+    b: np.ndarray,
+    obstacle: np.ndarray,
+    *,
+    direction: Literal["put", "call"],
+) -> np.ndarray:
+    diagonal = np.diag(a).copy()
+    lower = np.diag(a, -1).copy()
+    upper = np.diag(a, 1).copy()
+    shifted_rhs = b - _matvec(a, obstacle)
+    transformed_rhs = shifted_rhs.copy()
+
+    if direction == "put":
+        upper_factor = np.empty_like(upper)
+        for i in range(len(diagonal) - 2, -1, -1):
+            if diagonal[i + 1] <= 0.0:
+                raise ValueError("Brennan-Schwartz requires positive UL pivots")
+            upper_factor[i] = upper[i] / diagonal[i + 1]
+            diagonal[i] -= upper_factor[i] * lower[i]
+        if np.any(diagonal <= 0.0):
+            raise ValueError("Brennan-Schwartz requires positive UL pivots")
+        for i in range(len(transformed_rhs) - 2, -1, -1):
+            transformed_rhs[i] -= upper_factor[i] * transformed_rhs[i + 1]
+        gap = np.empty_like(transformed_rhs)
+        gap[0] = max(0.0, transformed_rhs[0] / diagonal[0])
+        for i in range(1, len(gap)):
+            gap[i] = max(
+                0.0,
+                (transformed_rhs[i] - lower[i - 1] * gap[i - 1]) / diagonal[i],
+            )
+        return obstacle + gap
+
+    for i in range(1, len(diagonal)):
+        if diagonal[i - 1] <= 0.0:
+            raise ValueError("Brennan-Schwartz requires positive LU pivots")
+        multiplier = lower[i - 1] / diagonal[i - 1]
+        diagonal[i] -= multiplier * upper[i - 1]
+        transformed_rhs[i] -= multiplier * transformed_rhs[i - 1]
+    if np.any(diagonal <= 0.0):
+        raise ValueError("Brennan-Schwartz requires positive LU pivots")
+    gap = np.empty_like(transformed_rhs)
+    gap[-1] = max(0.0, transformed_rhs[-1] / diagonal[-1])
+    for i in range(len(gap) - 2, -1, -1):
+        gap[i] = max(
+            0.0,
+            (transformed_rhs[i] - upper[i] * gap[i + 1]) / diagonal[i],
+        )
+    return obstacle + gap
 
 
 def _solve_lcp(
