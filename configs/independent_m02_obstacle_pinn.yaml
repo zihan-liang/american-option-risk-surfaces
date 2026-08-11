@@ -1,0 +1,41 @@
+dataset: data/processed/surrogate_dataset.npz
+output_root: results/independent_method_campaign/M02
+mode: canonical
+option_scope: put
+device: cpu
+training_dtype: float64
+hidden: 128
+depth: 3
+learning_rate: 1.0e-3
+gap_epsilon: 1.0e-5
+tau_min_for_pde: 0.05
+gap_scale: 0.10
+residual_scale: 1.0
+fischer_burmeister_epsilon: 1.0e-4
+lambda_masked_pde: 1.0
+lambda_dual: 1.0
+lambda_complementarity: 1.0
+lambda_fischer_burmeister: 1.0
+premium_boundary_threshold: 1.0e-3
+obstacle_tolerance: 1.0e-10
+bootstrap_iterations: 10000
+bootstrap_seed: 2702
+canonical_settings:
+  seeds: [101, 203, 307, 409, 503]
+  epochs: 30
+  batch_size: 8192
+  collocation_cap: 8192
+  patience: 8
+  train_cap: 150000
+  validation_cap: 75000
+  legacy_test_cap: 75000
+smoke_settings:
+  seeds: [101]
+  epochs: 2
+  batch_size: 64
+  collocation_cap: 64
+  patience: 2
+  train_cap: 4096
+  validation_cap: 2048
+  legacy_test_cap: 2048
+  bootstrap_iterations: 200
