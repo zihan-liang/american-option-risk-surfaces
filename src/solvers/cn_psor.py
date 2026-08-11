@@ -436,7 +436,12 @@ def _sdirk2_step(
     rhs_stage = u_old + gamma * dt * source_stage
     stage, info_stage = _linear_or_lcp_solve(cfg, a, rhs_stage, obstacle, u_old)
 
-    rhs_final = u_old + (1.0 - gamma) * dt * (_matvec(l_mat, stage) + source_stage)
+    stage_reaction = np.zeros_like(stage)
+    if cfg.american:
+        stage_reaction = (_matvec(a, stage) - rhs_stage) / (gamma * dt)
+    rhs_final = u_old + (1.0 - gamma) * dt * (
+        _matvec(l_mat, stage) + source_stage + stage_reaction
+    )
     rhs_final += gamma * dt * _boundary_source(cfg, tau_new, lower, upper)
     solution, info_final = _linear_or_lcp_solve(cfg, a, rhs_final, obstacle, stage)
     info = {

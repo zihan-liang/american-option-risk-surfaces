@@ -14,7 +14,7 @@ def boundary_values(
     q: float,
 ) -> tuple[float, float]:
     if option_type == "put":
-        return k, 0.0
+        return k * _exp(max(-r * tau, 0.0)), 0.0
     if option_type == "call":
         immediate = s_max - k
         european_asymptotic = s_max * _exp(-q * tau) - k * _exp(-r * tau)

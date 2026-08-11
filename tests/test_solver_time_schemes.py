@@ -4,10 +4,54 @@ import numpy as np
 
 from diagnostics.solver_checks import closed_form_error_in_region, solver_summary
 from solvers.black_scholes import black_scholes_price
-from solvers.cn_psor import SolverConfig, solve_option
+from solvers.boundary_conditions import boundary_values
+from solvers.cn_psor import SolverConfig, _sdirk2_step, solve_option
 
 
 class SolverTimeSchemeTests(unittest.TestCase):
+    def test_negative_rate_put_lower_boundary_uses_discounted_strike(self):
+        left, right = boundary_values(
+            "put", tau=2.0, k=3.0, s_max=12.0, r=-0.05, q=0.0
+        )
+
+        self.assertAlmostEqual(left, 3.0 * np.exp(0.1), places=14)
+        self.assertEqual(right, 0.0)
+
+    def test_negative_rate_put_boundary_propagates_through_solver_time_levels(self):
+        cfg = SolverConfig(r=-0.04, t=0.75, m=16, n=5, tol=1e-10)
+
+        result = solve_option(cfg)
+
+        expected = cfg.k * np.exp(-cfg.r * result.taus)
+        np.testing.assert_allclose(result.values[:, 0], expected, rtol=0.0, atol=1e-14)
+
+    def test_sdirk2_carries_stage_one_obstacle_reaction_into_second_stage(self):
+        cfg = SolverConfig(
+            r=-1.0,
+            m=3,
+            n=1,
+            time_scheme="sdirk2",
+            lcp_solver="policy_iteration",
+            tol=1e-12,
+        )
+        gamma = 1.0 - 1.0 / np.sqrt(2.0)
+
+        solution, info = _sdirk2_step(
+            cfg,
+            u_old=np.array([1.0, 0.0]),
+            obstacle=np.array([1.0, 0.0]),
+            l_mat=np.diag([-1.0, -1.0]),
+            lower=np.array([0.5, 0.0]),
+            upper=np.array([0.0, 0.0]),
+            tau_old=0.0,
+            tau_new=1.0,
+        )
+
+        expected = (1.0 + gamma * 0.5 * np.exp(1.0)) / (1.0 + gamma)
+        self.assertAlmostEqual(solution[0], expected, places=12)
+        self.assertGreater(solution[0], 1.0)
+        self.assertTrue(info["converged"])
+
     def test_generic_lcp_fields_keep_psor_compatibility_properties(self):
         result = solve_option(SolverConfig(m=24, n=12, tol=1e-9))
 
