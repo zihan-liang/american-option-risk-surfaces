@@ -56,6 +56,12 @@ class CampaignOutputTests(unittest.TestCase):
             )
             manifest_text = (output_dir / "config_manifest.json").read_text(encoding="utf-8")
             self.assertLess(manifest_text.index('"a"'), manifest_text.index('"z"'))
+            manifest = json.loads(manifest_text)
+            expected_config_hash = hashlib.sha256(
+                json.dumps({"z": 1, "a": {"nested": True}}, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+            ).hexdigest()
+            self.assertEqual(manifest["config_sha256"], expected_config_hash)
+            self.assertEqual(manifest["provenance"], {"branch": "feature/campaign-registry", "commit": "deadbeef"})
             with (output_dir / "run_metrics.csv").open(newline="", encoding="utf-8") as handle:
                 metric_rows = list(csv.DictReader(handle))
             self.assertEqual(len(metric_rows), 1)
@@ -81,6 +87,50 @@ class CampaignOutputTests(unittest.TestCase):
             self.assertFalse((output_dir / "training_history.csv").exists())
             hashes = json.loads((output_dir / "artifact_hashes.json").read_text(encoding="utf-8"))
             self.assertNotIn("training_history.csv", hashes["files"])
+
+    def test_writer_removes_stale_history_when_a_later_scaffold_omits_it(self):
+        completed_record = MethodRunRecord(
+            method_id="M02",
+            phase=RunPhase.SCREEN,
+            status=RunStatus.COMPLETED,
+            primary_metric_value=0.2,
+            baseline_metric_value=0.3,
+        )
+        scaffold_record = MethodRunRecord(
+            method_id="M02",
+            phase=RunPhase.SCREEN,
+            status=RunStatus.NOT_IMPLEMENTED,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_dir = Path(temp_dir) / "M02"
+            write_method_outputs(
+                output_dir,
+                get_method_spec("M02"),
+                completed_record,
+                config={},
+                training_history=[{"epoch": 1, "loss": 0.2}],
+            )
+            self.assertTrue((output_dir / "training_history.csv").exists())
+
+            write_method_outputs(output_dir, get_method_spec("M02"), scaffold_record, config={})
+
+            self.assertFalse((output_dir / "training_history.csv").exists())
+            hashes = json.loads((output_dir / "artifact_hashes.json").read_text(encoding="utf-8"))
+            self.assertNotIn("training_history.csv", hashes["files"])
+
+    def test_completed_method_requiring_history_rejects_missing_or_empty_history(self):
+        record = MethodRunRecord(
+            method_id="M02",
+            phase=RunPhase.SCREEN,
+            status=RunStatus.COMPLETED,
+            primary_metric_value=0.2,
+            baseline_metric_value=0.3,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with self.assertRaisesRegex(ValueError, "training_history"):
+                write_method_outputs(Path(temp_dir), get_method_spec("M02"), record, config={})
+            with self.assertRaisesRegex(ValueError, "training_history"):
+                write_method_outputs(Path(temp_dir), get_method_spec("M02"), record, config={}, training_history=[])
 
 
 class CampaignCliTests(unittest.TestCase):
@@ -129,4 +179,3 @@ class CampaignCliTests(unittest.TestCase):
             capture_output=True,
             check=check,
         )
-

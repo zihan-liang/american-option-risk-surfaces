@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Mapping, Optional
@@ -50,8 +51,8 @@ class MethodRunRecord:
     notes: str = ""
 
     def __post_init__(self) -> None:
-        if not self.method_id.startswith("M"):
-            raise ValueError("method_id must use the Mxx campaign form")
+        if not re.fullmatch(r"M(0[1-9]|1[0-9]|2[0-4])", self.method_id):
+            raise ValueError("method_id must be exactly M01 through M24")
         if not isinstance(self.phase, RunPhase):
             object.__setattr__(self, "phase", RunPhase(self.phase))
         if not isinstance(self.status, RunStatus):
@@ -112,4 +113,3 @@ METHOD_RUN_CSV_FIELDS = (
     "claim_status",
     "notes",
 )
-

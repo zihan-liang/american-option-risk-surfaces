@@ -39,8 +39,8 @@ class MethodSpec:
     baseline: str
     primary_metric: str
     metric_direction: MetricDirection
-    screen_budget_hours: int
-    confirmation_budget_hours: int
+    screen_budget_seconds: int
+    confirmation_budget_seconds: int
     stochastic: bool
     predeclared_configurations: tuple[str, ...]
     required_outputs: tuple[str, ...]
@@ -65,7 +65,7 @@ def _spec(
     gates: tuple[str, ...],
     *,
     stochastic: bool = False,
-    screen_budget_hours: int = 1,
+    screen_budget_seconds: int = 3_600,
     required_outputs: tuple[str, ...] = STANDARD_OUTPUTS,
 ) -> MethodSpec:
     return MethodSpec(
@@ -76,8 +76,8 @@ def _spec(
         baseline=baseline,
         primary_metric=primary_metric,
         metric_direction=metric_direction,
-        screen_budget_hours=screen_budget_hours,
-        confirmation_budget_hours=6,
+        screen_budget_seconds=screen_budget_seconds,
+        confirmation_budget_seconds=21_600,
         stochastic=stochastic,
         predeclared_configurations=configurations,
         required_outputs=required_outputs,
@@ -97,7 +97,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
     "M02": _spec(
         "M02", "Obstacle-aware PINN",
         "Compare supervised, masked-PDE, separate complementarity, and Fischer--Burmeister losses using the same positive-premium architecture.",
-        MethodCategory.SOLVER_ACCELERATOR, "Supervised positive-premium surrogate", "price_rmse",
+        MethodCategory.SURROGATE_COMPRESSION, "Supervised positive-premium surrogate", "price_rmse",
         MetricDirection.LOWER_IS_BETTER,
         ("supervised", "masked_pde", "separate_complementarity", "fischer_burmeister"),
         ("Obstacle violation is at most 1e-10.", "Price and diagnostic degradation is no more than 2%."),
@@ -116,7 +116,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
     "M04": _spec(
         "M04", "Free-boundary representation",
         "Compare an implicit level-set network and scalar boundary head with price-surface boundary extraction.",
-        MethodCategory.SOLVER_ACCELERATOR, "Price-surface boundary extraction", "subgrid_boundary_rmse",
+        MethodCategory.SURROGATE_COMPRESSION, "Price-surface boundary extraction", "subgrid_boundary_rmse",
         MetricDirection.LOWER_IS_BETTER,
         ("implicit_level_set", "scalar_boundary_head"),
         ("Use sub-grid boundary RMSE as the primary metric.",),
@@ -130,7 +130,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
         MetricDirection.LOWER_IS_BETTER,
         ("frozen_continuation", "one_live_obstacle_update"),
         ("Error stays below the classical discretization floor.",),
-        screen_budget_hours=4,
+        screen_budget_seconds=14_400,
     ),
     "M06": _spec(
         "M06", "Quantum linear systems",
@@ -140,7 +140,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
         ("vqls_n8", "vqls_n16", "vqls_n32", "qsvt_resource_accounting"),
         ("Report residual, conditioning, encoding, shots, and readout.", "Do not make a speedup claim."),
         stochastic=True,
-        screen_budget_hours=4,
+        screen_budget_seconds=14_400,
     ),
     "M07": _spec(
         "M07", "Nonlinear quantum reduction",
@@ -149,7 +149,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
         MetricDirection.LOWER_IS_BETTER,
         ("occupation_measure_lp", "optimal_stopping_lp"),
         ("Treat this as a falsification experiment.",),
-        screen_budget_hours=4,
+        screen_budget_seconds=14_400,
     ),
     "M08": _spec(
         "M08", "Tensor and low rank",
@@ -195,7 +195,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
         ("conditional_ddpm", "deterministic_unet", "low_rank"),
         ("Use equal data and compute.", "Evaluate kink, Gamma, and boundary preservation."),
         stochastic=True,
-        screen_budget_hours=4,
+        screen_budget_seconds=14_400,
         required_outputs=STANDARD_OUTPUTS + ("training_history.csv",),
     ),
     "M13": _spec(
@@ -211,7 +211,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
     "M14": _spec(
         "M14", "Hardware acceleration",
         "Compare CPU float64 with a batched Apple-MPS implementation against the float64 oracle.",
-        MethodCategory.SURROGATE_COMPRESSION, "CPU float64", "end_to_end_speedup",
+        MethodCategory.SOLVER_ACCELERATOR, "CPU float64", "end_to_end_speedup",
         MetricDirection.HIGHER_IS_BETTER,
         ("cpu_float64", "apple_mps_batched"),
         ("Require at least 1.25x end-to-end speedup while matching the float64 oracle.", "Do not generalize to CUDA."),
@@ -255,7 +255,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
     "M19": _spec(
         "M19", "U-Net/V-Net segmentation",
         "Predict parameter-conditioned exercise masks and compare with a smaller scalar boundary head.",
-        MethodCategory.DIAGNOSTIC_WORKFLOW, "Smaller scalar boundary head", "boundary_rmse",
+        MethodCategory.SURROGATE_COMPRESSION, "Smaller scalar boundary head", "boundary_rmse",
         MetricDirection.LOWER_IS_BETTER,
         ("unet", "vnet", "scalar_boundary_head"),
         ("Advance U-Net only if boundary error improves after parameter-count accounting.",),
@@ -265,7 +265,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
     "M20": _spec(
         "M20", "Transfer learning",
         "Compare European pretraining followed by American fine-tuning with scratch, frozen-backbone, and correction-head controls under equal American-label budgets.",
-        MethodCategory.DIAGNOSTIC_WORKFLOW, "Scratch training", "price_rmse_at_equal_american_label_budget",
+        MethodCategory.SURROGATE_COMPRESSION, "Scratch training", "price_rmse_at_equal_american_label_budget",
         MetricDirection.LOWER_IS_BETTER,
         ("scratch", "european_pretrain_finetune", "frozen_backbone", "correction_head"),
         ("Use equal American-label budgets.",),
@@ -334,7 +334,7 @@ def verify_registry() -> dict[str, Any]:
             raise ValueError(f"Registry key mismatch for {method_id}")
         if not spec.name or not spec.scope or not spec.baseline or not spec.primary_metric:
             raise ValueError(f"Registry entry {method_id} has an incomplete contract")
-        if not 1 <= spec.screen_budget_hours <= 4 or spec.confirmation_budget_hours != 6:
+        if spec.screen_budget_seconds not in {3_600, 14_400} or spec.confirmation_budget_seconds != 21_600:
             raise ValueError(f"Registry entry {method_id} has invalid campaign budgets")
         if not 1 <= len(spec.predeclared_configurations) <= 8:
             raise ValueError(f"Registry entry {method_id} must declare one to eight configurations")
@@ -343,4 +343,3 @@ def verify_registry() -> dict[str, Any]:
         categories[spec.category.value] += 1
 
     return {"categories": categories, "methods": len(METHOD_REGISTRY), "valid": True}
-

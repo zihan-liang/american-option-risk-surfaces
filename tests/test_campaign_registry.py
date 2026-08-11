@@ -7,9 +7,9 @@ from campaign.registry import MethodCategory, MetricDirection, METHOD_REGISTRY, 
 
 EXPECTED_METHODS = {
     "M01": ("Classical solvers", MethodCategory.SOLVER_ACCELERATOR),
-    "M02": ("Obstacle-aware PINN", MethodCategory.SOLVER_ACCELERATOR),
+    "M02": ("Obstacle-aware PINN", MethodCategory.SURROGATE_COMPRESSION),
     "M03": ("Algorithm unrolling", MethodCategory.SOLVER_ACCELERATOR),
-    "M04": ("Free-boundary representation", MethodCategory.SOLVER_ACCELERATOR),
+    "M04": ("Free-boundary representation", MethodCategory.SURROGATE_COMPRESSION),
     "M05": ("Schrodingerization", MethodCategory.SOLVER_ACCELERATOR),
     "M06": ("Quantum linear systems", MethodCategory.SOLVER_ACCELERATOR),
     "M07": ("Nonlinear quantum reduction", MethodCategory.SOLVER_ACCELERATOR),
@@ -19,13 +19,13 @@ EXPECTED_METHODS = {
     "M11": ("Inverse regularization", MethodCategory.RECONSTRUCTION_UQ),
     "M12": ("Diffusion or score model", MethodCategory.RECONSTRUCTION_UQ),
     "M13": ("Adaptive sampling", MethodCategory.SURROGATE_COMPRESSION),
-    "M14": ("Hardware acceleration", MethodCategory.SURROGATE_COMPRESSION),
+    "M14": ("Hardware acceleration", MethodCategory.SOLVER_ACCELERATOR),
     "M15": ("MC Dropout", MethodCategory.RECONSTRUCTION_UQ),
     "M16": ("Deep ensembles", MethodCategory.RECONSTRUCTION_UQ),
     "M17": ("Conformal prediction", MethodCategory.RECONSTRUCTION_UQ),
     "M18": ("Selective fallback", MethodCategory.RECONSTRUCTION_UQ),
-    "M19": ("U-Net/V-Net segmentation", MethodCategory.DIAGNOSTIC_WORKFLOW),
-    "M20": ("Transfer learning", MethodCategory.DIAGNOSTIC_WORKFLOW),
+    "M19": ("U-Net/V-Net segmentation", MethodCategory.SURROGATE_COMPRESSION),
+    "M20": ("Transfer learning", MethodCategory.SURROGATE_COMPRESSION),
     "M21": ("Explainable AI", MethodCategory.DIAGNOSTIC_WORKFLOW),
     "M22": ("Mechanistic audit", MethodCategory.DIAGNOSTIC_WORKFLOW),
     "M23": ("Agentic search", MethodCategory.DIAGNOSTIC_WORKFLOW),
@@ -48,18 +48,18 @@ class CampaignRegistryTests(unittest.TestCase):
             self.assertTrue(spec.baseline)
             self.assertTrue(spec.primary_metric)
             self.assertIsInstance(spec.metric_direction, MetricDirection)
-            self.assertGreater(spec.screen_budget_hours, 0)
-            self.assertEqual(spec.confirmation_budget_hours, 6)
+            self.assertGreater(spec.screen_budget_seconds, 0)
+            self.assertEqual(spec.confirmation_budget_seconds, 21_600)
             self.assertLessEqual(len(spec.predeclared_configurations), 8)
             self.assertGreater(len(spec.predeclared_configurations), 0)
             self.assertTrue(spec.required_outputs)
             self.assertTrue(spec.gates)
 
-        self.assertEqual(get_method_spec("M05").screen_budget_hours, 4)
-        self.assertEqual(get_method_spec("M06").screen_budget_hours, 4)
-        self.assertEqual(get_method_spec("M07").screen_budget_hours, 4)
-        self.assertEqual(get_method_spec("M12").screen_budget_hours, 4)
-        self.assertEqual(get_method_spec("M01").screen_budget_hours, 1)
+        self.assertEqual(get_method_spec("M05").screen_budget_seconds, 14_400)
+        self.assertEqual(get_method_spec("M06").screen_budget_seconds, 14_400)
+        self.assertEqual(get_method_spec("M07").screen_budget_seconds, 14_400)
+        self.assertEqual(get_method_spec("M12").screen_budget_seconds, 14_400)
+        self.assertEqual(get_method_spec("M01").screen_budget_seconds, 3_600)
         self.assertEqual(get_method_spec("M14").primary_metric, "end_to_end_speedup")
         self.assertEqual(get_method_spec("M14").metric_direction, MetricDirection.HIGHER_IS_BETTER)
         self.assertEqual(get_method_spec("M17").metric_direction, MetricDirection.TARGET)
@@ -72,10 +72,10 @@ class CampaignRegistryTests(unittest.TestCase):
             verify_registry(),
             {
                 "categories": {
-                    "diagnostic_workflow": 6,
-                    "reconstruction_uq": 6,
-                    "solver_accelerator": 7,
-                    "surrogate_compression": 5,
+                "diagnostic_workflow": 4,
+                "reconstruction_uq": 6,
+                "solver_accelerator": 6,
+                "surrogate_compression": 8,
                 },
                 "methods": 24,
                 "valid": True,
@@ -111,6 +111,15 @@ class MethodRunRecordTests(unittest.TestCase):
                 status=RunStatus.DIAGNOSTIC_ONLY,
                 optional_metrics={"boundary_rmse": math.inf},
             )
+
+    def test_method_id_must_be_an_exact_registered_campaign_id(self):
+        for method_id in ("M1", "M00", "M25", "M99", "M01x", "method-01"):
+            with self.assertRaisesRegex(ValueError, "M01 through M24"):
+                MethodRunRecord(
+                    method_id=method_id,
+                    phase=RunPhase.SCREEN,
+                    status=RunStatus.NOT_IMPLEMENTED,
+                )
 
     def test_non_completed_record_preserves_campaign_provenance_without_metrics(self):
         record = MethodRunRecord(

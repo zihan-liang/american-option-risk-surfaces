@@ -20,6 +20,11 @@ def _write_json(path: Path, data: Any) -> None:
     path.write_text(_stable_json(data), encoding="utf-8")
 
 
+def _config_sha256(config: Mapping[str, Any]) -> str:
+    canonical = json.dumps(dict(config), sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def _write_csv(path: Path, rows: Iterable[Mapping[str, Any]], fieldnames: tuple[str, ...] | None = None) -> None:
     materialized_rows = list(rows)
     if fieldnames is None:
@@ -66,12 +71,27 @@ def write_method_outputs(
 
     output_dir = Path(method_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    history_rows = None if training_history is None else list(training_history)
+    requires_history = "training_history.csv" in spec.required_outputs
+    if history_rows == []:
+        raise ValueError("training_history must be non-empty when supplied")
+    if record.status.value == "completed" and requires_history and history_rows is None:
+        raise ValueError("training_history is required for completed runs of this method")
+
     paths = {
         "config_manifest": output_dir / "config_manifest.json",
         "run_metrics": output_dir / "run_metrics.csv",
         "decision": output_dir / "decision.json",
     }
-    _write_json(paths["config_manifest"], {"config": dict(config), "method_spec": spec.to_dict()})
+    _write_json(
+        paths["config_manifest"],
+        {
+            "config": dict(config),
+            "config_sha256": _config_sha256(config),
+            "method_spec": spec.to_dict(),
+            "provenance": {"branch": record.branch, "commit": record.commit},
+        },
+    )
     _write_csv(paths["run_metrics"], [_csv_row(record)], METHOD_RUN_CSV_FIELDS)
     _write_json(
         paths["decision"],
@@ -85,9 +105,12 @@ def write_method_outputs(
             "status": record.status.value,
         },
     )
-    if training_history is not None:
+    history_path = output_dir / "training_history.csv"
+    if history_rows is not None:
         paths["training_history"] = output_dir / "training_history.csv"
-        _write_csv(paths["training_history"], training_history)
+        _write_csv(paths["training_history"], history_rows)
+    elif history_path.exists():
+        history_path.unlink()
 
     hashes = {
         path.name: hashlib.sha256(path.read_bytes()).hexdigest()
@@ -96,4 +119,3 @@ def write_method_outputs(
     paths["artifact_hashes"] = output_dir / "artifact_hashes.json"
     _write_json(paths["artifact_hashes"], {"algorithm": "sha256", "files": hashes})
     return paths
-
