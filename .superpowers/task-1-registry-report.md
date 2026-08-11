@@ -4,7 +4,10 @@ Branch: `feature/campaign-registry`
 
 Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/campaign-registry`
 
-Implementation commit: `526f3e9 Add independent campaign registry contract`
+Implementation commits:
+
+- `526f3e9 Add independent campaign registry contract`
+- `86fcca8 Refine campaign registry output contract`
 
 ## Changed Files
 
@@ -18,7 +21,7 @@ Implementation commit: `526f3e9 Add independent campaign registry contract`
 
 ## Delivered Contract
 
-- Registered exactly M01 through M24 with plan-aligned names, scopes, explicit final-scoreboard categories, baselines, primary metrics, directions, budgets, stochastic flags, bounded predeclared configurations, output requirements, and method-specific gates.
+- Registered exactly M01 through M24 with plan-aligned names, scopes, explicit final-scoreboard categories, baselines, primary metrics, directions, second-based budgets, stochastic flags, bounded predeclared configurations, output requirements, and method-specific gates.
 - Defined `RunPhase` (`screen`, `confirm`, `final`) and validated `MethodRunRecord` states, including completed finite-metric requirements and the required failure/diagnostic/resource/not-implemented statuses.
 - Added deterministic `config_manifest.json`, `run_metrics.csv`, `decision.json`, optional `training_history.csv`, and `artifact_hashes.json` generation. The SHA-256 manifest covers every generated evidence file except itself.
 - Added the foundation CLI. `--list-methods` and `--verify-all` return machine-readable registry data. A normal method invocation exits with a clear not-implemented error; only a config containing `dry_run: true` produces a `not_implemented` scaffold.
@@ -41,6 +44,24 @@ env PYTHONPATH=src:experiments /Users/liangzihan/Documents/SURF_0159/SURF/.workt
 
 Observed GREEN result: `11 passed`.
 
+## Manager Review Round 1 Update
+
+- Corrected categories to solver/accelerator M01, M03, M05--M07, M14; surrogate/compression M02, M04, M08--M10, M13, M19--M20; reconstruction/UQ M11--M12 and M15--M18; diagnostic/workflow M21--M24. The verified totals are `6/8/6/4`.
+- Replaced hour fields with `screen_budget_seconds` and `confirmation_budget_seconds`. Ordinary screening is `3600`, the M05/M06/M07/M12 exception is `14400`, and every confirmation budget is `21600`.
+- Tightened `MethodRunRecord` validation to accept only exact IDs M01 through M24.
+- Made output reruns idempotent for training history. Completed methods whose spec requires history reject missing history; any empty supplied history rejects clearly; scaffolds may omit history and remove stale history from a reused output directory.
+- Added `config_sha256` over canonical JSON plus record branch/commit under `provenance` in `config_manifest.json`; all JSON serialization retains `allow_nan=False`.
+
+Review RED command:
+
+```sh
+env PYTHONPATH=src:experiments /Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-pilot/bin/python -m pytest tests/test_campaign_registry.py tests/test_campaign_outputs.py -q
+```
+
+Observed review RED result: seven focused failures, covering obsolete categories and hour fields, permissive IDs, missing manifest hash/provenance, stale history retention, and absent required history validation.
+
+Review GREEN result: `14 passed`.
+
 ## Commands Run
 
 ```sh
@@ -51,7 +72,7 @@ env PYTHONPATH=src:experiments /Users/liangzihan/Documents/SURF_0159/SURF/.workt
 git diff --check
 ```
 
-Results: harness startup passed; compileall passed with the temporary bytecode cache; registry verification returned 24 valid methods with category counts `7/5/6/6`; method listing returned M01 through M24; and `git diff --check` passed.
+Results: harness startup passed; compileall passed with the temporary bytecode cache; registry verification returned 24 valid methods with category counts `6/8/6/4`; method listing returned M01 through M24; and `git diff --check` passed.
 
 ## Result Paths And Metrics
 
@@ -61,7 +82,7 @@ Metric table: not applicable. This task supplies infrastructure only and does no
 
 ## Manifest And Provenance Evidence
 
-`MethodRunRecord` preserves scenario count, seed, split, branch, commit, timing breakdown, memory, claim status, and notes. `config_manifest.json` contains both the supplied config and the complete frozen `MethodSpec`; `run_metrics.csv` uses fixed field ordering; `decision.json` records the decision state; and `artifact_hashes.json` records SHA-256 hashes for the other generated files.
+`MethodRunRecord` preserves scenario count, seed, split, branch, commit, timing breakdown, memory, claim status, and notes. `config_manifest.json` contains the supplied config, a canonical `config_sha256`, record branch/commit provenance, and the complete frozen `MethodSpec`; `run_metrics.csv` uses fixed field ordering; `decision.json` records the decision state; and `artifact_hashes.json` records SHA-256 hashes for the other generated files.
 
 ## Risks And Limitations
 
