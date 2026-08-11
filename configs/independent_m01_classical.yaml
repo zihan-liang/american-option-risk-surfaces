@@ -1,0 +1,121 @@
+method_id: M01
+phase: screen
+output_root: results/independent_method_campaign/M01/screen
+common:
+  option_type: put
+  k: 1.0
+  r: 0.05
+  q: 0.0
+  sigma: 0.2
+  t: 1.0
+  s_max: 4.0
+  m: 120
+  n: 120
+  omega: 1.2
+  tol: 1.0e-10
+  max_iter: 20000
+  american: true
+reference:
+  time_scheme: rannacher_cn
+  rannacher_steps: 2
+  lcp_solver: policy_iteration
+  m: 240
+  n: 240
+methods:
+  - config_id: cn_psor
+    time_scheme: cn
+    rannacher_steps: 0
+    lcp_solver: psor
+  - config_id: rannacher_cn_psor
+    time_scheme: rannacher_cn
+    rannacher_steps: 2
+    lcp_solver: psor
+  - config_id: dirk_psor
+    time_scheme: sdirk2
+    rannacher_steps: 0
+    lcp_solver: psor
+  - config_id: cn_policy_iteration
+    time_scheme: cn
+    rannacher_steps: 0
+    lcp_solver: policy_iteration
+  - config_id: cn_penalty_newton
+    time_scheme: cn
+    rannacher_steps: 0
+    lcp_solver: penalty_newton
+    penalty: 1.0e+10
+regimes:
+  - scenario_id: put_T0p25_sig0p10_r0p01_q0
+    t: 0.25
+    sigma: 0.10
+    r: 0.01
+    q: 0.0
+  - scenario_id: put_T0p25_sig0p40_r0p05_q0
+    t: 0.25
+    sigma: 0.40
+    r: 0.05
+    q: 0.0
+  - scenario_id: put_T0p50_sig0p20_r0p03_q0p02
+    t: 0.50
+    sigma: 0.20
+    r: 0.03
+    q: 0.02
+  - scenario_id: put_T0p50_sig0p80_r0p10_q0
+    t: 0.50
+    sigma: 0.80
+    r: 0.10
+    q: 0.0
+  - scenario_id: put_T1p00_sig0p20_r0p05_q0
+    t: 1.00
+    sigma: 0.20
+    r: 0.05
+    q: 0.0
+  - scenario_id: put_T1p00_sig0p40_r0p01_q0p04
+    t: 1.00
+    sigma: 0.40
+    r: 0.01
+    q: 0.04
+  - scenario_id: put_T2p00_sig0p20_r0p10_q0p03
+    t: 2.00
+    sigma: 0.20
+    r: 0.10
+    q: 0.03
+  - scenario_id: put_T2p00_sig0p60_r0p05_q0
+    t: 2.00
+    sigma: 0.60
+    r: 0.05
+    q: 0.0
+region:
+  s_min_over_k: 0.4
+  s_max_over_k: 1.8
+  kink_width_over_k: 0.03
+  boundary_width_over_k: 0.03
+timing:
+  warmups: 5
+  repetitions: 30
+  m: 80
+  n: 80
+grid_refinement:
+  grids: [40, 80, 120]
+analytic_controls:
+  m: 120
+  n: 120
+integral_boundary:
+  steps: 160
+bootstrap:
+  iterations: 10000
+  seed: 2401
+gates:
+  ordinary_no_regression_percent: 2.0
+  residual_no_regression_percent: 5.0
+  practical_improvement_percent: 2.0
+  hard_obstacle_tolerance: 1.0e-10
+smoke:
+  common_grid: 24
+  reference_grid: 48
+  grid_refinement_grids: [12, 24]
+  timing_grid: 20
+  timing_warmups: 0
+  timing_repetitions: 2
+  integral_steps: 24
+  bootstrap_iterations: 200
+  regime_count: 2

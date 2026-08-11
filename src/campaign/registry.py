@@ -88,7 +88,7 @@ def _spec(
 METHOD_REGISTRY: Mapping[str, MethodSpec] = {
     "M01": _spec(
         "M01", "Classical solvers",
-        "Compare CN, Rannacher-CN, and second-order L-stable DIRK with PSOR, policy iteration, and penalty/Newton one factor at a time.",
+        "Compare CN, Rannacher-CN, and the chosen L-stable obstacle discretization with PSOR, policy iteration, and penalty/Newton one factor at a time.",
         MethodCategory.SOLVER_ACCELERATOR, "CN/PSOR", "wall_time_seconds_at_fixed_accuracy",
         MetricDirection.LOWER_IS_BETTER,
         ("cn_psor", "rannacher_cn_psor", "dirk_psor", "cn_policy_iteration", "cn_penalty_newton"),
