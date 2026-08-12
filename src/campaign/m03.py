@@ -1270,9 +1270,9 @@ def _blend_from_config_id(config_id: str) -> float:
 
 
 def _process_memory_mb() -> float:
-    import psutil
+    import resource
 
-    return float(psutil.Process().memory_info().rss / (1024.0**2))
+    return float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024.0**2))
 
 
 def _git_provenance() -> dict[str, str]:
