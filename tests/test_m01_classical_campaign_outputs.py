@@ -2,6 +2,7 @@ import csv
 import importlib.util
 import json
 import math
+import os
 import subprocess
 import sys
 import tempfile
@@ -41,6 +42,12 @@ class M01ClassicalCampaignOutputTests(unittest.TestCase):
         self.assertEqual(set(methods), set(get_method_spec("M01").predeclared_configurations))
         self.assertEqual(config["grid_refinement"]["grids"], [40, 80, 120])
         self.assertEqual(config["smoke"].get("grid_refinement_grids"), [12, 24])
+        self.assertEqual(config["timing"]["warmups"], 5)
+        self.assertEqual(config["timing"]["repetitions"], 30)
+        self.assertEqual(config["gates"].get("familywise_alpha"), 0.05)
+        negative_regimes = [regime for regime in config["regimes"] if float(regime["r"]) < 0.0]
+        self.assertGreaterEqual(len(negative_regimes), 1)
+        self.assertTrue(all(str(regime["scenario_id"]).startswith("put_") for regime in negative_regimes))
         self.assertEqual(methods["cn_psor"]["lcp_solver"], "psor")
         self.assertEqual(methods["rannacher_cn_psor"]["time_scheme"], "rannacher_cn")
         self.assertEqual(methods["dirk_psor"]["time_scheme"], "sdirk2")
@@ -88,6 +95,26 @@ class M01ClassicalCampaignOutputTests(unittest.TestCase):
                 summary.get("grid_refinement_claim"),
                 "diagnostic consistency check only; no convergence order is estimated",
             )
+            accounting = summary["resource_accounting"]
+            self.assertEqual(accounting["screen_budget_seconds"], 3600)
+            self.assertFalse(accounting["budget_exceeded"])
+            self.assertEqual(accounting["timing_warmups"], 0)
+            self.assertEqual(accounting["timing_repetitions"], 2)
+            self.assertEqual(accounting["training_elapsed_seconds"], 0.0)
+            self.assertEqual(
+                accounting["training_cost_status"], "not_applicable_no_trainable_model"
+            )
+            self.assertEqual(accounting["memory_measure"], "process_peak_rss")
+            for field in (
+                "total_screen_elapsed_seconds",
+                "deterministic_timing_elapsed_seconds",
+                "control_generation_elapsed_seconds",
+                "comparison_refinement_elapsed_seconds",
+                "memory_mb",
+            ):
+                self.assertTrue(math.isfinite(float(accounting[field])), field)
+                self.assertGreaterEqual(float(accounting[field]), 0.0, field)
+            self.assertGreater(float(accounting["memory_mb"]), 0.0)
             decision = json.loads((output / "decision.json").read_text(encoding="utf-8"))
             self.assertEqual(decision["method_id"], "M01")
             self.assertEqual(decision["record_count"], 5)
@@ -104,6 +131,21 @@ class M01ClassicalCampaignOutputTests(unittest.TestCase):
             self.assertEqual(len({row["commit"] for row in run_rows}), 1)
             self.assertTrue(run_rows[0]["branch"])
             self.assertTrue(run_rows[0]["commit"])
+            self.assertEqual(len({row["memory_mb"] for row in run_rows}), 1)
+            self.assertGreater(float(run_rows[0]["memory_mb"]), 0.0)
+            candidate_rows = [row for row in run_rows if row["config_id"] != "cn_psor"]
+            self.assertEqual(len(candidate_rows), 4)
+            for row in candidate_rows:
+                metrics = json.loads(row["optional_metrics_json"])
+                raw = float(metrics["timing_raw_p_value"])
+                adjusted = float(metrics["timing_holm_adjusted_p_value"])
+                self.assertGreaterEqual(adjusted, raw)
+                self.assertIn(metrics["timing_holm_reject"], (0.0, 1.0))
+                decision_state = summary["method_decisions"][row["config_id"]]
+                self.assertEqual(decision_state["timing_raw_p_value"], raw)
+                self.assertEqual(decision_state["timing_holm_adjusted_p_value"], adjusted)
+                self.assertIsInstance(decision_state["timing_holm_reject"], bool)
+                self.assertIn("all_relevant_hard_lcp_converged", decision_state)
             manifest = json.loads((output / "config_manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(
                 manifest["provenance"],
@@ -111,6 +153,7 @@ class M01ClassicalCampaignOutputTests(unittest.TestCase):
             )
             self.assertEqual(manifest["config"]["evidence_status"], "diagnostic_non_evidence")
             self.assertFalse(manifest["config"]["blind_holdout_accessed"])
+            self.assertEqual(manifest["config"]["resource_accounting"], accounting)
             for row in rows:
                 for field in (
                     "price_rmse",
@@ -122,6 +165,8 @@ class M01ClassicalCampaignOutputTests(unittest.TestCase):
                     "max_lcp_natural_residual",
                     "timing_median_seconds",
                 ):
+                    if field == "boundary_rmse" and float(row[field]) != float(row[field]):
+                        continue
                     self.assertTrue(math.isfinite(float(row[field])), (row["config_id"], field))
             with (output / "grid_refinement.csv").open(newline="", encoding="utf-8") as handle:
                 grid_reader = csv.DictReader(handle)
@@ -137,6 +182,30 @@ class M01ClassicalCampaignOutputTests(unittest.TestCase):
             self.assertEqual(len(grouped_grids), 10)
             self.assertTrue(all(sorted(grids) == [12, 24] for grids in grouped_grids.values()))
             self.assertNotIn("observed_order", grid_fields)
+            with (output / "analytic_controls.csv").open(newline="", encoding="utf-8") as handle:
+                analytic_rows = list(csv.DictReader(handle))
+            negative_brennan = [
+                row
+                for row in analytic_rows
+                if row["control"] == "brennan_schwartz_first_step"
+                and row["control_status"] == "not_applicable_negative_rate"
+            ]
+            self.assertEqual(len(negative_brennan), 1)
+            self.assertEqual(negative_brennan[0]["applicability_reason"], "negative_interest_rate")
+            with (output / "boundary_crosscheck.csv").open(
+                newline="", encoding="utf-8"
+            ) as handle:
+                boundary_rows = list(csv.DictReader(handle))
+            negative_integral = [
+                row
+                for row in boundary_rows
+                if row["control_status"] == "not_applicable_negative_rate"
+            ]
+            self.assertEqual(len(negative_integral), 1)
+            self.assertEqual(
+                negative_integral[0]["applicability_reason"],
+                "integral_boundary_requires_positive_rate",
+            )
             hashes = json.loads((output / "artifact_hashes.json").read_text(encoding="utf-8"))
             self.assertEqual(set(hashes["files"]), required - {"artifact_hashes.json"})
             for filename, expected in hashes["files"].items():
@@ -144,11 +213,59 @@ class M01ClassicalCampaignOutputTests(unittest.TestCase):
 
                 self.assertEqual(hashlib.sha256((output / filename).read_bytes()).hexdigest(), expected)
 
+    def test_promotion_helpers_require_holm_convergence_and_budget(self):
+        experiment = _load_experiment()
+        status_function = getattr(experiment, "_candidate_run_status", None)
+        claim_function = getattr(experiment, "_evidence_status", None)
+        self.assertIsNotNone(status_function)
+        self.assertIsNotNone(claim_function)
+        gates = {
+            "smoke": False,
+            "baseline": False,
+            "no_regression": True,
+            "obstacle_ok": True,
+            "analytic_ok": True,
+            "boundary_ok": True,
+            "practical": True,
+            "ci_excludes_zero": True,
+            "holm_reject": True,
+            "hard_lcp_converged": True,
+            "budget_exceeded": False,
+        }
+
+        status, claim = status_function(**gates)
+        self.assertEqual((status.value, claim), ("completed", "candidate_supported"))
+        for gate in ("holm_reject", "hard_lcp_converged"):
+            blocked = {**gates, gate: False}
+            status, claim = status_function(**blocked)
+            self.assertNotEqual(status.value, "completed", gate)
+            self.assertNotEqual(claim, "candidate_supported", gate)
+        status, claim = status_function(**{**gates, "budget_exceeded": True})
+        self.assertEqual((status.value, claim), ("resource_blocked", "resource_blocked"))
+        self.assertEqual(
+            claim_function(smoke=False, supported_config_ids=(), budget_exceeded=False),
+            "benchmark_only",
+        )
+        self.assertEqual(
+            claim_function(
+                smoke=False,
+                supported_config_ids=("dirk_psor",),
+                budget_exceeded=False,
+            ),
+            "candidate_supported",
+        )
+        self.assertEqual(
+            claim_function(smoke=False, supported_config_ids=(), budget_exceeded=True),
+            "resource_blocked",
+        )
+
     def test_shared_campaign_cli_dispatches_m01_smoke_run(self):
         with tempfile.TemporaryDirectory() as temp_dir:
+            env = os.environ.copy()
+            env["PYTHONPATH"] = str(ROOT / "src") + os.pathsep + str(ROOT / "experiments")
             result = subprocess.run(
                 [
-                    "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-campaign/bin/python",
+                    sys.executable,
                     str(ROOT / "experiments" / "26_independent_method_campaign.py"),
                     "--method",
                     "M01",
@@ -161,6 +278,7 @@ class M01ClassicalCampaignOutputTests(unittest.TestCase):
                     "--smoke",
                 ],
                 cwd=ROOT,
+                env=env,
                 text=True,
                 capture_output=True,
                 check=True,

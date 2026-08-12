@@ -49,6 +49,11 @@ regimes:
     sigma: 0.10
     r: 0.01
     q: 0.0
+  - scenario_id: put_T1p00_sig0p10_rm0p012_qm0p016
+    t: 1.00
+    sigma: 0.10
+    r: -0.012
+    q: -0.016
   - scenario_id: put_T0p25_sig0p40_r0p05_q0
     t: 0.25
     sigma: 0.40
@@ -105,6 +110,7 @@ bootstrap:
   iterations: 10000
   seed: 2401
 gates:
+  familywise_alpha: 0.05
   ordinary_no_regression_percent: 2.0
   residual_no_regression_percent: 5.0
   practical_improvement_percent: 2.0
