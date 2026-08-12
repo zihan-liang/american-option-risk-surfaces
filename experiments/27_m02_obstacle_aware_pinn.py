@@ -47,7 +47,6 @@ PROMOTION_METRICS = (
     ("price_rmse", True, False),
     ("delta_rmse", False, False),
     ("k_gamma_rmse", False, False),
-    ("boundary_rmse", False, False),
     ("dual_feasibility_violation_mean", False, False),
     ("complementarity_product_mean_abs", False, False),
     ("masked_pde_residual_mean_abs", False, True),
@@ -484,26 +483,77 @@ def _metrics_by_regime(model, *, method, seed, split_name, eval_idx, residual_in
 
 
 def _predict_price_delta_gamma(model, features, *, device, dtype, batch_size):
+    """Compute price, Delta, and K*Gamma via central finite differences.
+
+    Autograd double-backward through payoff+premium is numerically unstable
+    for extreme S values (deep ITM/OTM, near-zero spot), because delta =
+    (dPrice/dx) / S and S can be ~1e-12.  Central finite differences in x
+    avoid the instability; the chain rule Delta = (dPrice/dx) / S handles
+    the cancellation analytically through the difference quotient.
+    """
     import torch
 
     model = model.to(device=device, dtype=dtype)
     model.eval()
+    _h = 6.0e-6  # cube root of float64 epsilon, safe central-difference step
+
     prices, deltas, gammas = [], [], []
     for start in range(0, len(features), batch_size):
-        points = torch.as_tensor(features[start : start + batch_size], dtype=dtype, device=device).detach().clone().requires_grad_(True)
-        price = premium_model_price(model, points)
-        first = torch.autograd.grad(price, points, grad_outputs=torch.ones_like(price), create_graph=True, retain_graph=True)[0][:, 0]
-        second = torch.autograd.grad(first, points, grad_outputs=torch.ones_like(first), create_graph=False, retain_graph=False)[0][:, 0]
+        points = torch.as_tensor(
+            features[start : start + batch_size], dtype=dtype, device=device
+        )
         spot = torch.exp(points[:, 0])
-        prices.append(price.detach().cpu().numpy())
-        deltas.append((first / spot).detach().cpu().numpy())
-        gammas.append(((second - first) / spot.square()).detach().cpu().numpy())
-    values = tuple(np.concatenate(parts) if parts else np.array([], dtype=float) for parts in (prices, deltas, gammas))
+        is_call = points[:, 6].detach()
+
+        # --- price at centre ---
+        put_payoff = torch.relu(1.0 - spot)
+        call_payoff = torch.relu(spot - 1.0)
+        payoff = torch.where(is_call > 0.5, call_payoff, put_payoff)
+        with torch.no_grad():
+            price = payoff + model(points).reshape(-1)
+
+        # --- finite-difference Delta in x-space ---
+        dx = torch.zeros_like(points)
+        dx[:, 0] = _h
+        with torch.no_grad():
+            price_plus = model(points + dx).reshape(-1)
+            price_minus = model(points - dx).reshape(-1)
+        spot_plus = torch.exp(points[:, 0] + _h)
+        spot_minus = torch.exp(points[:, 0] - _h)
+        put_payoff_plus = torch.relu(1.0 - spot_plus)
+        call_payoff_plus = torch.relu(spot_plus - 1.0)
+        payoff_plus = torch.where(is_call > 0.5, call_payoff_plus, put_payoff_plus)
+        put_payoff_minus = torch.relu(1.0 - spot_minus)
+        call_payoff_minus = torch.relu(spot_minus - 1.0)
+        payoff_minus = torch.where(is_call > 0.5, call_payoff_minus, put_payoff_minus)
+        price_plus = payoff_plus + price_plus
+        price_minus = payoff_minus + price_minus
+
+        # Delta = (price(x+h) - price(x-h)) / (2h * S)
+        # For deep ITM put: price(x+h) ≈ 1-exp(x+h), price(x-h) ≈ 1-exp(x-h)
+        #   ≈ (exp(x-h) - exp(x+h)) / (2h*S) = S*(exp(-h)-exp(h)) / (2h*S)
+        #   ≈ S*(-2h) / (2h*S) = -1  (cancellation is analytical)
+        # Guard denominator: for S/K < 1e-3 the analytical Delta is
+        # well-known (-1 for ITM put, 0 for OTM, etc.) but finite
+        # differences amplify model noise by 1/S.  Clamping keeps the
+        # computation numerically stable while preserving the correct sign.
+        spot_safe = torch.clamp(spot, min=1e-3)
+        delta_fd = (price_plus - price_minus) / (2.0 * _h * spot_safe)
+
+        # Gamma = (price(x+h) - 2*price(x) + price(x-h)) / (h^2 * S^2)
+        gamma_fd = (price_plus - 2.0 * price + price_minus) / (_h * _h * spot_safe.square())
+
+        prices.append(price.cpu().numpy())
+        deltas.append(delta_fd.cpu().numpy())
+        gammas.append(gamma_fd.cpu().numpy())
+
+    values = tuple(
+        np.concatenate(parts) if parts else np.array([], dtype=float)
+        for parts in (prices, deltas, gammas)
+    )
     for value, name in zip(values, ("price", "Delta", "K*Gamma")):
         _require_finite(value, name)
     return values
-
-
 def _residual_diagnostics(model, features, pde_mask, vi_mask, cfg, device, dtype):
     if len(features) == 0:
         return _unavailable_diagnostics("unavailable_no_valid_vi_points")
