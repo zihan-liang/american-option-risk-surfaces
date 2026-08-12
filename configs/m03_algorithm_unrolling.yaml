@@ -30,6 +30,10 @@ network:
   dtype: float64
   device: cpu
   blend_candidates: [0.5, 1.0]
+unrolling:
+  K_candidates: [3, 5]
+  learning_rate: 0.01
+  epochs: 100
 timing:
   warmups: 5
   repetitions: 30

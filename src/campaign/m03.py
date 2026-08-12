@@ -22,9 +22,12 @@ from campaign.statistics import measure_timing, summarize_paired_scenarios
 from models.algorithm_unrolling import (
     FeatureNormalizer,
     SurfaceSolveResult,
+    UnrolledOmegaResult,
     build_warm_start_mlp,
+    extract_lcp_training_data,
     solve_cn_lcp_surface,
     surface_training_examples,
+    train_unrolled_omegas,
 )
 from solvers.boundaries import boundary_curve
 from solvers.cn_psor import SolverConfig, cn_matrices, time_boundary_values
@@ -69,6 +72,11 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "device": "cpu",
         "blend_candidates": [0.5, 1.0],
     },
+    "unrolling": {
+        "K_candidates": [3, 5],
+        "learning_rate": 0.01,
+        "epochs": 100,
+    },
     "timing": {"warmups": 5, "repetitions": 30},
     "statistics": {"bootstrap_iterations": 10_000, "bootstrap_seed": 1703},
     "budget_seconds": 3_600,
@@ -94,6 +102,11 @@ SMOKE_OVERRIDES: dict[str, Any] = {
         "batch_size": 64,
         "patience": 1,
         "blend_candidates": [0.5, 1.0],
+    },
+    "unrolling": {
+        "K_candidates": [2, 3],
+        "learning_rate": 0.01,
+        "epochs": 2,
     },
     "timing": {"warmups": 0, "repetitions": 1},
     "statistics": {"bootstrap_iterations": 200},
@@ -353,8 +366,56 @@ def run_m03_screen(
                 }
                 selection_rows.append(row)
                 candidate_selection_rows.append(row)
+
+    # --- Unrolled projected SOR candidate path ---
+    unroll_cfg = config["unrolling"]
+    unrolled_trained: dict[int, dict[int, UnrolledOmegaResult]] = {seed: {} for seed in seeds}
+    train_lcp_data: list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = []
+    for oracle in train_oracles.values():
+        train_lcp_data.extend(extract_lcp_training_data(oracle))
+    unrolled_training_started = perf_counter()
+    for k_value in unroll_cfg["K_candidates"]:
+        for seed in seeds:
+            trained_unrolled = train_unrolled_omegas(
+                train_lcp_data,
+                K=int(k_value),
+                learning_rate=float(unroll_cfg["learning_rate"]),
+                epochs=int(unroll_cfg["epochs"]),
+                seed=seed,
+            )
+            unrolled_trained[seed][int(k_value)] = trained_unrolled
+    unrolled_training_seconds = float(perf_counter() - unrolled_training_started)
+
+    for k_value in unroll_cfg["K_candidates"]:
+        config_id = f"unrolled_projected_sor_k{k_value}"
+        for seed in seeds:
+            omegas = unrolled_trained[seed][int(k_value)].omegas
+            for regime in splits.validation:
+                scenario_id = str(regime["scenario_id"])
+                result = _solve_regime(
+                    regime,
+                    solver_cfg,
+                    tolerance=float(solver_cfg["residual_tolerance"]),
+                    omega=selected_omega,
+                    unrolled_omegas=omegas,
+                )
+                candidate_results[(seed, config_id, scenario_id)] = result
+                row = {
+                    "selection_stage": "candidate_unrolled",
+                    "config_id": config_id,
+                    "seed": seed,
+                    "scenario_id": scenario_id,
+                    "cleanup_iterations": result.cleanup_iterations_total,
+                    "total_seconds": result.timings_seconds["total"],
+                    "natural_residual": max(result.natural_residuals),
+                    "fallback_count": result.fallback_count,
+                }
+                selection_rows.append(row)
+                candidate_selection_rows.append(row)
+
     fixed_selection = select_fixed_configuration(candidate_selection_rows, required_seeds=seeds)
-    selected_blend = _blend_from_config_id(fixed_selection.config_id)
+    selected_is_unrolled = fixed_selection.config_id.startswith("unrolled_")
+    selected_blend = 1.0 if selected_is_unrolled else _blend_from_config_id(fixed_selection.config_id)
     candidate_selection_seconds = float(perf_counter() - candidate_selection_started)
     selection_seconds = baseline_selection_seconds + candidate_selection_seconds
 
@@ -398,18 +459,33 @@ def run_m03_screen(
             _timing_rows("tuned_psor", scenario_id, None, baseline_measurement)
         )
         for seed, trained in trained_models.items():
-            candidate_measurement = _measure_surface(
-                lambda regime=regime, predictor=trained.predictor: _solve_regime(
-                    regime,
-                    solver_cfg,
-                    tolerance=float(solver_cfg["residual_tolerance"]),
-                    omega=selected_omega,
-                    predictor=predictor,
-                    blend=selected_blend,
-                ),
-                warmups=int(timing_cfg["warmups"]),
-                repetitions=int(timing_cfg["repetitions"]),
-            )
+            if selected_is_unrolled:
+                k_value = int(fixed_selection.config_id.rsplit("k", 1)[-1])
+                omegas = unrolled_trained[seed][k_value].omegas
+                candidate_measurement = _measure_surface(
+                    lambda regime=regime, omegas=omegas: _solve_regime(
+                        regime,
+                        solver_cfg,
+                        tolerance=float(solver_cfg["residual_tolerance"]),
+                        omega=selected_omega,
+                        unrolled_omegas=omegas,
+                    ),
+                    warmups=int(timing_cfg["warmups"]),
+                    repetitions=int(timing_cfg["repetitions"]),
+                )
+            else:
+                candidate_measurement = _measure_surface(
+                    lambda regime=regime, predictor=trained.predictor: _solve_regime(
+                        regime,
+                        solver_cfg,
+                        tolerance=float(solver_cfg["residual_tolerance"]),
+                        omega=selected_omega,
+                        predictor=predictor,
+                        blend=selected_blend,
+                    ),
+                    warmups=int(timing_cfg["warmups"]),
+                    repetitions=int(timing_cfg["repetitions"]),
+                )
             candidate_times[scenario_id].extend(candidate_measurement["samples"])
             candidate_components[seed].append(candidate_measurement["component_medians"])
             timing_samples.extend(
@@ -478,6 +554,8 @@ def run_m03_screen(
                     paired,
                     selected_omega,
                     selected_blend,
+                    selected_is_unrolled=selected_is_unrolled,
+                    selected_k=int(fixed_selection.config_id.rsplit("k", 1)[-1]) if selected_is_unrolled else None,
                     residual_tolerance=float(solver_cfg["residual_tolerance"]),
                     cleanup_iterations_mean=float(
                         np.mean([result.cleanup_iterations_total for result in candidate_execution[seed]])
@@ -492,7 +570,12 @@ def run_m03_screen(
                 timings_seconds={
                     "label_generation": label_generation_seconds,
                     "preprocessing": preprocessing_seconds,
-                    "training": trained_models[seed].training_seconds,
+                    "training": (
+                        unrolled_trained[seed][int(fixed_selection.config_id.rsplit("k", 1)[-1])].training_seconds
+                        if selected_is_unrolled
+                        else trained_models[seed].training_seconds
+                    ),
+                    "unrolled_training_total": unrolled_training_seconds if selected_is_unrolled else 0.0,
                     "selection": selection_seconds,
                     **component_summary,
                 },
@@ -515,6 +598,8 @@ def run_m03_screen(
             paired,
             selected_omega,
             selected_blend,
+            selected_is_unrolled=selected_is_unrolled,
+            selected_k=int(fixed_selection.config_id.rsplit("k", 1)[-1]) if selected_is_unrolled else None,
             residual_tolerance=float(solver_cfg["residual_tolerance"]),
             cleanup_iterations_mean=float(
                 np.mean(
@@ -542,7 +627,11 @@ def run_m03_screen(
             "elapsed": float(perf_counter() - started_at),
             "label_generation": label_generation_seconds,
             "preprocessing": preprocessing_seconds,
-            "training": float(sum(model.training_seconds for model in trained_models.values())),
+            "training": (
+                unrolled_training_seconds
+                if selected_is_unrolled
+                else float(sum(model.training_seconds for model in trained_models.values()))
+            ),
             "selection": selection_seconds,
         },
         memory_mb=process_memory_mb,
@@ -554,8 +643,14 @@ def run_m03_screen(
     actual_counts = {
         "train_regimes": len(splits.train),
         "validation_regimes": len(splits.validation),
-        "train_samples": int(len(train_features)),
-        "validation_samples": int(len(validation_features)),
+        "train_samples": (
+            int(len(train_lcp_data)) if selected_is_unrolled else int(len(train_features))
+        ),
+        "validation_samples": (
+            int(sum(len(extract_lcp_training_data(o)) for o in validation_oracles.values()))
+            if selected_is_unrolled
+            else int(len(validation_features))
+        ),
         "training_seeds": len(seeds),
     }
     effective_config = deepcopy(config)
@@ -589,7 +684,9 @@ def run_m03_screen(
             "baseline_omega": selected_omega,
             "baseline_omega_mean_iterations": omega_scores[selected_omega],
             "candidate_config_id": fixed_selection.config_id,
-            "candidate_blend": selected_blend,
+            "candidate_is_unrolled": selected_is_unrolled,
+            "candidate_blend": None if selected_is_unrolled else selected_blend,
+            "candidate_k": int(fixed_selection.config_id.rsplit("k", 1)[-1]) if selected_is_unrolled else None,
             "candidate_mean_cleanup_iterations": fixed_selection.mean_cleanup_iterations,
             "fixed_across_seeds": True,
             "seeds": list(seeds),
@@ -609,7 +706,11 @@ def run_m03_screen(
             "candidate_selection": candidate_selection_seconds,
             "label_generation": label_generation_seconds,
             "preprocessing": preprocessing_seconds,
-            "training_total": float(sum(model.training_seconds for model in trained_models.values())),
+            "training_total": (
+                unrolled_training_seconds
+                if selected_is_unrolled
+                else float(sum(model.training_seconds for model in trained_models.values()))
+            ),
             "selection": selection_seconds,
             "elapsed_before_writes": float(perf_counter() - started_at),
         },
@@ -782,6 +883,7 @@ def _solve_regime(
     omega: float,
     predictor: Any | None = None,
     blend: float = 1.0,
+    unrolled_omegas: Any | None = None,
 ) -> SurfaceSolveResult:
     config = SolverConfig(
         option_type="put",
@@ -805,6 +907,7 @@ def _solve_regime(
         max_iter=config.max_iter,
         warm_start_predictor=predictor,
         blend=blend,
+        unrolled_omegas=unrolled_omegas,
     )
 
 
@@ -1039,7 +1142,7 @@ def _timing_rows(
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for repetition, (sample, result) in enumerate(
-        zip(measurement["samples"], measurement["results"], strict=True), start=1
+        zip(measurement["samples"], measurement["results"]), start=1
     ):
         rows.append(
             {
@@ -1068,6 +1171,8 @@ def _record_metrics(
     selected_omega: float,
     selected_blend: float,
     *,
+    selected_is_unrolled: bool = False,
+    selected_k: int | None = None,
     residual_tolerance: float,
     cleanup_iterations_mean: float,
     fallback_count: float,
@@ -1093,6 +1198,8 @@ def _record_metrics(
             "paired_p_value": paired.paired_p_value,
             "selected_omega": selected_omega,
             "selected_blend": selected_blend,
+            "selected_is_unrolled": 1.0 if selected_is_unrolled else 0.0,
+            "selected_k": float(selected_k) if selected_k is not None else None,
             "residual_tolerance": residual_tolerance,
             "cleanup_iterations_mean": cleanup_iterations_mean,
             "fallback_count": fallback_count,
@@ -1128,7 +1235,12 @@ def _validate_config(config: Mapping[str, Any]) -> None:
     label_tolerance = float(solver["label_residual_tolerance"])
     if not 0.0 < label_tolerance < tolerance:
         raise ValueError("label_residual_tolerance must be positive and tighter than residual_tolerance")
-    configuration_count = len(solver["omega_candidates"]) + len(network["blend_candidates"])
+    unroll_cfg = config.get("unrolling", {})
+    configuration_count = (
+        len(solver["omega_candidates"])
+        + len(network["blend_candidates"])
+        + len(unroll_cfg.get("K_candidates", []))
+    )
     if not 1 <= configuration_count <= 8:
         raise ValueError("M03 must predeclare between one and eight configurations")
     if str(network["dtype"]) != "float64" or str(network["device"]) != "cpu":

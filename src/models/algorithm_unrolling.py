@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from time import perf_counter
-from typing import Callable, Mapping
+from typing import Callable, Mapping, Sequence
 
 import numpy as np
 
@@ -294,6 +294,7 @@ def solve_cn_lcp_surface(
     max_iter: int,
     warm_start_predictor: ArrayPredictor | None = None,
     blend: float = 1.0,
+    unrolled_omegas: np.ndarray | None = None,
 ) -> SurfaceSolveResult:
     """Solve a CN surface with either the ordinary or learned feasible start."""
     if config.m < 3 or config.n < 1:
@@ -340,11 +341,7 @@ def solve_cn_lcp_surface(
         rhs[-1] += 0.5 * dt * upper[-1] * (right_old + right_new)
         timings["assembly"] += float(perf_counter() - assembly_started)
 
-        if warm_start_predictor is None:
-            projection_started = perf_counter()
-            initial_guess = project_feasible(previous, obstacle)
-            timings["projection"] += float(perf_counter() - projection_started)
-        else:
+        if warm_start_predictor is not None:
             feature_started = perf_counter()
             features = warm_start_features(config, spots, tau_new, previous, rhs, obstacle)
             timings["feature_construction"] += float(perf_counter() - feature_started)
@@ -363,6 +360,18 @@ def solve_cn_lcp_surface(
             if warm.fallback_used:
                 fallback_count += 1
                 fallback_reasons.append(str(warm.fallback_reason))
+        elif unrolled_omegas is not None:
+            inference_started = perf_counter()
+            initial_guess = project_feasible(previous, obstacle)
+            initial_guess = unrolled_projected_jacobi(
+                matrix, rhs, obstacle, unrolled_omegas, initial_guess
+            )
+            timings["inference"] += float(perf_counter() - inference_started)
+            timings["projection"] += 0.0
+        else:
+            projection_started = perf_counter()
+            initial_guess = project_feasible(previous, obstacle)
+            timings["projection"] += float(perf_counter() - projection_started)
 
         cleanup = projected_sor_cleanup(
             matrix,
@@ -376,7 +385,7 @@ def solve_cn_lcp_surface(
         cleanup_iterations = cleanup.iterations
         timings["cleanup"] += cleanup.cleanup_seconds
 
-        if warm_start_predictor is not None and not cleanup.converged:
+        if (warm_start_predictor is not None or unrolled_omegas is not None) and not cleanup.converged:
             fallback_count += 1
             fallback_reasons.append("cleanup_nonconvergence")
             fallback_started = perf_counter()
@@ -478,6 +487,151 @@ def _validated_lcp(
     if not all(np.all(np.isfinite(values)) for values in (a, b, phi, x)):
         raise ValueError("LCP inputs must be finite")
     return a, b, phi, x
+
+
+@dataclass(frozen=True)
+class UnrolledOmegaResult:
+    """Trained per-iteration relaxation parameters for unrolled projected Jacobi."""
+
+    omegas: np.ndarray
+    training_seconds: float
+
+
+def train_unrolled_omegas(
+    train_lcp_data: Sequence[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]],
+    K: int,
+    *,
+    learning_rate: float,
+    epochs: int,
+    seed: int,
+) -> UnrolledOmegaResult:
+    """Train K relaxation parameters for unrolled projected Jacobi.
+
+    Each training sample is (A, b, phi, V_prev, V_true) where:
+    - A: LCP matrix (d x d)
+    - b: RHS vector (d,)
+    - phi: obstacle vector (d,)
+    - V_prev: previous-time-step solution (d,)
+    - V_true: tight-tolerance PSOR solution (d,)
+
+    Training minimizes MSE(V_K, V_true) over the K-iteration unrolled Jacobi
+    trajectory started from max(phi, V_prev).
+    """
+    import torch
+
+    if K < 1:
+        raise ValueError("K must be positive")
+    if not train_lcp_data:
+        raise ValueError("training data must not be empty")
+    if not np.isfinite(learning_rate) or learning_rate <= 0.0:
+        raise ValueError("learning_rate must be finite and positive")
+    if not isinstance(epochs, int) or isinstance(epochs, bool) or epochs < 1:
+        raise ValueError("epochs must be a positive integer")
+
+    torch.manual_seed(seed)
+    omegas_param = torch.nn.Parameter(torch.ones(K, dtype=torch.float64))
+    optimizer = torch.optim.Adam([omegas_param], lr=float(learning_rate))
+
+    training_started = perf_counter()
+    for _epoch in range(epochs):
+        epoch_loss = 0.0
+        for A_np, b_np, phi_np, vprev_np, vtrue_np in train_lcp_data:
+            A_t = torch.as_tensor(A_np, dtype=torch.float64)
+            b_t = torch.as_tensor(b_np, dtype=torch.float64)
+            phi_t = torch.as_tensor(phi_np, dtype=torch.float64)
+            V = torch.max(phi_t, torch.as_tensor(vprev_np, dtype=torch.float64))
+            V_true = torch.as_tensor(vtrue_np, dtype=torch.float64)
+
+            diag = torch.diag(A_t)
+            for omega in omegas_param:
+                residual = b_t - A_t @ V
+                direction = residual / diag
+                V = torch.max(phi_t, V + omega * direction)
+
+            loss = torch.nn.functional.mse_loss(V, V_true)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            epoch_loss += float(loss.detach())
+
+        with torch.no_grad():
+            omegas_param.clamp_(0.01, 1.99)
+
+    training_seconds = float(perf_counter() - training_started)
+    return UnrolledOmegaResult(
+        omegas=omegas_param.detach().cpu().numpy().copy(),
+        training_seconds=training_seconds,
+    )
+
+
+def unrolled_projected_jacobi(
+    matrix: np.ndarray,
+    rhs: np.ndarray,
+    obstacle: np.ndarray,
+    omegas: np.ndarray,
+    initial_guess: np.ndarray,
+) -> np.ndarray:
+    """Run K projected Jacobi iterations with learned omega parameters.
+
+    Each iteration:
+        V_{k+1} = max(obstacle, V_k + omega_k * (rhs - matrix @ V_k) / diag(matrix))
+
+    This is the projected Jacobi over-relaxation (PJOR) from Schwab & Stein (2022).
+    The obstacle projection is exact (no learned approximation).
+    """
+    A, b, phi, x = _validated_lcp(matrix, rhs, obstacle, initial_guess)
+    omega_values = np.asarray(omegas, dtype=float).reshape(-1)
+    if omega_values.size == 0:
+        raise ValueError("omegas must not be empty")
+    if not np.all(np.isfinite(omega_values)):
+        raise ValueError("omegas must be finite")
+    if np.any(omega_values <= 0.0) or np.any(omega_values >= 2.0):
+        raise ValueError("omegas must lie in (0, 2)")
+
+    diag = np.diag(A)
+    if np.any(~np.isfinite(diag)) or np.any(np.abs(diag) <= np.finfo(float).eps):
+        raise ValueError("matrix diagonal must be finite and nonzero")
+
+    V = x.copy()
+    for omega in omega_values:
+        residual = b - A @ V
+        direction = residual / diag
+        V = np.maximum(phi, V + omega * direction)
+
+    return V
+
+
+def extract_lcp_training_data(
+    result: "SurfaceSolveResult",
+) -> list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]]:
+    """Extract per-time-step LCP training tuples from a completed surface solve.
+
+    Returns list of (A, b, phi, V_prev, V_true) for each time step.
+    V_prev is the solution at tau_n; V_true is the solution at tau_{n+1}.
+    """
+    from solvers.cn_psor import cn_matrices, time_boundary_values
+
+    config = result.config
+    spots, lower, upper, matrix, rhs_matrix = cn_matrices(config)
+    dt = config.t / config.n
+    obstacle = result.payoff[1:-1]
+    samples: list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = []
+
+    for step in range(config.n):
+        tau_old = float(result.taus[step])
+        tau_new = float(result.taus[step + 1])
+        left_old, right_old = time_boundary_values(config, tau_old)
+        left_new, right_new = time_boundary_values(config, tau_new)
+        previous = result.values[step, 1:-1].copy()
+        rhs = rhs_matrix @ previous
+        rhs[0] += 0.5 * dt * lower[0] * (left_old + left_new)
+        rhs[-1] += 0.5 * dt * upper[-1] * (right_old + right_new)
+        v_true = result.values[step + 1, 1:-1].copy()
+        samples.append((matrix.copy(), rhs.copy(), obstacle.copy(), previous.copy(), v_true))
+
+    return samples
+
+
 
 
 def _finite_matrix(values: np.ndarray, label: str) -> np.ndarray:
