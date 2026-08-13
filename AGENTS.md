@@ -11,15 +11,48 @@ The detailed token and model policy is in
 - The project manager must not create Codex tasks, threads, subagents, or other
   delegated workers.
 - When specialist work is useful, the manager must stop and give the user a
-  task name, recommended model, repository/worktree path, branch, permitted
-  files, complete prompt, stop conditions, and acceptance criteria.
+  task name, recommended model, repository/worktree path, branch, initialization
+  prompt, full prompt, stop conditions, and acceptance criteria.
 - Only the user creates a task and assigns its model.
+- Task creation uses two stages. The user first creates the task with the short
+  initialization prompt below. The full task prompt is sent only after the
+  manager verifies the created task's ID, worktree, repository root, HEAD, and
+  status.
+- If the app displays `conversation not found` after initialization, do not
+  resend or create a duplicate. Wait briefly, return to the Project or Recent
+  list, locate the task, and tell the manager it was created.
 - A user-created specialist task may work only in its explicitly assigned
   branch or worktree. Reviewers are read-only unless the user authorizes a
   scoped fix.
 - A new task must verify that `git rev-parse --show-toplevel` points to this
   repository before reading or modifying project files. If it cannot access the
   repository, it must stop without creating substitute work elsewhere.
+
+The initialization prompt is:
+
+```text
+Initialization only.
+
+Report:
+git rev-parse --show-toplevel
+git status --short --branch
+git rev-parse HEAD
+
+Do not read project files, modify files, run tests, or start the requested work.
+Wait for the full task prompt.
+```
+
+## Manager Notification
+
+- The full task prompt must include the Project Manager task ID.
+- If `send_message_to_thread` is available, the worker must proactively send the
+  same compact report to the manager when it reaches a blocker or completes its
+  assigned phase. It must still reply in its own task for the user.
+- If thread messaging is unavailable, the worker must say so explicitly and ask
+  the user to relay the compact report to the manager.
+- Do not send routine progress messages to the manager. Notify only on a blocker
+  that needs a decision or on completion.
+- A notification is a handoff, not acceptance or authorization to continue.
 
 ## Startup Workflow
 
