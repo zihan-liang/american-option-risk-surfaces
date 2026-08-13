@@ -3,7 +3,9 @@
 ## Current Objective
 
 - Goal: execute the approved independent 24-method experiment campaign and produce a bilingual comparison report.
-- Current status: Wave 0 campaign foundation complete; M01 and M02 are in implementation/review.
+- Current status: Wave 0 campaign foundation complete; M02 is closed as
+  `insufficient_diagnostics`; M01 remains separate campaign work and HD0 is the
+  next approved extension-preparation phase.
 - Branch: `campaign/independent-methods`.
 - Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/campaign-independent-methods`.
 
@@ -87,4 +89,6 @@
 
 ## Recommended Next Step
 
-Finish the M01 correction/re-review loop and the M02 contract review, then run their canonical screening jobs serially.
+Do not rerun M02. Prepare HD0 as a separate Windows RTX 4060 CPU-float64 versus
+GPU-float32 precision/performance calibration, without blind-holdout access or
+high-dimensional claims.

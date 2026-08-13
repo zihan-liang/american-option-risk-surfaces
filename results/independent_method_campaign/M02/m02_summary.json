@@ -1,0 +1,753 @@
+{
+  "architecture": {
+    "depth": 3,
+    "type": "positive_premium_mlp",
+    "width": 128
+  },
+  "blind_holdout_accessed": false,
+  "canonical_run_launched": true,
+  "configuration_count": 4,
+  "costs": {
+    "fallback_reason": "M02 has no fallback path; no fallback computation was invoked.",
+    "fallback_seconds": 0.0,
+    "methods": {
+      "fischer_burmeister": {
+        "per_seed": [
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 1.456297468394041e-05,
+              "median_seconds": 0.005364687531255186,
+              "p95_seconds": 0.005522666656179354,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "fischer_burmeister",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.12059537484310567,
+            "seed": 101,
+            "training_seconds": 39.419610082986765,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 8.542032446712255e-06,
+              "median_seconds": 0.005515353986993432,
+              "p95_seconds": 0.005529050016775727,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "fischer_burmeister",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11615783406887203,
+            "seed": 203,
+            "training_seconds": 36.58476724999491,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 5.04200579598546e-06,
+              "median_seconds": 0.0053431669948622584,
+              "p95_seconds": 0.00535935225780122,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "fischer_burmeister",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11972033418715,
+            "seed": 307,
+            "training_seconds": 36.88130587502383,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 1.2541539035737514e-05,
+              "median_seconds": 0.005357083515264094,
+              "p95_seconds": 0.005543999985093251,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "fischer_burmeister",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11707508284598589,
+            "seed": 409,
+            "training_seconds": 36.67397762497421,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 7.521070074290037e-06,
+              "median_seconds": 0.005355645960662514,
+              "p95_seconds": 0.005438558309106156,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "fischer_burmeister",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.12247012613806874,
+            "seed": 503,
+            "training_seconds": 36.717514083953574,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          }
+        ]
+      },
+      "masked_pde": {
+        "per_seed": [
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 6.083515472710133e-06,
+              "median_seconds": 0.005101208516862243,
+              "p95_seconds": 0.005127726873615757,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "masked_pde",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.1121165418298915,
+            "seed": 101,
+            "training_seconds": 33.30616525001824,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 0.00025233300402760506,
+              "median_seconds": 0.006813874933868647,
+              "p95_seconds": 0.007405533269047737,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "masked_pde",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.13323749997653067,
+            "seed": 203,
+            "training_seconds": 32.324434417067096,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 7.833994459360838e-06,
+              "median_seconds": 0.0053434380097314715,
+              "p95_seconds": 0.00551842035492882,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "masked_pde",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11708750308025628,
+            "seed": 307,
+            "training_seconds": 31.463556749979034,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 7.833470590412617e-06,
+              "median_seconds": 0.005344770441297442,
+              "p95_seconds": 0.005635715078096837,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "masked_pde",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11440895940177143,
+            "seed": 409,
+            "training_seconds": 31.493197083007544,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 7.458555046468973e-06,
+              "median_seconds": 0.005347020516637713,
+              "p95_seconds": 0.005595233885105699,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "masked_pde",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11390841484535486,
+            "seed": 503,
+            "training_seconds": 31.52043183299247,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          }
+        ]
+      },
+      "separate_complementarity": {
+        "per_seed": [
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 5.070841871201992e-05,
+              "median_seconds": 0.005151333461981267,
+              "p95_seconds": 0.00534810014651157,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "separate_complementarity",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11385625111870468,
+            "seed": 101,
+            "training_seconds": 36.80045066692401,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 5.896028596907854e-06,
+              "median_seconds": 0.005342791555449367,
+              "p95_seconds": 0.005365666176658124,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "separate_complementarity",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11773229006212205,
+            "seed": 203,
+            "training_seconds": 37.689635541057214,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 2.9771006666123867e-05,
+              "median_seconds": 0.005528333538677543,
+              "p95_seconds": 0.006544550351100038,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "separate_complementarity",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.1164493749383837,
+            "seed": 307,
+            "training_seconds": 36.82499579200521,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 4.645960871130228e-06,
+              "median_seconds": 0.005349771003238857,
+              "p95_seconds": 0.0053681438963394616,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "separate_complementarity",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.12062987487297505,
+            "seed": 409,
+            "training_seconds": 36.807614708086476,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 5.145964678376913e-06,
+              "median_seconds": 0.005349750455934554,
+              "p95_seconds": 0.005531762534519658,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "separate_complementarity",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11761291685979813,
+            "seed": 503,
+            "training_seconds": 36.708647417020984,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          }
+        ]
+      },
+      "supervised": {
+        "per_seed": [
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 0.00022608297877013683,
+              "median_seconds": 0.005422937450930476,
+              "p95_seconds": 0.006783873325912282,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "supervised",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11921574897132814,
+            "seed": 101,
+            "training_seconds": 7.994415375054814,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 9.358354145660996e-05,
+              "median_seconds": 0.005475478945299983,
+              "p95_seconds": 0.005749412620207295,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "supervised",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11722000117879361,
+            "seed": 203,
+            "training_seconds": 7.305031833006069,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 1.3937533367425203e-05,
+              "median_seconds": 0.005511187482625246,
+              "p95_seconds": 0.005528629082255066,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "supervised",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11921833176165819,
+            "seed": 307,
+            "training_seconds": 7.1615131250582635,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 1.1395546607673168e-05,
+              "median_seconds": 0.005345979065168649,
+              "p95_seconds": 0.005489971511997282,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "supervised",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11490249971393496,
+            "seed": 409,
+            "training_seconds": 7.222191666951403,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          },
+          {
+            "inference": {
+              "median_absolute_deviation_seconds": 6.479443982243538e-06,
+              "median_seconds": 0.0055220830254256725,
+              "p95_seconds": 0.00553857134655118,
+              "repetitions": 30,
+              "warmups": 5,
+              "workload_samples": 8192
+            },
+            "method": "supervised",
+            "model_parameter_memory_mb": 0.26074981689453125,
+            "residual_diagnostic_seconds": 0.11379399907309562,
+            "seed": 503,
+            "training_seconds": 7.197036124998704,
+            "working_memory_definition": "static estimate: model parameters plus feature, premium, and price tensors for the fixed inference workload",
+            "working_memory_mb": 1.5732498168945312
+          }
+        ]
+      }
+    },
+    "preprocessing_seconds": 5.551833749981597,
+    "residual_diagnostic_cost_definition": "wall-clock time spent evaluating fixed valid-VI residual diagnostic samples",
+    "reused_psor_label_generation_reason": "CN/PSOR labels are reused benchmark data; label generation was not remeasured by M02.",
+    "reused_psor_label_generation_seconds": null
+  },
+  "elapsed_screen_seconds": 586.7359027499333,
+  "evidence_run": true,
+  "loss_scaling": {
+    "fischer_burmeister_epsilon": 0.0001,
+    "gap_scale": 0.1,
+    "residual_scale": 1.0
+  },
+  "matched_initialization": true,
+  "method_id": "M02",
+  "methods": [
+    "supervised",
+    "masked_pde",
+    "separate_complementarity",
+    "fischer_burmeister"
+  ],
+  "mode": "canonical",
+  "note": "CN/PSOR remains the benchmark and label generator. Validation alone is used for selection; legacy_test is descriptive and is not blind.",
+  "promotion": {
+    "budget_exceeded": false,
+    "comparisons": {
+      "fischer_burmeister": {
+        "claim_status": "diagnostic_only",
+        "gates": {
+          "masked_pde_residual_percent": 5.0,
+          "max_obstacle_violation": 1e-10,
+          "ordinary_metrics_percent": 2.0
+        },
+        "metrics": {
+          "boundary_rmse": {
+            "status": "unavailable"
+          },
+          "complementarity_product_mean_abs": {
+            "confidence_interval": [
+              -4.7934050330161776e-05,
+              -1.2506572821562197e-05
+            ],
+            "paired_p_value": 0.0007999200079992001,
+            "relative_percent_change": 40.70467643377263,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "delta_rmse": {
+            "confidence_interval": [
+              -1599067.0722553316,
+              -764894.8518614508
+            ],
+            "paired_p_value": 9.999000099990002e-05,
+            "relative_percent_change": 15.747224179652383,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "dual_feasibility_violation_mean": {
+            "confidence_interval": [
+              -0.010423478138079707,
+              -0.00100265557788228
+            ],
+            "paired_p_value": 0.009599040095990401,
+            "relative_percent_change": 74.36654704403229,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "k_gamma_rmse": {
+            "confidence_interval": [
+              -1.318751306557127e+18,
+              -5.565405937852627e+17
+            ],
+            "paired_p_value": 9.999000099990002e-05,
+            "relative_percent_change": 13.13454237788675,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "masked_pde_residual_mean_abs": {
+            "confidence_interval": [
+              -0.0048492426877008955,
+              0.00015086395309196586
+            ],
+            "paired_p_value": 0.15648435156484353,
+            "relative_percent_change": 15.499704839819719,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "price_rmse": {
+            "confidence_interval": [
+              -0.00039415122796201995,
+              0.00012327315772429713
+            ],
+            "paired_p_value": 0.2425757424257574,
+            "relative_percent_change": 0.8592517049719177,
+            "scenario_count": 5,
+            "status": "defined"
+          }
+        },
+        "missing_diagnostics": [
+          "boundary_rmse"
+        ],
+        "obstacle": {
+          "max_obstacle_violation": 0.0,
+          "passes": true,
+          "status": "defined"
+        },
+        "primary_price_holm": {
+          "adjusted_p_value": 0.4851514848515148,
+          "alpha": 0.05,
+          "raw_p_value": 0.2425757424257574,
+          "reject": false,
+          "status": "defined"
+        },
+        "raw_status": "insufficient_diagnostics",
+        "status": "insufficient_diagnostics"
+      },
+      "masked_pde": {
+        "claim_status": "diagnostic_only",
+        "gates": {
+          "masked_pde_residual_percent": 5.0,
+          "max_obstacle_violation": 1e-10,
+          "ordinary_metrics_percent": 2.0
+        },
+        "metrics": {
+          "boundary_rmse": {
+            "status": "unavailable"
+          },
+          "complementarity_product_mean_abs": {
+            "confidence_interval": [
+              -1.9701721465966342e-05,
+              2.033188042390657e-05
+            ],
+            "paired_p_value": 0.8268173182681732,
+            "relative_percent_change": -3.103230571384348,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "delta_rmse": {
+            "confidence_interval": [
+              3736653.1494478188,
+              6853001.419330587
+            ],
+            "paired_p_value": 9.999000099990002e-05,
+            "relative_percent_change": -71.61927562934152,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "dual_feasibility_violation_mean": {
+            "confidence_interval": [
+              -0.01085224988676484,
+              -0.0010352018018718713
+            ],
+            "paired_p_value": 0.009599040095990401,
+            "relative_percent_change": 76.66242830347953,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "k_gamma_rmse": {
+            "confidence_interval": [
+              3.357901980119688e+18,
+              6.198392195064494e+18
+            ],
+            "paired_p_value": 9.999000099990002e-05,
+            "relative_percent_change": -68.3921424325438,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "masked_pde_residual_mean_abs": {
+            "confidence_interval": [
+              -0.004128651229181076,
+              0.002674339580233089
+            ],
+            "paired_p_value": 0.7386261373862614,
+            "relative_percent_change": 4.576206598327799,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "price_rmse": {
+            "confidence_interval": [
+              -0.0002304011505528121,
+              0.00046537461235818413
+            ],
+            "paired_p_value": 0.7615238476152385,
+            "relative_percent_change": -0.39718375101222203,
+            "scenario_count": 5,
+            "status": "defined"
+          }
+        },
+        "missing_diagnostics": [
+          "boundary_rmse"
+        ],
+        "obstacle": {
+          "max_obstacle_violation": 0.0,
+          "passes": true,
+          "status": "defined"
+        },
+        "primary_price_holm": {
+          "adjusted_p_value": 0.7615238476152385,
+          "alpha": 0.05,
+          "raw_p_value": 0.7615238476152385,
+          "reject": false,
+          "status": "defined"
+        },
+        "raw_status": "insufficient_diagnostics",
+        "status": "insufficient_diagnostics"
+      },
+      "separate_complementarity": {
+        "claim_status": "diagnostic_only",
+        "gates": {
+          "masked_pde_residual_percent": 5.0,
+          "max_obstacle_violation": 1e-10,
+          "ordinary_metrics_percent": 2.0
+        },
+        "metrics": {
+          "boundary_rmse": {
+            "status": "unavailable"
+          },
+          "complementarity_product_mean_abs": {
+            "confidence_interval": [
+              2.9980155828635026e-06,
+              9.892424057513158e-05
+            ],
+            "paired_p_value": 0.044795520447955206,
+            "relative_percent_change": -62.456419186158406,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "delta_rmse": {
+            "confidence_interval": [
+              10940351.525269082,
+              20882860.865358282
+            ],
+            "paired_p_value": 9.999000099990002e-05,
+            "relative_percent_change": -217.61617853838385,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "dual_feasibility_violation_mean": {
+            "confidence_interval": [
+              -0.009831288298298083,
+              -0.0009896286872934348
+            ],
+            "paired_p_value": 0.009599040095990401,
+            "relative_percent_change": 71.36520403936444,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "k_gamma_rmse": {
+            "confidence_interval": [
+              9.992982374244086e+18,
+              1.9279306767067197e+19
+            ],
+            "paired_p_value": 9.999000099990002e-05,
+            "relative_percent_change": -212.1705635722496,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "masked_pde_residual_mean_abs": {
+            "confidence_interval": [
+              -0.0053274016116804,
+              -9.204196475891477e-05
+            ],
+            "paired_p_value": 0.0705929407059294,
+            "relative_percent_change": 19.48850144608522,
+            "scenario_count": 5,
+            "status": "defined"
+          },
+          "price_rmse": {
+            "confidence_interval": [
+              8.915054323132415e-05,
+              0.005388700767623218
+            ],
+            "paired_p_value": 0.053594640535946404,
+            "relative_percent_change": -14.070514631283826,
+            "scenario_count": 5,
+            "status": "defined"
+          }
+        },
+        "missing_diagnostics": [
+          "boundary_rmse"
+        ],
+        "obstacle": {
+          "max_obstacle_violation": 0.0,
+          "passes": true,
+          "status": "defined"
+        },
+        "primary_price_holm": {
+          "adjusted_p_value": 0.16078392160783922,
+          "alpha": 0.05,
+          "raw_p_value": 0.053594640535946404,
+          "reject": false,
+          "status": "defined"
+        },
+        "raw_status": "insufficient_diagnostics",
+        "status": "insufficient_diagnostics"
+      }
+    },
+    "elapsed_screen_seconds": 586.7359027499333,
+    "legacy_test_used_for_selection": false,
+    "primary_price_holm_alpha": 0.05,
+    "screen_budget_seconds": 3600,
+    "selection_split": "validation"
+  },
+  "provenance": {
+    "branch": "codex/m02-canonical-rerun",
+    "commit": "d6c1ff0b9ffd76205a8d94c6e165716d74846605"
+  },
+  "screen_budget_seconds": 3600,
+  "seeds": [
+    101,
+    203,
+    307,
+    409,
+    503
+  ],
+  "selection": {
+    "legacy_test": {
+      "regime_ids": [
+        "put_T1_sig0p4_r0p1_q0p06",
+        "put_T2_sig0p2_r0p05_q0",
+        "put_T0p25_sig0p4_r0p05_q0p06",
+        "put_T0p25_sig0p4_r0p01_q0p1",
+        "put_T0p25_sig0p6_r0p05_q0p1"
+      ],
+      "residual_regime_samples": {
+        "put_T0p25_sig0p4_r0p01_q0p1": 2048,
+        "put_T0p25_sig0p4_r0p05_q0p06": 2048,
+        "put_T0p25_sig0p6_r0p05_q0p1": 2048,
+        "put_T1_sig0p4_r0p1_q0p06": 2048,
+        "put_T2_sig0p2_r0p05_q0": 2048
+      },
+      "samples": 73205,
+      "vi_collocation_samples": 66700
+    },
+    "selection_seed": 2703,
+    "train": {
+      "regime_ids": [
+        "put_T0p25_sig0p4_r0p01_q0p03",
+        "put_T2_sig0p2_r0p01_q0",
+        "put_T2_sig0p4_r0p05_q0",
+        "put_T1_sig0p4_r0p1_q0",
+        "put_T0p5_sig0p2_r0p01_q0p03",
+        "put_T0p25_sig0p2_r0p01_q0p1",
+        "put_T1_sig0p6_r0p1_q0",
+        "put_T0p5_sig0p6_r0p1_q0p1",
+        "put_T0p25_sig0p2_r0p01_q0",
+        "put_T0p5_sig0p2_r0p05_q0p1"
+      ],
+      "residual_regime_samples": {},
+      "samples": 146410,
+      "vi_collocation_samples": 133400
+    },
+    "validation": {
+      "regime_ids": [
+        "put_T2_sig0p4_r0p05_q0p06",
+        "put_T0p25_sig0p2_r0p1_q0p1",
+        "put_T1_sig0p2_r0p01_q0p06",
+        "put_T0p25_sig0p6_r0p01_q0p06",
+        "put_T1_sig0p2_r0p1_q0"
+      ],
+      "residual_regime_samples": {
+        "put_T0p25_sig0p2_r0p1_q0p1": 2048,
+        "put_T0p25_sig0p6_r0p01_q0p06": 2048,
+        "put_T1_sig0p2_r0p01_q0p06": 2048,
+        "put_T1_sig0p2_r0p1_q0": 2048,
+        "put_T2_sig0p4_r0p05_q0p06": 2048
+      },
+      "samples": 73205,
+      "vi_collocation_samples": 66700
+    }
+  },
+  "split_names": [
+    "train",
+    "validation",
+    "legacy_test"
+  ],
+  "training": {
+    "batch_size": 8192,
+    "device": "cpu",
+    "dtype": "float64",
+    "epochs": 30,
+    "patience": 8
+  }
+}

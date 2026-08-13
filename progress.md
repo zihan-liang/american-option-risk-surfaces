@@ -28,12 +28,15 @@ This is the short current-session state file for agent continuity. The long rese
 ## In Progress
 
 - M01 classical oracle corrections after independent numerical review.
-- M02 obstacle-aware PINN implementation and contract refinement.
+- M02 obstacle-aware PINN is closed as `insufficient_diagnostics`; the
+  canonical five-seed run completed within budget, but required boundary RMSE
+  was unavailable for every method and no candidate passed the remaining gates.
 
 ## Next Step
 
 - Correct and re-review the M01 numerical issues before accepting oracle evidence.
-- Review the corrected M02 implementation, then run only its predeclared screening protocol.
+- Preserve M02 as a negative result and do not rerun it. Prepare the separate
+  HD0 Windows RTX 4060 precision/performance calibration before HD1.
 
 ## Blockers / Risks
 

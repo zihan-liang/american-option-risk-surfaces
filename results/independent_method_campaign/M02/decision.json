@@ -1,0 +1,32 @@
+{
+  "baseline_metric_value": 0.017479194233877747,
+  "blind_holdout_accessed": false,
+  "budget_exceeded": false,
+  "budget_seconds": 3600,
+  "claim_status": "diagnostic_only",
+  "decision_record": {
+    "baseline_metric_value": 0.017479194233877747,
+    "branch": "codex/m02-canonical-rerun",
+    "claim_status": "diagnostic_only",
+    "commit": "d6c1ff0b9ffd76205a8d94c6e165716d74846605",
+    "config_id": "m02_screen_decision",
+    "memory_mb": null,
+    "method_id": "M02",
+    "notes": "M02 aggregate validation decision; no blind holdout access.",
+    "optional_metrics": {},
+    "phase": "screen",
+    "primary_metric_value": 0.017479194233877747,
+    "scenario_count": 5,
+    "seed": null,
+    "split": "validation",
+    "status": "diagnostic_only",
+    "timings_seconds": {}
+  },
+  "elapsed_screen_seconds": 586.7359027499333,
+  "method_id": "M02",
+  "phase": "screen",
+  "primary_metric": "price_rmse",
+  "primary_metric_value": 0.017479194233877747,
+  "record_count": 21,
+  "status": "diagnostic_only"
+}

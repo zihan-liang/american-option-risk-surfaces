@@ -1,0 +1,122 @@
+{
+  "config": {
+    "batch_size": 8192,
+    "blind_holdout_accessed": false,
+    "bootstrap_iterations": 10000,
+    "bootstrap_seed": 2702,
+    "canonical_settings": {
+      "batch_size": 8192,
+      "collocation_cap": 8192,
+      "epochs": 30,
+      "legacy_test_cap": 75000,
+      "patience": 8,
+      "residual_eval_cap": 2048,
+      "seeds": [
+        101,
+        203,
+        307,
+        409,
+        503
+      ],
+      "timing_repetitions": 30,
+      "timing_validation_cap": 8192,
+      "timing_warmups": 5,
+      "train_cap": 150000,
+      "validation_cap": 75000
+    },
+    "collocation_cap": 8192,
+    "config_path": "configs/independent_m02_obstacle_pinn.yaml",
+    "dataset": "data/processed/surrogate_dataset.npz",
+    "depth": 3,
+    "device": "cpu",
+    "epochs": 30,
+    "evidence_run": true,
+    "fischer_burmeister_epsilon": 0.0001,
+    "gap_epsilon": 1e-05,
+    "gap_scale": 0.1,
+    "hidden": 128,
+    "lambda_complementarity": 1.0,
+    "lambda_dual": 1.0,
+    "lambda_fischer_burmeister": 1.0,
+    "lambda_masked_pde": 1.0,
+    "learning_rate": 0.001,
+    "legacy_test_cap": 75000,
+    "mode": "canonical",
+    "obstacle_tolerance": 1e-10,
+    "option_scope": "put",
+    "output_root": "results/independent_method_campaign/M02",
+    "patience": 8,
+    "premium_boundary_threshold": 0.001,
+    "residual_eval_cap": 2048,
+    "residual_scale": 1.0,
+    "screen_budget_seconds": 3600,
+    "seeds": [
+      101,
+      203,
+      307,
+      409,
+      503
+    ],
+    "selection_seed": 2703,
+    "smoke_settings": {
+      "batch_size": 16384,
+      "bootstrap_iterations": 200,
+      "collocation_cap": 64,
+      "depth": 1,
+      "epochs": 1,
+      "hidden": 8,
+      "legacy_test_cap": 14641,
+      "patience": 1,
+      "residual_eval_cap": 64,
+      "seeds": [
+        101
+      ],
+      "timing_repetitions": 1,
+      "timing_validation_cap": 256,
+      "timing_warmups": 0,
+      "train_cap": 14641,
+      "validation_cap": 14641
+    },
+    "tau_min_for_pde": 0.05,
+    "timing_repetitions": 30,
+    "timing_validation_cap": 8192,
+    "timing_warmups": 5,
+    "train_cap": 150000,
+    "training_dtype": "float64",
+    "validation_cap": 75000
+  },
+  "config_sha256": "0424ed3860591e3b21f6d516a3e0e912541dbc20c21911be445be98a12182b62",
+  "method_spec": {
+    "baseline": "Supervised positive-premium surrogate",
+    "category": "surrogate_compression",
+    "confirmation_budget_seconds": 21600,
+    "gates": [
+      "Obstacle violation is at most 1e-10.",
+      "Price and diagnostic degradation is no more than 2%."
+    ],
+    "method_id": "M02",
+    "metric_direction": "lower_is_better",
+    "name": "Obstacle-aware PINN",
+    "predeclared_configurations": [
+      "supervised",
+      "masked_pde",
+      "separate_complementarity",
+      "fischer_burmeister"
+    ],
+    "primary_metric": "price_rmse",
+    "required_outputs": [
+      "config_manifest.json",
+      "run_metrics.csv",
+      "decision.json",
+      "artifact_hashes.json",
+      "training_history.csv"
+    ],
+    "scope": "Compare supervised, masked-PDE, separate complementarity, and Fischer--Burmeister losses using the same positive-premium architecture.",
+    "screen_budget_seconds": 3600,
+    "stochastic": true
+  },
+  "provenance": {
+    "branch": "codex/m02-canonical-rerun",
+    "commit": "d6c1ff0b9ffd76205a8d94c6e165716d74846605"
+  }
+}

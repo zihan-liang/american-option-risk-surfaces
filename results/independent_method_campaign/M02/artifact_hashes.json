@@ -1,0 +1,14 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "config_manifest.json": "eca65517e054aee87e44a51763bac647987424741507c0e5e735d5e211c3581b",
+    "decision.json": "481c7f6924339d8ce07af0dc0bf4fa1fb66172a81f9cdf234ddd467413a99aa9",
+    "m02_config_manifest.json": "669a276d87e7e9bbbc30c50f22407a3d94068d777f18810743587fb5f2c338ac",
+    "m02_metrics_by_regime.csv": "eb36561be030be56854904b5c2f0e0502bd7f08f8f424cc4f4bdf1485b9996b0",
+    "m02_promotion.json": "7535831dfffecfd70c9112dfdcd5ee41f336ed0573e0553ee04f9892d6eff05f",
+    "m02_summary.json": "ca39a024678431d19bf9ad90516447c6d00b6c0554328d9a99020ad0ac06cf0c",
+    "m02_training_history.csv": "178bfd7c05f0fbb73766579eb78e14d97044ea9cdfcd3000fc7051e4cb9e45e0",
+    "run_metrics.csv": "3ea431c9fc79eb9e2a4d33fa74e7e4df114c530a84ab0bb90695896d4c6b3806",
+    "training_history.csv": "3e018f78257ac0e8b4608dc9258f4c4fdb398432e8686a71635a1f85cd8604d5"
+  }
+}

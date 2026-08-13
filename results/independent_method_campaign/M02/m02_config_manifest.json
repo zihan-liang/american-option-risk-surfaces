@@ -1,0 +1,156 @@
+{
+  "config": {
+    "batch_size": 8192,
+    "bootstrap_iterations": 10000,
+    "bootstrap_seed": 2702,
+    "canonical_settings": {
+      "batch_size": 8192,
+      "collocation_cap": 8192,
+      "epochs": 30,
+      "legacy_test_cap": 75000,
+      "patience": 8,
+      "residual_eval_cap": 2048,
+      "seeds": [
+        101,
+        203,
+        307,
+        409,
+        503
+      ],
+      "timing_repetitions": 30,
+      "timing_validation_cap": 8192,
+      "timing_warmups": 5,
+      "train_cap": 150000,
+      "validation_cap": 75000
+    },
+    "collocation_cap": 8192,
+    "dataset": "data/processed/surrogate_dataset.npz",
+    "depth": 3,
+    "device": "cpu",
+    "epochs": 30,
+    "evidence_run": true,
+    "fischer_burmeister_epsilon": 0.0001,
+    "gap_epsilon": 1e-05,
+    "gap_scale": 0.1,
+    "hidden": 128,
+    "lambda_complementarity": 1.0,
+    "lambda_dual": 1.0,
+    "lambda_fischer_burmeister": 1.0,
+    "lambda_masked_pde": 1.0,
+    "learning_rate": 0.001,
+    "legacy_test_cap": 75000,
+    "mode": "canonical",
+    "obstacle_tolerance": 1e-10,
+    "option_scope": "put",
+    "output_root": "results/independent_method_campaign/M02",
+    "patience": 8,
+    "premium_boundary_threshold": 0.001,
+    "residual_eval_cap": 2048,
+    "residual_scale": 1.0,
+    "screen_budget_seconds": 3600,
+    "seeds": [
+      101,
+      203,
+      307,
+      409,
+      503
+    ],
+    "selection_seed": 2703,
+    "smoke_settings": {
+      "batch_size": 16384,
+      "bootstrap_iterations": 200,
+      "collocation_cap": 64,
+      "depth": 1,
+      "epochs": 1,
+      "hidden": 8,
+      "legacy_test_cap": 14641,
+      "patience": 1,
+      "residual_eval_cap": 64,
+      "seeds": [
+        101
+      ],
+      "timing_repetitions": 1,
+      "timing_validation_cap": 256,
+      "timing_warmups": 0,
+      "train_cap": 14641,
+      "validation_cap": 14641
+    },
+    "tau_min_for_pde": 0.05,
+    "timing_repetitions": 30,
+    "timing_validation_cap": 8192,
+    "timing_warmups": 5,
+    "train_cap": 150000,
+    "training_dtype": "float64",
+    "validation_cap": 75000
+  },
+  "domain_boundary_samples": 53966,
+  "mask_counts": {
+    "domain_boundary": 53966,
+    "masked_pde": 693161,
+    "near_zero_spot": 53966,
+    "valid_vi": 1654160
+  },
+  "masked_pde_total_samples": 693161,
+  "near_zero_spot_samples": 53966,
+  "provenance": {
+    "branch": "codex/m02-canonical-rerun",
+    "commit": "d6c1ff0b9ffd76205a8d94c6e165716d74846605"
+  },
+  "selection": {
+    "legacy_test": {
+      "regime_ids": [
+        "put_T1_sig0p4_r0p1_q0p06",
+        "put_T2_sig0p2_r0p05_q0",
+        "put_T0p25_sig0p4_r0p05_q0p06",
+        "put_T0p25_sig0p4_r0p01_q0p1",
+        "put_T0p25_sig0p6_r0p05_q0p1"
+      ],
+      "residual_regime_samples": {
+        "put_T0p25_sig0p4_r0p01_q0p1": 2048,
+        "put_T0p25_sig0p4_r0p05_q0p06": 2048,
+        "put_T0p25_sig0p6_r0p05_q0p1": 2048,
+        "put_T1_sig0p4_r0p1_q0p06": 2048,
+        "put_T2_sig0p2_r0p05_q0": 2048
+      },
+      "samples": 73205,
+      "vi_collocation_samples": 66700
+    },
+    "selection_seed": 2703,
+    "train": {
+      "regime_ids": [
+        "put_T0p25_sig0p4_r0p01_q0p03",
+        "put_T2_sig0p2_r0p01_q0",
+        "put_T2_sig0p4_r0p05_q0",
+        "put_T1_sig0p4_r0p1_q0",
+        "put_T0p5_sig0p2_r0p01_q0p03",
+        "put_T0p25_sig0p2_r0p01_q0p1",
+        "put_T1_sig0p6_r0p1_q0",
+        "put_T0p5_sig0p6_r0p1_q0p1",
+        "put_T0p25_sig0p2_r0p01_q0",
+        "put_T0p5_sig0p2_r0p05_q0p1"
+      ],
+      "residual_regime_samples": {},
+      "samples": 146410,
+      "vi_collocation_samples": 133400
+    },
+    "validation": {
+      "regime_ids": [
+        "put_T2_sig0p4_r0p05_q0p06",
+        "put_T0p25_sig0p2_r0p1_q0p1",
+        "put_T1_sig0p2_r0p01_q0p06",
+        "put_T0p25_sig0p6_r0p01_q0p06",
+        "put_T1_sig0p2_r0p1_q0"
+      ],
+      "residual_regime_samples": {
+        "put_T0p25_sig0p2_r0p1_q0p1": 2048,
+        "put_T0p25_sig0p6_r0p01_q0p06": 2048,
+        "put_T1_sig0p2_r0p01_q0p06": 2048,
+        "put_T1_sig0p2_r0p1_q0": 2048,
+        "put_T2_sig0p4_r0p05_q0p06": 2048
+      },
+      "samples": 73205,
+      "vi_collocation_samples": 66700
+    }
+  },
+  "vi_collocation_total_samples": 1654160
+}

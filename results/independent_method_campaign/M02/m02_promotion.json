@@ -1,0 +1,280 @@
+{
+  "budget_exceeded": false,
+  "comparisons": {
+    "fischer_burmeister": {
+      "claim_status": "diagnostic_only",
+      "gates": {
+        "masked_pde_residual_percent": 5.0,
+        "max_obstacle_violation": 1e-10,
+        "ordinary_metrics_percent": 2.0
+      },
+      "metrics": {
+        "boundary_rmse": {
+          "status": "unavailable"
+        },
+        "complementarity_product_mean_abs": {
+          "confidence_interval": [
+            -4.7934050330161776e-05,
+            -1.2506572821562197e-05
+          ],
+          "paired_p_value": 0.0007999200079992001,
+          "relative_percent_change": 40.70467643377263,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "delta_rmse": {
+          "confidence_interval": [
+            -1599067.0722553316,
+            -764894.8518614508
+          ],
+          "paired_p_value": 9.999000099990002e-05,
+          "relative_percent_change": 15.747224179652383,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "dual_feasibility_violation_mean": {
+          "confidence_interval": [
+            -0.010423478138079707,
+            -0.00100265557788228
+          ],
+          "paired_p_value": 0.009599040095990401,
+          "relative_percent_change": 74.36654704403229,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "k_gamma_rmse": {
+          "confidence_interval": [
+            -1.318751306557127e+18,
+            -5.565405937852627e+17
+          ],
+          "paired_p_value": 9.999000099990002e-05,
+          "relative_percent_change": 13.13454237788675,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "masked_pde_residual_mean_abs": {
+          "confidence_interval": [
+            -0.0048492426877008955,
+            0.00015086395309196586
+          ],
+          "paired_p_value": 0.15648435156484353,
+          "relative_percent_change": 15.499704839819719,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "price_rmse": {
+          "confidence_interval": [
+            -0.00039415122796201995,
+            0.00012327315772429713
+          ],
+          "paired_p_value": 0.2425757424257574,
+          "relative_percent_change": 0.8592517049719177,
+          "scenario_count": 5,
+          "status": "defined"
+        }
+      },
+      "missing_diagnostics": [
+        "boundary_rmse"
+      ],
+      "obstacle": {
+        "max_obstacle_violation": 0.0,
+        "passes": true,
+        "status": "defined"
+      },
+      "primary_price_holm": {
+        "adjusted_p_value": 0.4851514848515148,
+        "alpha": 0.05,
+        "raw_p_value": 0.2425757424257574,
+        "reject": false,
+        "status": "defined"
+      },
+      "raw_status": "insufficient_diagnostics",
+      "status": "insufficient_diagnostics"
+    },
+    "masked_pde": {
+      "claim_status": "diagnostic_only",
+      "gates": {
+        "masked_pde_residual_percent": 5.0,
+        "max_obstacle_violation": 1e-10,
+        "ordinary_metrics_percent": 2.0
+      },
+      "metrics": {
+        "boundary_rmse": {
+          "status": "unavailable"
+        },
+        "complementarity_product_mean_abs": {
+          "confidence_interval": [
+            -1.9701721465966342e-05,
+            2.033188042390657e-05
+          ],
+          "paired_p_value": 0.8268173182681732,
+          "relative_percent_change": -3.103230571384348,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "delta_rmse": {
+          "confidence_interval": [
+            3736653.1494478188,
+            6853001.419330587
+          ],
+          "paired_p_value": 9.999000099990002e-05,
+          "relative_percent_change": -71.61927562934152,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "dual_feasibility_violation_mean": {
+          "confidence_interval": [
+            -0.01085224988676484,
+            -0.0010352018018718713
+          ],
+          "paired_p_value": 0.009599040095990401,
+          "relative_percent_change": 76.66242830347953,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "k_gamma_rmse": {
+          "confidence_interval": [
+            3.357901980119688e+18,
+            6.198392195064494e+18
+          ],
+          "paired_p_value": 9.999000099990002e-05,
+          "relative_percent_change": -68.3921424325438,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "masked_pde_residual_mean_abs": {
+          "confidence_interval": [
+            -0.004128651229181076,
+            0.002674339580233089
+          ],
+          "paired_p_value": 0.7386261373862614,
+          "relative_percent_change": 4.576206598327799,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "price_rmse": {
+          "confidence_interval": [
+            -0.0002304011505528121,
+            0.00046537461235818413
+          ],
+          "paired_p_value": 0.7615238476152385,
+          "relative_percent_change": -0.39718375101222203,
+          "scenario_count": 5,
+          "status": "defined"
+        }
+      },
+      "missing_diagnostics": [
+        "boundary_rmse"
+      ],
+      "obstacle": {
+        "max_obstacle_violation": 0.0,
+        "passes": true,
+        "status": "defined"
+      },
+      "primary_price_holm": {
+        "adjusted_p_value": 0.7615238476152385,
+        "alpha": 0.05,
+        "raw_p_value": 0.7615238476152385,
+        "reject": false,
+        "status": "defined"
+      },
+      "raw_status": "insufficient_diagnostics",
+      "status": "insufficient_diagnostics"
+    },
+    "separate_complementarity": {
+      "claim_status": "diagnostic_only",
+      "gates": {
+        "masked_pde_residual_percent": 5.0,
+        "max_obstacle_violation": 1e-10,
+        "ordinary_metrics_percent": 2.0
+      },
+      "metrics": {
+        "boundary_rmse": {
+          "status": "unavailable"
+        },
+        "complementarity_product_mean_abs": {
+          "confidence_interval": [
+            2.9980155828635026e-06,
+            9.892424057513158e-05
+          ],
+          "paired_p_value": 0.044795520447955206,
+          "relative_percent_change": -62.456419186158406,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "delta_rmse": {
+          "confidence_interval": [
+            10940351.525269082,
+            20882860.865358282
+          ],
+          "paired_p_value": 9.999000099990002e-05,
+          "relative_percent_change": -217.61617853838385,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "dual_feasibility_violation_mean": {
+          "confidence_interval": [
+            -0.009831288298298083,
+            -0.0009896286872934348
+          ],
+          "paired_p_value": 0.009599040095990401,
+          "relative_percent_change": 71.36520403936444,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "k_gamma_rmse": {
+          "confidence_interval": [
+            9.992982374244086e+18,
+            1.9279306767067197e+19
+          ],
+          "paired_p_value": 9.999000099990002e-05,
+          "relative_percent_change": -212.1705635722496,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "masked_pde_residual_mean_abs": {
+          "confidence_interval": [
+            -0.0053274016116804,
+            -9.204196475891477e-05
+          ],
+          "paired_p_value": 0.0705929407059294,
+          "relative_percent_change": 19.48850144608522,
+          "scenario_count": 5,
+          "status": "defined"
+        },
+        "price_rmse": {
+          "confidence_interval": [
+            8.915054323132415e-05,
+            0.005388700767623218
+          ],
+          "paired_p_value": 0.053594640535946404,
+          "relative_percent_change": -14.070514631283826,
+          "scenario_count": 5,
+          "status": "defined"
+        }
+      },
+      "missing_diagnostics": [
+        "boundary_rmse"
+      ],
+      "obstacle": {
+        "max_obstacle_violation": 0.0,
+        "passes": true,
+        "status": "defined"
+      },
+      "primary_price_holm": {
+        "adjusted_p_value": 0.16078392160783922,
+        "alpha": 0.05,
+        "raw_p_value": 0.053594640535946404,
+        "reject": false,
+        "status": "defined"
+      },
+      "raw_status": "insufficient_diagnostics",
+      "status": "insufficient_diagnostics"
+    }
+  },
+  "elapsed_screen_seconds": 586.7359027499333,
+  "legacy_test_used_for_selection": false,
+  "primary_price_holm_alpha": 0.05,
+  "screen_budget_seconds": 3600,
+  "selection_split": "validation"
+}
