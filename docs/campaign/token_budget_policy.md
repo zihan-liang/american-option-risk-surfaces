@@ -85,6 +85,49 @@ available, the worker explicitly reports that limitation and asks the user to
 relay the compact report. A callback does not authorize a rerun, scope expansion,
 push, merge, or follow-on phase.
 
+## Low-Overhead Coordination
+
+Worker callbacks are the normal synchronization mechanism. Once a worker has
+accepted a task, the manager does not poll its transcript, issue shell `sleep`
+commands, or repeatedly ask for status. Waiting consumes little computation by
+itself, but every polling call and returned transcript enlarges the manager's
+context and consumes Codex usage.
+
+The manager follows these rules:
+
+1. Send one bounded assignment containing the callback requirement.
+2. Continue independent local work, or return control to the user.
+3. Resume only when the worker sends a blocker or completion callback.
+4. Review the returned commit and artifacts directly instead of rereading the
+   worker's conversation history.
+5. If a callback is unexpectedly unavailable and an immediate decision is
+   necessary, take at most one compact status snapshot. Exclude tool outputs,
+   old turns, and the original long prompt.
+
+Routine progress messages are neither requested nor forwarded. A worker may
+write progress in its own task for the user, but only blocker and completion
+messages enter the manager task.
+
+Command output is bounded before execution. Prefer focused `rg`, `sed` ranges,
+`git diff --stat`, named tests, and compact JSON/CSV summaries. Redirect full
+training output to an ignored log and report only the command, exit status,
+elapsed time, and smallest relevant error excerpt. Do not request an entire
+test log or task transcript when a file, commit, or final status contains the
+needed evidence.
+
+Long numerical jobs do not keep an agent turn open. Run them locally with an
+explicit command and configuration, a log path, a recorded PID or process-
+identifying command, an exit-status file, and deterministic result/provenance
+paths. After launch, return control to the user. The manager inspects the exit
+status and final artifacts only after completion; it does not repeatedly reason
+over unchanged process state.
+
+If one method requires more than one implementation pass plus one focused
+review pass, or coordination begins consuming experiment-scale context, stop
+the phase. Record the unresolved issue and create a smaller follow-up packet.
+Do not continue by appending more repository history, logs, or repeated status
+snapshots to the same context.
+
 ## Work Unit
 
 One task handles one method and one phase only:
@@ -190,8 +233,8 @@ static review
 
 Canonical work is forbidden while an earlier stage is unresolved. Local scripts
 perform training, bootstrap, repeated timing, artifact hashing, and aggregation.
-The model should launch or monitor those programs without repeatedly reasoning
-over unchanged state.
+The model may prepare or launch those programs, but long runs follow the local
+job protocol above and are not monitored through repeated agent turns.
 
 ## Immediate Stop Conditions
 

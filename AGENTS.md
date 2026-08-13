@@ -79,12 +79,28 @@ If baseline verification fails, diagnose it before adding scope.
 
 - One task handles one method and one phase: design, implementation, smoke
   review, canonical run, or acceptance review.
+- Use callback-first coordination. After assigning work, wait for the worker's
+  blocker or completion message; do not run shell `sleep` commands or poll an
+  active task's transcript for routine progress.
+- Do not call `read_thread` on an active worker merely to check whether it has
+  finished. If a callback is unexpectedly unavailable and a decision cannot
+  wait, take at most one compact status snapshot without tool outputs or old
+  turns, then return control to the user.
 - Read the smallest relevant file set. Do not rescan the repository, all prior
   reports, or long task histories when a focused diff and method packet suffice.
+- Bound command output at its source with focused paths, `rg`, line ranges, and
+  small output limits. Keep full logs in ignored files and inspect only the
+  failing excerpt or final summary.
 - Use local programs for training, timing, bootstrap, hashing, and aggregation.
   The model should not repeatedly reason while a deterministic process runs.
+- Long numerical jobs run outside an active reasoning loop. Start them from a
+  local terminal with a log, PID, and exit-status file; return control to the
+  user and inspect artifacts only after the process finishes.
 - Run no more than one implementation pass and one focused review pass before
   returning to the user for a decision.
+- If diagnostic coordination or repeated review begins to consume experiment-
+  scale context, stop, record the exact blocker, and request a narrower next
+  phase instead of continuing to accumulate history.
 - Do not activate report-writing, visualization, or cleanup work during a
   numerical implementation phase unless the user explicitly requests it.
 - Completion messages must be compact: branch and commit, files changed,
@@ -212,7 +228,7 @@ Use narrower checks from `docs/harness/verification-matrix.md` for focused edits
 - Push only reviewed commits at meaningful checkpoints. Do not merge to `main`
   without the user's requested PR and acceptance workflow.
 
-## Definition Of Done
+## Definition of Done
 
 A feature is done only when all of these are true:
 
