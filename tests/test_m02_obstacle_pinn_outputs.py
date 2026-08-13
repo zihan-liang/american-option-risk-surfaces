@@ -278,6 +278,7 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
 
     def test_shared_cli_dispatches_m02_smoke(self):
         root = Path("results/test_m02_obstacle_pinn")
+        root.mkdir(parents=True, exist_ok=True)
         dataset = root / "cli_dataset.npz"
         features, labels, split, regime_key = _tiny_dataset()
         np.savez_compressed(
