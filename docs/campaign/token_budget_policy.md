@@ -27,12 +27,37 @@ needed, the manager provides the user with:
 2. Recommended model and reason.
 3. Repository or worktree absolute path.
 4. Required branch and accepted base commit.
-5. Files allowed to be read or modified.
-6. Complete prompt and expected artifacts.
-7. Stop conditions and test commands.
-8. Maximum response format and acceptance criteria.
+5. Short initialization prompt.
+6. Files allowed to be read or modified.
+7. Complete prompt and expected artifacts.
+8. Project Manager task ID for completion and blocker callbacks.
+9. Stop conditions and test commands.
+10. Maximum response format and acceptance criteria.
 
-The user-created task must begin with:
+Task creation has two stages. In stage one, the user creates the task with only
+this initialization prompt:
+
+```text
+Initialization only.
+
+Report:
+git rev-parse --show-toplevel
+git status --short --branch
+git rev-parse HEAD
+
+Do not read project files, modify files, run tests, or start the requested work.
+Wait for the full task prompt.
+```
+
+If the app displays `conversation not found`, the user must not resend the
+prompt or create a duplicate. Wait 10--20 seconds, return to the Codex Project
+or Recent list, locate the newly created task, and tell the manager `created`.
+The manager then inspects the task ID, worktree path, repository root, HEAD, and
+status. This avoids paying for a repeated full prompt and prevents work from
+starting on the wrong branch.
+
+In stage two, only after the manager accepts the initialization state, the user
+sends the full task prompt in the existing task. That task repeats:
 
 ```bash
 git rev-parse --show-toplevel
@@ -44,6 +69,21 @@ It must stop if the root is not `american-option-risk-surfaces`, if the assigned
 branch is not available, or if unrelated changes make the requested edit
 unsafe. It must not recreate project files in an accessible but unrelated
 directory.
+
+## Completion And Blocker Callback
+
+Every full task prompt includes the Project Manager task ID. If
+`send_message_to_thread` is available, the worker must proactively send the
+same compact report to the manager when either:
+
+- the task stops at a gate and needs a manager decision; or
+- the assigned phase is complete and ready for manager review.
+
+The worker also replies in its own task so the user can see the result. It does
+not send routine progress updates to the manager. If thread messaging is not
+available, the worker explicitly reports that limitation and asks the user to
+relay the compact report. A callback does not authorize a rerun, scope expansion,
+push, merge, or follow-on phase.
 
 ## Work Unit
 
@@ -228,18 +268,33 @@ Recommended model: <model and reason>
 Repository/worktree: <absolute path>
 Branch and accepted base: <branch> / <commit>
 Permitted files: <small explicit list>
+Project Manager task ID: <task id>
 
-Prompt:
+Stage 1 initialization prompt:
+Initialization only.
+
+Report:
+git rev-parse --show-toplevel
+git status --short --branch
+git rev-parse HEAD
+
+Do not read project files, modify files, run tests, or start the requested work.
+Wait for the full task prompt.
+
+Stage 2 full prompt, sent only after manager verification:
 Read AGENTS.md first. Verify the repository root, branch, HEAD, and status before
 working. Perform only <one method and one phase>. Do not create subagents or
 expand scope. Stop on any AGENTS.md experimental gate. Run <focused commands>.
 Return only the compact completion format from
-docs/campaign/token_budget_policy.md and notify the manager/user when finished.
+docs/campaign/token_budget_policy.md. If `send_message_to_thread` is available,
+send the same report to Project Manager task <task id> on a blocker or
+completion. Otherwise ask the user to relay it. Do not send routine progress
+updates to the manager.
 
 Acceptance criteria: <tests, metrics, artifacts, and scientific checks>
 Stop conditions: <phase-specific conditions>
 ```
 
-The manager does not send the prompt to a newly created task. The user creates
-the task in the correct repository context, assigns the recommended or chosen
-model, and pastes the prompt.
+The manager does not create the task or paste either prompt into a newly created
+task. The user creates it in the correct repository context, assigns the chosen
+model, pastes stage one, and sends stage two only after manager verification.
