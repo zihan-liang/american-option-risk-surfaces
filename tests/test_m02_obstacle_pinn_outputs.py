@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 import numpy as np
+import torch
 
 
 _EXPERIMENT_PATH = Path("experiments/27_m02_obstacle_aware_pinn.py")
@@ -248,6 +249,33 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
         self.assertEqual(promotion["status"], "insufficient_diagnostics")
         self.assertEqual(promotion["metrics"]["boundary_rmse"]["status"], "unavailable")
 
+    def test_normalized_quadratic_price_uses_log_space_chain_rule_for_greeks(self):
+        features = _greek_features([0.5, 0.8, 1.3])
+
+        _, delta, k_gamma = experiment._predict_price_delta_gamma(
+            _AnalyticPriceModel("quadratic"),
+            features,
+            device="cpu",
+            dtype=torch.float64,
+            batch_size=len(features),
+        )
+
+        self.assertTrue(np.allclose(delta, 2.0 * np.exp(features[:, 0]), atol=2.0e-5))
+        self.assertTrue(np.allclose(k_gamma, 2.0, atol=2.0e-5))
+
+    def test_linear_in_spot_price_has_zero_normalized_gamma(self):
+        features = _greek_features([0.5, 0.8, 1.3])
+
+        _, _, k_gamma = experiment._predict_price_delta_gamma(
+            _AnalyticPriceModel("linear"),
+            features,
+            device="cpu",
+            dtype=torch.float64,
+            batch_size=len(features),
+        )
+
+        self.assertTrue(np.allclose(k_gamma, 0.0, atol=2.0e-5))
+
     def test_shared_cli_dispatches_m02_smoke(self):
         root = Path("results/test_m02_obstacle_pinn")
         dataset = root / "cli_dataset.npz"
@@ -323,6 +351,30 @@ def _tiny_dataset():
     price = payoff + premium
     labels = np.column_stack([price, premium, payoff, np.zeros(n), np.zeros(n)])
     return features, labels, np.asarray(split), np.asarray(regime_key)
+
+
+class _AnalyticPriceModel(torch.nn.Module):
+    """Returns premium values that reconstruct the requested analytic price."""
+
+    def __init__(self, kind):
+        super().__init__()
+        self.kind = kind
+
+    def forward(self, features):
+        spot = torch.exp(features[:, 0])
+        payoff = torch.relu(1.0 - spot)
+        price = spot.square() if self.kind == "quadratic" else spot
+        return (price - payoff).unsqueeze(1)
+
+
+def _greek_features(spots):
+    features = np.zeros((len(spots), 7), dtype=np.float64)
+    features[:, 0] = np.log(spots)
+    features[:, 1] = 0.5
+    features[:, 2] = 0.05
+    features[:, 4] = 0.2
+    features[:, 5] = 1.0
+    return features
 
 
 def _promotion_cfg():

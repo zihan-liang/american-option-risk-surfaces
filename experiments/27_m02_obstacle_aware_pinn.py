@@ -47,6 +47,7 @@ PROMOTION_METRICS = (
     ("price_rmse", True, False),
     ("delta_rmse", False, False),
     ("k_gamma_rmse", False, False),
+    ("boundary_rmse", False, False),
     ("dual_feasibility_violation_mean", False, False),
     ("complementarity_product_mean_abs", False, False),
     ("masked_pde_residual_mean_abs", False, True),
@@ -486,10 +487,10 @@ def _predict_price_delta_gamma(model, features, *, device, dtype, batch_size):
     """Compute price, Delta, and K*Gamma via central finite differences.
 
     Autograd double-backward through payoff+premium is numerically unstable
-    for extreme S values (deep ITM/OTM, near-zero spot), because delta =
-    (dPrice/dx) / S and S can be ~1e-12.  Central finite differences in x
-    avoid the instability; the chain rule Delta = (dPrice/dx) / S handles
-    the cancellation analytically through the difference quotient.
+    for extreme S values (deep ITM/OTM, near-zero spot). Central finite
+    differences in x retain the normalized-price chain rule exactly:
+    Delta = p_x / s and K*Gamma = (p_xx - p_x) / s^2, where s = S/K.
+    No spot clamping is applied, because it would change these derivatives.
     """
     import torch
 
@@ -529,19 +530,12 @@ def _predict_price_delta_gamma(model, features, *, device, dtype, batch_size):
         price_plus = payoff_plus + price_plus
         price_minus = payoff_minus + price_minus
 
-        # Delta = (price(x+h) - price(x-h)) / (2h * S)
-        # For deep ITM put: price(x+h) ≈ 1-exp(x+h), price(x-h) ≈ 1-exp(x-h)
-        #   ≈ (exp(x-h) - exp(x+h)) / (2h*S) = S*(exp(-h)-exp(h)) / (2h*S)
-        #   ≈ S*(-2h) / (2h*S) = -1  (cancellation is analytical)
-        # Guard denominator: for S/K < 1e-3 the analytical Delta is
-        # well-known (-1 for ITM put, 0 for OTM, etc.) but finite
-        # differences amplify model noise by 1/S.  Clamping keeps the
-        # computation numerically stable while preserving the correct sign.
-        spot_safe = torch.clamp(spot, min=1e-3)
-        delta_fd = (price_plus - price_minus) / (2.0 * _h * spot_safe)
-
-        # Gamma = (price(x+h) - 2*price(x) + price(x-h)) / (h^2 * S^2)
-        gamma_fd = (price_plus - 2.0 * price + price_minus) / (_h * _h * spot_safe.square())
+        # p_x and p_xx are finite differences in x = log(S/K).  The
+        # conversion to financial Greeks must retain the -p_x term in Gamma.
+        p_x = (price_plus - price_minus) / (2.0 * _h)
+        p_xx = (price_plus - 2.0 * price + price_minus) / (_h * _h)
+        delta_fd = p_x / spot
+        gamma_fd = (p_xx - p_x) / spot.square()
 
         prices.append(price.cpu().numpy())
         deltas.append(delta_fd.cpu().numpy())
