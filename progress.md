@@ -27,16 +27,19 @@ This is the short current-session state file for agent continuity. The long rese
 
 ## In Progress
 
-- M01 classical oracle corrections after independent numerical review.
+- M01 reviewed implementation is integrated; a clean-provenance canonical
+  rerun is required because the historical artifacts were generated from
+  uncommitted code and record parent commit `bc2b4a0`.
 - M02 obstacle-aware PINN is closed as `insufficient_diagnostics`; the
   canonical five-seed run completed within budget, but required boundary RMSE
   was unavailable for every method and no candidate passed the remaining gates.
 
 ## Next Step
 
-- Correct and re-review the M01 numerical issues before accepting oracle evidence.
-- Preserve M02 as a negative result and do not rerun it. Prepare the separate
-  HD0 Windows RTX 4060 precision/performance calibration before HD1.
+- Run and inspect one clean M01 canonical screen from the committed integration
+  state. Preserve M02 as a negative result and do not rerun it.
+- HD0/HD1 are `deferred` until the independent M01--M24 campaign is complete;
+  they are not failed, resource-blocked, or part of the campaign scoreboard.
 
 ## Blockers / Risks
 
