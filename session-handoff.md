@@ -3,9 +3,9 @@
 ## Current Objective
 
 - Goal: execute the approved independent 24-method experiment campaign and produce a bilingual comparison report.
-- Current status: Wave 0 campaign foundation complete; M02 is closed as
-  `insufficient_diagnostics`; M01 is the active acceptance task. HD0/HD1 are
-  deferred until M01--M24 finish.
+- Current status: Wave 0 campaign foundation complete; M01 is accepted with
+  `cn_policy_iteration` as a scoped candidate, M02 is closed as
+  `insufficient_diagnostics`, and M03 is next. HD0/HD1 remain deferred.
 - Branch: `campaign/independent-methods`.
 - Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/campaign-independent-methods`.
 
@@ -89,6 +89,7 @@
 
 ## Recommended Next Step
 
-Do not rerun M02. Run one clean-provenance M01 canonical screen from the
-committed integration branch, verify its compact artifacts, and then continue
-to M03. Keep HD0/HD1 deferred and outside the campaign scoreboard.
+Do not rerun M01 or M02. Start with a focused review of M03 algorithm unrolling
+and run its canonical screen only if the implementation, cleanup timing, and
+natural-residual gates pass. Keep HD0/HD1 deferred and outside the campaign
+scoreboard.

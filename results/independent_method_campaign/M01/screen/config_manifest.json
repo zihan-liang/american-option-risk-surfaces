@@ -1,0 +1,231 @@
+{
+  "config": {
+    "analytic_controls": {
+      "m": 120,
+      "n": 120
+    },
+    "blind_holdout_accessed": false,
+    "bootstrap": {
+      "iterations": 10000,
+      "seed": 2401
+    },
+    "common": {
+      "american": true,
+      "k": 1.0,
+      "m": 120,
+      "max_iter": 20000,
+      "n": 120,
+      "omega": 1.2,
+      "option_type": "put",
+      "q": 0.0,
+      "r": 0.05,
+      "s_max": 4.0,
+      "sigma": 0.2,
+      "t": 1.0,
+      "tol": 1e-10
+    },
+    "config_path": "configs/independent_m01_classical.yaml",
+    "evidence_status": "candidate_supported",
+    "gates": {
+      "familywise_alpha": 0.05,
+      "hard_obstacle_tolerance": 1e-10,
+      "ordinary_no_regression_percent": 2.0,
+      "practical_improvement_percent": 2.0,
+      "residual_no_regression_percent": 5.0
+    },
+    "git_branch": "campaign/independent-methods",
+    "git_commit": "4c07a8caaa95535458b469d4235e5ca19d810069",
+    "grid_refinement": {
+      "grids": [
+        40,
+        80,
+        120
+      ]
+    },
+    "integral_boundary": {
+      "steps": 160
+    },
+    "method_id": "M01",
+    "methods": [
+      {
+        "config_id": "cn_psor",
+        "lcp_solver": "psor",
+        "rannacher_steps": 0,
+        "time_scheme": "cn"
+      },
+      {
+        "config_id": "rannacher_cn_psor",
+        "lcp_solver": "psor",
+        "rannacher_steps": 2,
+        "time_scheme": "rannacher_cn"
+      },
+      {
+        "config_id": "dirk_psor",
+        "lcp_solver": "psor",
+        "rannacher_steps": 0,
+        "time_scheme": "sdirk2"
+      },
+      {
+        "config_id": "cn_policy_iteration",
+        "lcp_solver": "policy_iteration",
+        "rannacher_steps": 0,
+        "time_scheme": "cn"
+      },
+      {
+        "config_id": "cn_penalty_newton",
+        "lcp_solver": "penalty_newton",
+        "penalty": 10000000000.0,
+        "rannacher_steps": 0,
+        "time_scheme": "cn"
+      }
+    ],
+    "output_root": "results/independent_method_campaign/M01/screen",
+    "phase": "screen",
+    "reference": {
+      "lcp_solver": "policy_iteration",
+      "m": 240,
+      "n": 240,
+      "rannacher_steps": 2,
+      "time_scheme": "rannacher_cn"
+    },
+    "regimes": [
+      {
+        "q": 0.0,
+        "r": 0.01,
+        "scenario_id": "put_T0p25_sig0p10_r0p01_q0",
+        "sigma": 0.1,
+        "t": 0.25
+      },
+      {
+        "q": -0.016,
+        "r": -0.012,
+        "scenario_id": "put_T1p00_sig0p10_rm0p012_qm0p016",
+        "sigma": 0.1,
+        "t": 1.0
+      },
+      {
+        "q": 0.0,
+        "r": 0.05,
+        "scenario_id": "put_T0p25_sig0p40_r0p05_q0",
+        "sigma": 0.4,
+        "t": 0.25
+      },
+      {
+        "q": 0.02,
+        "r": 0.03,
+        "scenario_id": "put_T0p50_sig0p20_r0p03_q0p02",
+        "sigma": 0.2,
+        "t": 0.5
+      },
+      {
+        "q": 0.0,
+        "r": 0.1,
+        "scenario_id": "put_T0p50_sig0p80_r0p10_q0",
+        "sigma": 0.8,
+        "t": 0.5
+      },
+      {
+        "q": 0.0,
+        "r": 0.05,
+        "scenario_id": "put_T1p00_sig0p20_r0p05_q0",
+        "sigma": 0.2,
+        "t": 1.0
+      },
+      {
+        "q": 0.04,
+        "r": 0.01,
+        "scenario_id": "put_T1p00_sig0p40_r0p01_q0p04",
+        "sigma": 0.4,
+        "t": 1.0
+      },
+      {
+        "q": 0.03,
+        "r": 0.1,
+        "scenario_id": "put_T2p00_sig0p20_r0p10_q0p03",
+        "sigma": 0.2,
+        "t": 2.0
+      },
+      {
+        "q": 0.0,
+        "r": 0.05,
+        "scenario_id": "put_T2p00_sig0p60_r0p05_q0",
+        "sigma": 0.6,
+        "t": 2.0
+      }
+    ],
+    "region": {
+      "boundary_width_over_k": 0.03,
+      "kink_width_over_k": 0.03,
+      "s_max_over_k": 1.8,
+      "s_min_over_k": 0.4
+    },
+    "resource_accounting": {
+      "budget_exceeded": false,
+      "comparison_refinement_elapsed_seconds": 31.86299308168236,
+      "control_generation_elapsed_seconds": 39.44940133392811,
+      "deterministic_timing_elapsed_seconds": 160.75766958179884,
+      "memory_mb": 91.0625,
+      "memory_measure": "process_peak_rss",
+      "screen_budget_seconds": 3600,
+      "timing_repetitions": 30,
+      "timing_warmups": 5,
+      "total_screen_elapsed_seconds": 232.10463241604157,
+      "training_cost_status": "not_applicable_no_trainable_model",
+      "training_elapsed_seconds": 0.0
+    },
+    "run_mode": "canonical_screen",
+    "smoke": {
+      "bootstrap_iterations": 200,
+      "common_grid": 24,
+      "grid_refinement_grids": [
+        12,
+        24
+      ],
+      "integral_steps": 24,
+      "reference_grid": 48,
+      "regime_count": 2,
+      "timing_grid": 20,
+      "timing_repetitions": 2,
+      "timing_warmups": 0
+    },
+    "timing": {
+      "m": 80,
+      "n": 80,
+      "repetitions": 30,
+      "warmups": 5
+    }
+  },
+  "config_sha256": "70ee9a28e59adad0a7cc1170c7130dc8d1d68cba72e4b6a02ef304f34cd3120b",
+  "method_spec": {
+    "baseline": "CN/PSOR",
+    "category": "solver_accelerator",
+    "confirmation_budget_seconds": 21600,
+    "gates": [
+      "Pass grid refinement, European analytic controls, no-dividend American-call equivalence, and applicable independent boundary checks."
+    ],
+    "method_id": "M01",
+    "metric_direction": "lower_is_better",
+    "name": "Classical solvers",
+    "predeclared_configurations": [
+      "cn_psor",
+      "rannacher_cn_psor",
+      "dirk_psor",
+      "cn_policy_iteration",
+      "cn_penalty_newton"
+    ],
+    "primary_metric": "wall_time_seconds_at_fixed_accuracy",
+    "required_outputs": [
+      "config_manifest.json",
+      "run_metrics.csv",
+      "decision.json",
+      "artifact_hashes.json"
+    ],
+    "scope": "Compare CN, Rannacher-CN, and the chosen L-stable obstacle discretization with PSOR, policy iteration, and penalty/Newton one factor at a time.",
+    "screen_budget_seconds": 3600,
+    "stochastic": false
+  },
+  "provenance": {
+    "branch": "campaign/independent-methods",
+    "commit": "4c07a8caaa95535458b469d4235e5ca19d810069"
+  }
+}

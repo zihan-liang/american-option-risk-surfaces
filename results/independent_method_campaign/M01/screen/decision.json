@@ -1,0 +1,51 @@
+{
+  "baseline_metric_value": 0.14314841670501563,
+  "claim_status": "candidate_supported",
+  "decision_record": {
+    "baseline_metric_value": 0.14314841670501563,
+    "branch": "campaign/independent-methods",
+    "claim_status": "candidate_supported",
+    "commit": "4c07a8caaa95535458b469d4235e5ca19d810069",
+    "config_id": "cn_policy_iteration",
+    "memory_mb": 91.0625,
+    "method_id": "M01",
+    "notes": "One-factor M01 screen.",
+    "optional_metrics": {
+      "all_relevant_hard_lcp_converged": 1.0,
+      "boundary_rmse": null,
+      "delta_rmse": 0.001044099209432042,
+      "gamma_rmse": 0.08697552561365657,
+      "max_complementarity_error": 1.3131156465406887e-17,
+      "max_lcp_natural_residual": 6.06898341976902e-11,
+      "max_obstacle_violation": 2.726239951471142e-27,
+      "price_rmse": 9.034395106995704e-05,
+      "timing_holm_adjusted_p_value": 0.030396960303969604,
+      "timing_holm_reject": 1.0,
+      "timing_paired_ci_high": -0.060540508859816745,
+      "timing_paired_ci_low": -0.25163436908381603,
+      "timing_paired_mean_difference": -0.13571247008965454,
+      "timing_raw_p_value": 0.015198480151984802,
+      "timing_relative_improvement_percent": 94.80542866870525
+    },
+    "phase": "screen",
+    "primary_metric_value": 0.007435946615361091,
+    "scenario_count": 9,
+    "seed": null,
+    "split": "validation_controls",
+    "status": "completed",
+    "timings_seconds": {
+      "comparison_refinement": 31.86299308168236,
+      "deterministic_timing": 160.75766958179884,
+      "median_solve": 0.007435946615361091,
+      "preprocessing_controls": 39.44940133392811,
+      "total_screen": 232.10463241604157,
+      "training": 0.0
+    }
+  },
+  "method_id": "M01",
+  "phase": "screen",
+  "primary_metric": "wall_time_seconds_at_fixed_accuracy",
+  "primary_metric_value": 0.007435946615361091,
+  "record_count": 5,
+  "status": "completed"
+}

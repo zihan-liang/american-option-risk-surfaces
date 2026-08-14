@@ -27,17 +27,17 @@ This is the short current-session state file for agent continuity. The long rese
 
 ## In Progress
 
-- M01 reviewed implementation is integrated; a clean-provenance canonical
-  rerun is required because the historical artifacts were generated from
-  uncommitted code and record parent commit `bc2b4a0`.
+- M01 is accepted with `cn_policy_iteration` as a scoped
+  `candidate_supported` result; penalty/Newton failed the natural-residual
+  gate, while Rannacher-CN and SDIRK2 remain diagnostic-only.
 - M02 obstacle-aware PINN is closed as `insufficient_diagnostics`; the
   canonical five-seed run completed within budget, but required boundary RMSE
   was unavailable for every method and no candidate passed the remaining gates.
 
 ## Next Step
 
-- Run and inspect one clean M01 canonical screen from the committed integration
-  state. Preserve M02 as a negative result and do not rerun it.
+- Preserve the accepted M01 and negative M02 evidence. Review and execute M03
+  algorithm unrolling as the next independent method.
 - HD0/HD1 are `deferred` until the independent M01--M24 campaign is complete;
   they are not failed, resource-blocked, or part of the campaign scoreboard.
 

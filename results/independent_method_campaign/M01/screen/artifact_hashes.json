@@ -1,0 +1,14 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "analytic_controls.csv": "4f8826407a88010bd667c9fc13cf65d05a99bdc157c161cfc033074cc4f47255",
+    "boundary_crosscheck.csv": "cc97e71d0f734f5d8c06a3419fb1aeff6dcc594d954e72b4bedfd9b8e2635c12",
+    "config_manifest.json": "82d0f496eb9f5e27a65a4118a6fc59f28e88dc9ab942a1e0cce39335fa5e6021",
+    "decision.json": "bd020d2657490565747b995f9b7fcfa4f96932721a2dd1182afc536ec00a5cf0",
+    "grid_refinement.csv": "eabaec66929910c74a3d9a83df8bf981be74e40693324db2fd0d3c68feb34bab",
+    "m01_summary.json": "05dc9a1c6fd3011b62e340877d087d07f202733e85584d73d016521136ce8f60",
+    "run_metrics.csv": "07dd6e3d788cf0c2010e0af379950dc600ab945d7eb17a509bb6714f80dc3ea6",
+    "solver_comparison.csv": "376aaf5481541f4082c61e2709ec754cd2e67865730946464de2f45a6cdd1429",
+    "timing_samples.csv": "965002d439a6e53aedfbdc9eee221cfd2bc8df3c180c7e2541d54464290e2016"
+  }
+}
