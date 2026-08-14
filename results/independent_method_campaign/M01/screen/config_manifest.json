@@ -34,7 +34,7 @@
       "residual_no_regression_percent": 5.0
     },
     "git_branch": "campaign/independent-methods",
-    "git_commit": "4c07a8caaa95535458b469d4235e5ca19d810069",
+    "git_commit": "df21b8a54763666a00c0fd05d4d602d3bab1bd30",
     "grid_refinement": {
       "grids": [
         40,
@@ -161,15 +161,15 @@
     },
     "resource_accounting": {
       "budget_exceeded": false,
-      "comparison_refinement_elapsed_seconds": 31.86299308168236,
-      "control_generation_elapsed_seconds": 39.44940133392811,
-      "deterministic_timing_elapsed_seconds": 160.75766958179884,
-      "memory_mb": 91.0625,
+      "comparison_refinement_elapsed_seconds": 31.814557284815237,
+      "control_generation_elapsed_seconds": 39.16526141704526,
+      "deterministic_timing_elapsed_seconds": 159.39194066333584,
+      "memory_mb": 81.75,
       "memory_measure": "process_peak_rss",
       "screen_budget_seconds": 3600,
       "timing_repetitions": 30,
       "timing_warmups": 5,
-      "total_screen_elapsed_seconds": 232.10463241604157,
+      "total_screen_elapsed_seconds": 230.39810937503353,
       "training_cost_status": "not_applicable_no_trainable_model",
       "training_elapsed_seconds": 0.0
     },
@@ -195,7 +195,7 @@
       "warmups": 5
     }
   },
-  "config_sha256": "70ee9a28e59adad0a7cc1170c7130dc8d1d68cba72e4b6a02ef304f34cd3120b",
+  "config_sha256": "85400f3d574efd053d9654aaa3989d844773a75b5ecf6fb2228b87e17c2c26fe",
   "method_spec": {
     "baseline": "CN/PSOR",
     "category": "solver_accelerator",
@@ -226,6 +226,6 @@
   },
   "provenance": {
     "branch": "campaign/independent-methods",
-    "commit": "4c07a8caaa95535458b469d4235e5ca19d810069"
+    "commit": "df21b8a54763666a00c0fd05d4d602d3bab1bd30"
   }
 }

@@ -13,9 +13,9 @@ continuous-PDE theorem.
 - Canonical screen on nine predeclared American-put regimes.
 - Clean committed provenance:
   `campaign/independent-methods` at
-  `4c07a8caaa95535458b469d4235e5ca19d810069`.
+  `df21b8a54763666a00c0fd05d4d602d3bab1bd30`.
 - Five timing warm-ups and 30 repetitions for every measured workload.
-- Total screen time `232.10463241604157` seconds, below the 3600-second budget.
+- Total screen time `230.39810937503353` seconds, below the 3600-second budget.
 - No blind-holdout access.
 - All artifact hashes match.
 - European analytic controls, applicable no-dividend American-call controls,
@@ -33,9 +33,9 @@ continuous-PDE theorem.
 | `cn_penalty_newton` | `failed_metric_gate` | Fast, but its natural residual violates the shared no-regression requirement. |
 
 For `cn_policy_iteration`, the median solve time is
-`0.007435946615361091` seconds versus `0.14314841670501563` seconds for
-CN/PSOR, a `94.80542866870525%` relative improvement. The paired timing
-difference interval is `[-0.25163436908381603, -0.060540508859816745]`
+`0.007312756937204136` seconds versus `0.14061326379629058` seconds for
+CN/PSOR, a `94.79938325889493%` relative improvement. The paired timing
+difference interval is `[-0.24570344548022452, -0.06008740873738943]`
 seconds and the Holm-adjusted p-value is `0.030396960303969604`.
 
 The selected candidate's mean price, Delta, and Gamma RMSE values are
