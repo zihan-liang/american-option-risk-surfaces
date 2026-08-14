@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build an auditable learned feasible warm-start screen against tuned PSOR at an identical natural-residual tolerance.
+**Goal:** Build an auditable learned feasible warm-start and PJOR-unrolling screen against tuned PSOR at an identical natural-residual tolerance.
 
 **Architecture:** Numerical and learning primitives live in `src/models/algorithm_unrolling.py`; complete-regime generation, training, validation selection, diagnostics, statistics, and evidence writing live in `src/campaign/m03.py`. The shared campaign CLI dispatches only M03 screen runs and leaves all other method scaffolds unchanged.
 

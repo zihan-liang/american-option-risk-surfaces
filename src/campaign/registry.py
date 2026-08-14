@@ -109,7 +109,7 @@ METHOD_REGISTRY: Mapping[str, MethodSpec] = {
         "Compare unrolled projected SOR or a learned feasible warm start with tuned PSOR at identical natural-residual tolerance, including cleanup timing.",
         MethodCategory.SOLVER_ACCELERATOR, "Tuned PSOR", "wall_time_seconds_at_fixed_natural_residual",
         MetricDirection.LOWER_IS_BETTER,
-        ("unrolled_projected_sor", "learned_feasible_warm_start"),
+        ("unrolled_projected_jacobi", "learned_feasible_warm_start"),
         ("Match the tuned-PSOR natural-residual tolerance.", "Include ordinary cleanup in timing."),
         stochastic=True,
     ),

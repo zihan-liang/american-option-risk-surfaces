@@ -28,7 +28,6 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--smoke", action="store_true", help="Run a reduced diagnostic, non-evidence screen when supported")
     parser.add_argument("--list-methods", action="store_true", help="List the fixed M01--M24 registry")
     parser.add_argument("--verify-all", action="store_true", help="Validate all registry entries")
-    parser.add_argument("--smoke", action="store_true", help="Run an explicitly non-evidence smoke configuration")
     return parser
 
 
@@ -49,8 +48,6 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             smoke=bool(args.smoke),
             config_overrides=config,
         )
-    if args.smoke:
-        raise ValueError("--smoke is currently implemented only for M03 screen")
     if not bool(config.get("dry_run", False)):
         return _dispatch_implemented_method(args)
 

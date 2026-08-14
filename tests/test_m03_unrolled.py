@@ -89,6 +89,10 @@ def test_trained_omegas_stay_in_valid_range():
         )
         assert isinstance(result, UnrolledOmegaResult)
         assert len(result.omegas) == K
+        assert len(result.history) == 10
+        assert {row["candidate_type"] for row in result.history} == {"pjor"}
+        assert {row["seed"] for row in result.history} == {42}
+        assert {row["unroll_depth"] for row in result.history} == {K}
         assert np.all(result.omegas > 0.0)
         assert np.all(result.omegas < 2.0)
         assert result.training_seconds >= 0.0

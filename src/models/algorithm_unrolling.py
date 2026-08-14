@@ -362,10 +362,21 @@ def solve_cn_lcp_surface(
                 fallback_reasons.append(str(warm.fallback_reason))
         elif unrolled_omegas is not None:
             inference_started = perf_counter()
-            initial_guess = project_feasible(previous, obstacle)
-            initial_guess = unrolled_projected_jacobi(
-                matrix, rhs, obstacle, unrolled_omegas, initial_guess
-            )
+            projected_start = project_feasible(previous, obstacle)
+            try:
+                unrolled_guess = unrolled_projected_jacobi(
+                    matrix, rhs, obstacle, unrolled_omegas, projected_start
+                )
+                if not np.all(np.isfinite(unrolled_guess)):
+                    fallback_count += 1
+                    fallback_reasons.append("unrolled_nonfinite_output")
+                    initial_guess = projected_start
+                else:
+                    initial_guess = unrolled_guess
+            except Exception as error:
+                fallback_count += 1
+                fallback_reasons.append(f"unrolled_error:{type(error).__name__}")
+                initial_guess = projected_start
             timings["inference"] += float(perf_counter() - inference_started)
             timings["projection"] += 0.0
         else:
@@ -495,6 +506,7 @@ class UnrolledOmegaResult:
 
     omegas: np.ndarray
     training_seconds: float
+    history: tuple[Mapping[str, object], ...]
 
 
 def train_unrolled_omegas(
@@ -533,7 +545,9 @@ def train_unrolled_omegas(
     optimizer = torch.optim.Adam([omegas_param], lr=float(learning_rate))
 
     training_started = perf_counter()
-    for _epoch in range(epochs):
+    history: list[dict[str, object]] = []
+    for epoch in range(1, epochs + 1):
+        epoch_started = perf_counter()
         epoch_loss = 0.0
         for A_np, b_np, phi_np, vprev_np, vtrue_np in train_lcp_data:
             A_t = torch.as_tensor(A_np, dtype=torch.float64)
@@ -543,10 +557,20 @@ def train_unrolled_omegas(
             V_true = torch.as_tensor(vtrue_np, dtype=torch.float64)
 
             diag = torch.diag(A_t)
+            # Scale for numerical stability during training
+            A_scale = max(1.0, float(torch.max(torch.abs(A_t))), float(torch.max(torch.abs(b_t))))
+            A_s = A_t / A_scale
+            b_s = b_t / A_scale
+            diag_s = torch.diag(A_s)
+            diag_s = torch.where(torch.abs(diag_s) > 1e-15, diag_s, torch.tensor(1.0, dtype=torch.float64))
             for omega in omegas_param:
-                residual = b_t - A_t @ V
-                direction = residual / diag
+                residual = b_s - A_s @ V
+                if not torch.all(torch.isfinite(residual)):
+                    break
+                direction = residual / diag_s
                 V = torch.max(phi_t, V + omega * direction)
+                if not torch.all(torch.isfinite(V)):
+                    break
 
             loss = torch.nn.functional.mse_loss(V, V_true)
             optimizer.zero_grad()
@@ -556,11 +580,27 @@ def train_unrolled_omegas(
 
         with torch.no_grad():
             omegas_param.clamp_(0.01, 1.99)
+        history.append(
+            {
+                "candidate_type": "pjor",
+                "seed": seed,
+                "unroll_depth": K,
+                "epoch": epoch,
+                "train_loss": float(epoch_loss / len(train_lcp_data)),
+                "validation_loss": None,
+                "epoch_seconds": float(perf_counter() - epoch_started),
+                "train_samples": int(sum(len(sample[1]) for sample in train_lcp_data)),
+                "validation_samples": None,
+                "dtype": "float64",
+                "device": "cpu",
+            }
+        )
 
     training_seconds = float(perf_counter() - training_started)
     return UnrolledOmegaResult(
         omegas=omegas_param.detach().cpu().numpy().copy(),
         training_seconds=training_seconds,
+        history=tuple(history),
     )
 
 
@@ -578,9 +618,13 @@ def unrolled_projected_jacobi(
 
     This is the projected Jacobi over-relaxation (PJOR) from Schwab & Stein (2022).
     The obstacle projection is exact (no learned approximation).
+
+    Numerical stability: the LCP system is scaled by max|A_ij| before iterating
+    to prevent matmul overflow on large grids.  NaN/Inf at any iteration returns
+    the (valid) initial guess so the PSOR cleanup fallback stays available.
     """
     A, b, phi, x = _validated_lcp(matrix, rhs, obstacle, initial_guess)
-    omega_values = np.asarray(omegas, dtype=float).reshape(-1)
+    omega_values = np.asarray(omegas, dtype=np.float64).reshape(-1)
     if omega_values.size == 0:
         raise ValueError("omegas must not be empty")
     if not np.all(np.isfinite(omega_values)):
@@ -588,16 +632,37 @@ def unrolled_projected_jacobi(
     if np.any(omega_values <= 0.0) or np.any(omega_values >= 2.0):
         raise ValueError("omegas must lie in (0, 2)")
 
-    diag = np.diag(A)
-    if np.any(~np.isfinite(diag)) or np.any(np.abs(diag) <= np.finfo(float).eps):
+    diag = np.diag(A).astype(np.float64, copy=False)
+    if np.any(~np.isfinite(diag)) or np.any(np.abs(diag) <= np.finfo(np.float64).eps):
         raise ValueError("matrix diagonal must be finite and nonzero")
 
-    V = x.copy()
-    for omega in omega_values:
-        residual = b - A @ V
-        direction = residual / diag
-        V = np.maximum(phi, V + omega * direction)
+    # Scale the LCP system to keep matrix entries near O(1) and prevent matmul
+    # overflow on fine grids with large sigma.  The LCP  A x >= b, x >= phi
+    # is equivalent to  (A/s) x >= (b/s), x >= phi  for any s > 0.
+    scale = float(max(1.0, np.max(np.abs(A)), np.max(np.abs(b))))
+    if not np.isfinite(scale) or scale > 1e150:
+        # Catastrophic entries — return feasible initial guess for PSOR fallback
+        return x.astype(np.float64, copy=False)
+    A_s = (A / scale).astype(np.float64, copy=False)
+    b_s = (b / scale).astype(np.float64, copy=False)
+    diag_s = np.diag(A_s)
+    # The scaled diagonal of a CN matrix is always bounded well away from zero,
+    # but guard anyway for degenerate grids.
+    diag_s = np.where(np.abs(diag_s) > np.finfo(np.float64).eps, diag_s, 1.0)
 
+    V = x.astype(np.float64, copy=True)
+    for omega in omega_values:
+        omega_f = float(omega)
+        residual = b_s - A_s @ V
+        if not np.all(np.isfinite(residual)):
+            return x.astype(np.float64, copy=False)
+        direction = residual / diag_s
+        V = np.maximum(phi, V + omega_f * direction)
+        if not np.all(np.isfinite(V)):
+            return x.astype(np.float64, copy=False)
+
+    if not np.all(np.isfinite(V)):
+        return x.astype(np.float64, copy=False)
     return V
 
 
@@ -613,8 +678,12 @@ def extract_lcp_training_data(
 
     config = result.config
     spots, lower, upper, matrix, rhs_matrix = cn_matrices(config)
-    dt = config.t / config.n
-    obstacle = result.payoff[1:-1]
+    dt = float(config.t) / float(config.n)
+    obstacle = np.asarray(result.payoff[1:-1], dtype=np.float64)
+    matrix_f64 = np.asarray(matrix, dtype=np.float64)
+    rhs_matrix_f64 = np.asarray(rhs_matrix, dtype=np.float64)
+    lower_f64 = np.asarray(lower, dtype=np.float64)
+    upper_f64 = np.asarray(upper, dtype=np.float64)
     samples: list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = []
 
     for step in range(config.n):
@@ -622,12 +691,17 @@ def extract_lcp_training_data(
         tau_new = float(result.taus[step + 1])
         left_old, right_old = time_boundary_values(config, tau_old)
         left_new, right_new = time_boundary_values(config, tau_new)
-        previous = result.values[step, 1:-1].copy()
-        rhs = rhs_matrix @ previous
-        rhs[0] += 0.5 * dt * lower[0] * (left_old + left_new)
-        rhs[-1] += 0.5 * dt * upper[-1] * (right_old + right_new)
-        v_true = result.values[step + 1, 1:-1].copy()
-        samples.append((matrix.copy(), rhs.copy(), obstacle.copy(), previous.copy(), v_true))
+        previous = np.asarray(result.values[step, 1:-1], dtype=np.float64)
+        rhs = rhs_matrix_f64 @ previous
+        rhs[0] += 0.5 * dt * lower_f64[0] * (float(left_old) + float(left_new))
+        rhs[-1] += 0.5 * dt * upper_f64[-1] * (float(right_old) + float(right_new))
+        v_true = np.asarray(result.values[step + 1, 1:-1], dtype=np.float64)
+        if not (np.all(np.isfinite(rhs)) and np.all(np.isfinite(v_true))):
+            continue
+        samples.append((
+            matrix_f64.copy(), rhs.copy(), obstacle.copy(),
+            previous.copy(), v_true.copy(),
+        ))
 
     return samples
 

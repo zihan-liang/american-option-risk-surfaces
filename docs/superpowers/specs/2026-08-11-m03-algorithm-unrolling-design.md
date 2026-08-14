@@ -9,7 +9,7 @@ Screen one learned feasible warm start against tuned projected SOR (PSOR) for th
 ## Considered Approaches
 
 1. **Learned feasible warm start (selected).** Train a float64 MLP to predict the correction from the previous time-step solution to the next LCP solution using local CN/LCP and regime features. Project the prediction onto the obstacle before cleanup. This is trainable, independent of M01's evolving public solver API, and has an auditable correctness boundary.
-2. **Trainable fixed-depth projected-SOR unroll.** Learn relaxation parameters through a differentiable unroll. This would require a second differentiable numerical stack and tighter coupling to solver internals, increasing implementation and validation risk for this screen.
+2. **Trainable fixed-depth projected Jacobi over-relaxation (PJOR) unroll.** Learn one relaxation parameter per parallel projected-Jacobi step, then use ordinary PSOR for the mandatory tolerance-matched cleanup. This candidate was added alongside the learned feasible warm start; it must be reported as PJOR, not SOR, because each unrolled update uses the previous iterate at every coordinate.
 3. **Fixed short PSOR prefix.** Rejected because a fixed number of ordinary PSOR iterations is not machine learning and cannot satisfy the approved M03 claim.
 
 ## Numerical Contract
@@ -55,4 +55,3 @@ The primary statistic is paired total solve-time difference, resampled by comple
 - `screen_summary.json`
 
 Every output records or inherits branch/commit provenance, actual regime and sample counts, residual tolerance, timing components, and `blind_holdout_accessed=false`. Smoke runs are small enough for CI and are always `diagnostic_only`, `evidence=false`, and non-promoting even when their point estimates look favorable.
-

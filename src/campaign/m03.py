@@ -125,6 +125,7 @@ class FixedConfigurationSelection:
     seeds: tuple[int, ...]
     selected_config_by_seed: Mapping[int, str]
     mean_cleanup_iterations: float
+    mean_total_seconds: float
 
 
 @dataclass(frozen=True)
@@ -174,29 +175,43 @@ def select_fixed_configuration(
     expected_seeds = tuple(int(seed) for seed in required_seeds)
     if not expected_seeds or len(expected_seeds) != len(set(expected_seeds)):
         raise ValueError("required_seeds must be non-empty and unique")
-    grouped: dict[str, dict[int, list[float]]] = {}
+    grouped_times: dict[str, dict[int, list[float]]] = {}
+    grouped_iterations: dict[str, dict[int, list[float]]] = {}
     for row in rows:
         config_id = str(row["config_id"])
         seed = int(row["seed"])
         iterations = float(row["cleanup_iterations"])
-        if not config_id or not math.isfinite(iterations) or iterations < 0.0:
-            raise ValueError("selection rows require finite non-negative cleanup iterations")
-        grouped.setdefault(config_id, {}).setdefault(seed, []).append(iterations)
-    if not grouped:
+        total_seconds = float(row["total_seconds"])
+        if (
+            not config_id
+            or not math.isfinite(iterations)
+            or iterations < 0.0
+            or not math.isfinite(total_seconds)
+            or total_seconds < 0.0
+        ):
+            raise ValueError("selection rows require finite non-negative time and iterations")
+        grouped_times.setdefault(config_id, {}).setdefault(seed, []).append(total_seconds)
+        grouped_iterations.setdefault(config_id, {}).setdefault(seed, []).append(iterations)
+    if not grouped_times:
         raise ValueError("selection rows must not be empty")
 
     scores: list[tuple[float, str]] = []
-    for config_id, seed_values in grouped.items():
+    for config_id, seed_values in grouped_times.items():
         if set(seed_values) != set(expected_seeds):
             raise ValueError(f"configuration {config_id} does not cover every required seed")
         seed_means = [float(np.mean(seed_values[seed])) for seed in expected_seeds]
         scores.append((float(np.mean(seed_means)), config_id))
     score, selected = min(scores, key=lambda item: (item[0], item[1]))
+    selected_iterations = grouped_iterations[selected]
+    mean_iterations = float(
+        np.mean([np.mean(selected_iterations[seed]) for seed in expected_seeds])
+    )
     return FixedConfigurationSelection(
         config_id=selected,
         seeds=expected_seeds,
         selected_config_by_seed={seed: selected for seed in expected_seeds},
-        mean_cleanup_iterations=score,
+        mean_cleanup_iterations=mean_iterations,
+        mean_total_seconds=score,
     )
 
 
@@ -367,7 +382,7 @@ def run_m03_screen(
                 selection_rows.append(row)
                 candidate_selection_rows.append(row)
 
-    # --- Unrolled projected SOR candidate path ---
+    # --- Unrolled projected Jacobi over-relaxation (PJOR) candidate path ---
     unroll_cfg = config["unrolling"]
     unrolled_trained: dict[int, dict[int, UnrolledOmegaResult]] = {seed: {} for seed in seeds}
     train_lcp_data: list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = []
@@ -384,10 +399,11 @@ def run_m03_screen(
                 seed=seed,
             )
             unrolled_trained[seed][int(k_value)] = trained_unrolled
+            training_history.extend(dict(row) for row in trained_unrolled.history)
     unrolled_training_seconds = float(perf_counter() - unrolled_training_started)
 
     for k_value in unroll_cfg["K_candidates"]:
-        config_id = f"unrolled_projected_sor_k{k_value}"
+        config_id = f"unrolled_projected_jacobi_k{k_value}"
         for seed in seeds:
             omegas = unrolled_trained[seed][int(k_value)].omegas
             for regime in splits.validation:
@@ -643,13 +659,11 @@ def run_m03_screen(
     actual_counts = {
         "train_regimes": len(splits.train),
         "validation_regimes": len(splits.validation),
-        "train_samples": (
-            int(len(train_lcp_data)) if selected_is_unrolled else int(len(train_features))
-        ),
-        "validation_samples": (
-            int(sum(len(extract_lcp_training_data(o)) for o in validation_oracles.values()))
-            if selected_is_unrolled
-            else int(len(validation_features))
+        "train_samples": int(len(train_features)),
+        "validation_samples": int(len(validation_features)),
+        "train_lcp_systems": int(len(train_lcp_data)),
+        "validation_lcp_systems": int(
+            sum(len(extract_lcp_training_data(oracle)) for oracle in validation_oracles.values())
         ),
         "training_seeds": len(seeds),
     }
@@ -662,7 +676,8 @@ def run_m03_screen(
             "selected_omega": selected_omega,
             "selected_candidate_config": fixed_selection.config_id,
             "predeclared_configuration_count": len(solver_cfg["omega_candidates"])
-            + len(network_cfg["blend_candidates"]),
+            + len(network_cfg["blend_candidates"])
+            + len(unroll_cfg["K_candidates"]),
             "residual_tolerance": float(solver_cfg["residual_tolerance"]),
             "split_scenario_ids": {
                 "train": [str(regime["scenario_id"]) for regime in splits.train],
@@ -688,6 +703,7 @@ def run_m03_screen(
             "candidate_blend": None if selected_is_unrolled else selected_blend,
             "candidate_k": int(fixed_selection.config_id.rsplit("k", 1)[-1]) if selected_is_unrolled else None,
             "candidate_mean_cleanup_iterations": fixed_selection.mean_cleanup_iterations,
+            "candidate_selection_mean_seconds": fixed_selection.mean_total_seconds,
             "fixed_across_seeds": True,
             "seeds": list(seeds),
         },
@@ -722,7 +738,12 @@ def run_m03_screen(
         "memory": {
             "process_rss_mb": process_memory_mb,
             "model_bytes_per_seed": {
-                str(seed): trained_models[seed].model_bytes for seed in seeds
+                str(seed): (
+                    int(unrolled_trained[seed][int(fixed_selection.config_id.rsplit("k", 1)[-1])].omegas.nbytes)
+                    if selected_is_unrolled
+                    else trained_models[seed].model_bytes
+                )
+                for seed in seeds
             },
         },
         "fallback": {
@@ -835,6 +856,7 @@ def _train_model(
             validation_loss = float(functional.mse_loss(model(validation_x), validation_y))
         history.append(
             {
+                "candidate_type": "mlp_warm_start",
                 "seed": seed,
                 "epoch": epoch,
                 "train_loss": float(loss_sum / len(train_x)),

@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from campaign.m03 import (
+    DEFAULT_CONFIG,
     REQUIRED_SEEDS,
     build_regime_splits,
     classify_screen_decision,
@@ -60,16 +61,26 @@ def test_selection_is_one_configuration_fixed_across_all_required_seeds():
     for seed in REQUIRED_SEEDS:
         rows.extend(
             [
-                {"config_id": "blend_0p5", "seed": seed, "cleanup_iterations": 10.0},
-                {"config_id": "blend_1p0", "seed": seed, "cleanup_iterations": 8.0},
+                {
+                    "config_id": "blend_0p5",
+                    "seed": seed,
+                    "cleanup_iterations": 10.0,
+                    "total_seconds": 0.8,
+                },
+                {
+                    "config_id": "blend_1p0",
+                    "seed": seed,
+                    "cleanup_iterations": 8.0,
+                    "total_seconds": 1.0,
+                },
             ]
         )
 
     selection = select_fixed_configuration(rows, required_seeds=REQUIRED_SEEDS)
 
-    assert selection.config_id == "blend_1p0"
+    assert selection.config_id == "blend_0p5"
     assert selection.seeds == REQUIRED_SEEDS
-    assert set(selection.selected_config_by_seed.values()) == {"blend_1p0"}
+    assert set(selection.selected_config_by_seed.values()) == {"blend_0p5"}
 
 
 def test_budget_exhaustion_is_resource_blocked_without_overriding_smoke_policy():
@@ -132,6 +143,11 @@ def test_smoke_screen_writes_standard_outputs_hashes_and_never_promotes(tmp_path
     assert manifest["provenance"] == {"branch": "exp/m03-algorithm-unrolling", "commit": "test-commit"}
     assert manifest["config"]["actual_counts"]["train_regimes"] == 2
     assert manifest["config"]["actual_counts"]["validation_regimes"] == 2
+    assert manifest["config"]["actual_counts"]["train_samples"] == 42
+    assert manifest["config"]["actual_counts"]["validation_samples"] == 42
+    assert manifest["config"]["actual_counts"]["train_lcp_systems"] == 6
+    assert manifest["config"]["actual_counts"]["validation_lcp_systems"] == 6
+    assert manifest["config"]["predeclared_configuration_count"] == 6
     assert manifest["config"]["blind_holdout_accessed"] is False
     assert decision["status"] == "diagnostic_only"
     assert decision["blind_holdout_accessed"] is False
@@ -161,12 +177,30 @@ def test_smoke_screen_writes_standard_outputs_hashes_and_never_promotes(tmp_path
     with (output_dir / "training_history.csv").open(newline="", encoding="utf-8") as handle:
         history_rows = list(csv.DictReader(handle))
     assert {int(row["seed"]) for row in history_rows} == set(REQUIRED_SEEDS)
+    assert {row["candidate_type"] for row in history_rows} == {"mlp_warm_start", "pjor"}
+
+    with (output_dir / "selection_metrics.csv").open(newline="", encoding="utf-8") as handle:
+        selection_rows = list(csv.DictReader(handle))
+    configuration_ids = {row["config_id"] for row in selection_rows}
+    expected_pjor_ids = {
+        f"unrolled_projected_jacobi_k{depth}"
+        for depth in manifest["config"]["unrolling"]["K_candidates"]
+    }
+    assert expected_pjor_ids <= configuration_ids
+    assert not any("unrolled_projected_sor" in value for value in configuration_ids)
 
     hashes = json.loads((output_dir / "artifact_hashes.json").read_text(encoding="utf-8"))
     assert set(hashes["files"]) == expected - {"artifact_hashes.json"}
     for filename, expected_digest in hashes["files"].items():
         assert hashlib.sha256((output_dir / filename).read_bytes()).hexdigest() == expected_digest
 
+
+def test_canonical_configuration_predeclares_exactly_eight_choices():
+    assert (
+        len(DEFAULT_CONFIG["solver"]["omega_candidates"])
+        + len(DEFAULT_CONFIG["network"]["blend_candidates"])
+        + len(DEFAULT_CONFIG["unrolling"]["K_candidates"])
+    ) == 8
 
 def test_cli_dispatches_m03_smoke(tmp_path):
     completed = subprocess.run(
