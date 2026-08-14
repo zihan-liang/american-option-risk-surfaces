@@ -1,0 +1,13 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "config_manifest.json": "9071611e5f323a0efb965d2035b16e28e5358f8b42885e5d02b4bc7d03b25db0",
+    "decision.json": "dbb4db26806b39237e2304aa6113d87e415cf70f2d4be662cc6763838b736525",
+    "run_metrics.csv": "4f8f876f8bebee3f6c8571e5307cb158639c0b41b998159c72a18d879e1498cb",
+    "scenario_metrics.csv": "75541fe7d720b0b3f26ed0c8a6346973b0711116fe1abf9314206c7d06d07dc2",
+    "screen_summary.json": "f15352bad95b9c0bbf30a907d7ed5efc78dc38e047d605ead5efdbcab8dccde5",
+    "selection_metrics.csv": "32079406e5ee8ae890947a026f80591820f1ee65b0027000495ab7bd57a6e6f5",
+    "timing_samples.csv": "150ae67e7db2521529878a4c8fd3f059e8559a1b0f7e359abec424a503770050",
+    "training_history.csv": "de5a69d076bc64aaf99c0d46d500bfe232f1d4d99db7c88f798aa09d374a52a8"
+  }
+}

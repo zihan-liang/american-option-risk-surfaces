@@ -1,0 +1,164 @@
+{
+  "config": {
+    "actual_counts": {
+      "train_lcp_systems": 2000,
+      "train_regimes": 20,
+      "train_samples": 150000,
+      "training_seeds": 5,
+      "validation_lcp_systems": 1000,
+      "validation_regimes": 10,
+      "validation_samples": 75000
+    },
+    "blind_holdout_accessed": false,
+    "budget_seconds": 3600,
+    "evidence": true,
+    "method_id": "M03",
+    "network": {
+      "batch_size": 8192,
+      "blend_candidates": [
+        0.5,
+        1.0
+      ],
+      "depth": 3,
+      "device": "cpu",
+      "dtype": "float64",
+      "epochs": 30,
+      "hidden": 128,
+      "learning_rate": 0.001,
+      "patience": 8
+    },
+    "predeclared_configuration_count": 8,
+    "residual_tolerance": 1e-10,
+    "run_mode": "canonical_screen",
+    "sampling": {
+      "generation_seed": 1701,
+      "parameter_ranges": {
+        "q": [
+          0.0,
+          0.06
+        ],
+        "r": [
+          0.0,
+          0.1
+        ],
+        "sigma": [
+          0.1,
+          0.6
+        ],
+        "t": [
+          0.25,
+          2.0
+        ]
+      },
+      "train_regimes": 20,
+      "validation_regimes": 10
+    },
+    "seeds": [
+      101,
+      203,
+      307,
+      409,
+      503
+    ],
+    "selected_candidate_config": "unrolled_projected_jacobi_k5",
+    "selected_omega": 1.2,
+    "solver": {
+      "k": 1.0,
+      "label_residual_tolerance": 1e-12,
+      "m": 76,
+      "max_iter": 20000,
+      "n": 100,
+      "omega_candidates": [
+        1.0,
+        1.2,
+        1.4,
+        1.6
+      ],
+      "residual_tolerance": 1e-10,
+      "s_max": 4.0
+    },
+    "split_scenario_ids": {
+      "train": [
+        "m03-regime-000",
+        "m03-regime-001",
+        "m03-regime-002",
+        "m03-regime-003",
+        "m03-regime-004",
+        "m03-regime-005",
+        "m03-regime-006",
+        "m03-regime-007",
+        "m03-regime-008",
+        "m03-regime-009",
+        "m03-regime-010",
+        "m03-regime-011",
+        "m03-regime-012",
+        "m03-regime-013",
+        "m03-regime-014",
+        "m03-regime-015",
+        "m03-regime-016",
+        "m03-regime-017",
+        "m03-regime-018",
+        "m03-regime-019"
+      ],
+      "validation": [
+        "m03-regime-020",
+        "m03-regime-021",
+        "m03-regime-022",
+        "m03-regime-023",
+        "m03-regime-024",
+        "m03-regime-025",
+        "m03-regime-026",
+        "m03-regime-027",
+        "m03-regime-028",
+        "m03-regime-029"
+      ]
+    },
+    "statistics": {
+      "bootstrap_iterations": 10000,
+      "bootstrap_seed": 1703
+    },
+    "timing": {
+      "repetitions": 30,
+      "warmups": 5
+    },
+    "unrolling": {
+      "K_candidates": [
+        3,
+        5
+      ],
+      "epochs": 100,
+      "learning_rate": 0.01
+    }
+  },
+  "config_sha256": "59513534648797b794d49bd21ddf5401196151b00b0c259976dd1f8a590befc0",
+  "method_spec": {
+    "baseline": "Tuned PSOR",
+    "category": "solver_accelerator",
+    "confirmation_budget_seconds": 21600,
+    "gates": [
+      "Match the tuned-PSOR natural-residual tolerance.",
+      "Include ordinary cleanup in timing."
+    ],
+    "method_id": "M03",
+    "metric_direction": "lower_is_better",
+    "name": "Algorithm unrolling",
+    "predeclared_configurations": [
+      "unrolled_projected_jacobi",
+      "learned_feasible_warm_start"
+    ],
+    "primary_metric": "wall_time_seconds_at_fixed_natural_residual",
+    "required_outputs": [
+      "config_manifest.json",
+      "run_metrics.csv",
+      "decision.json",
+      "artifact_hashes.json"
+    ],
+    "scope": "Compare unrolled projected SOR or a learned feasible warm start with tuned PSOR at identical natural-residual tolerance, including cleanup timing.",
+    "screen_budget_seconds": 3600,
+    "stochastic": true
+  },
+  "provenance": {
+    "branch": "campaign/independent-methods",
+    "commit": "46c2afb3ad21a97fe831a886a1d7cbb683dc7621"
+  }
+}

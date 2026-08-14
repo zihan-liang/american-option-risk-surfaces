@@ -5,7 +5,8 @@
 - Goal: execute the approved independent 24-method experiment campaign and produce a bilingual comparison report.
 - Current status: Wave 0 campaign foundation complete; M01 is accepted with
   `cn_policy_iteration` as a scoped candidate, M02 is closed as
-  `insufficient_diagnostics`, and M03 is next. HD0/HD1 remain deferred.
+  `insufficient_diagnostics`, and M03 is closed as `failed_metric_gate`.
+  M04 is next; HD0/HD1 remain deferred.
 - Branch: `campaign/independent-methods`.
 - Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/campaign-independent-methods`.
 
@@ -47,6 +48,8 @@
 | Reviewed campaign foundation | `MPLBACKEND=Agg MPLCONFIGDIR=/private/tmp/codex_mplconfig PYTHONPATH=src:experiments $PY -m pytest tests -q` | passed | 209 tests passed after registry, statistics, holdout, and M22--M24 audit integration. |
 | Foundation compilation | `$PY -m compileall -q src tests experiments` | passed | No compilation errors. |
 | Foundation diff hygiene | `git diff --check` | passed | No whitespace errors. |
+| M03 focused integration | `$PY -m pytest -p no:cacheprovider tests/test_m03_algorithm_unrolling.py tests/test_m03_unrolled.py tests/test_m03_campaign.py tests/test_m01_classical_campaign_outputs.py tests/test_m02_obstacle_pinn_outputs.py tests/test_campaign_outputs.py` | passed | 42 tests passed. |
+| M03 canonical screen | `$PY experiments/26_independent_method_campaign.py --method M03 --phase screen --config configs/m03_algorithm_unrolling.yaml --output-root results/independent_method_campaign` | completed | `failed_metric_gate`; 11.85% timing improvement but frozen diagnostic gates failed; blind holdout untouched. |
 
 ## Files Changed
 
@@ -76,7 +79,9 @@
 - Artifact bootstrap may rewrite tracked result summaries; this branch keeps the commit scoped to harness files.
 - Headless plotting must use `MPLBACKEND=Agg`; the macOS interactive backend aborts inside the Codex test environment.
 - Legacy dry-run paths emit non-finite arithmetic warnings, so campaign schemas and gates must reject non-finite metrics.
-- Independent M01 review found blocking mathematical issues; no M01 campaign result may be accepted until those regressions are fixed and re-reviewed.
+- M03's relative diagnostic gates are conservative near the numerical floor.
+  They were not weakened after observing the result; M03 remains a negative
+  result despite its timing signal.
 - M23's approved 72-call comparison implies a 50-second average ceiling and may correctly end as `resource_blocked` after calibration.
 
 ## Next Session Startup
@@ -89,7 +94,7 @@
 
 ## Recommended Next Step
 
-Do not rerun M01 or M02. Start with a focused review of M03 algorithm unrolling
-and run its canonical screen only if the implementation, cleanup timing, and
-natural-residual gates pass. Keep HD0/HD1 deferred and outside the campaign
-scoreboard.
+Do not rerun M01--M03. Start with a focused review of M04 free-boundary
+representation and run its canonical screen only if its boundary definition,
+sub-grid extraction, split isolation, and comparison gates pass. Keep HD0/HD1
+deferred and outside the campaign scoreboard.

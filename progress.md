@@ -4,7 +4,7 @@ This is the short current-session state file for agent continuity. The long rese
 
 ## Current State
 
-- Last updated: 2026-08-11
+- Last updated: 2026-08-14
 - Active feature: `independent-all-method-campaign`
 - Branch: `campaign/independent-methods`
 - Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/campaign-independent-methods`
@@ -33,11 +33,15 @@ This is the short current-session state file for agent continuity. The long rese
 - M02 obstacle-aware PINN is closed as `insufficient_diagnostics`; the
   canonical five-seed run completed within budget, but required boundary RMSE
   was unavailable for every method and no candidate passed the remaining gates.
+- M03 algorithm unrolling is closed as `failed_metric_gate`. Five-step PJOR plus
+  PSOR cleanup is about 11.85% faster on the validation workloads, but it fails
+  the frozen price, Greek, boundary, continuation, and complementarity
+  non-regression gates.
 
 ## Next Step
 
-- Preserve the accepted M01 and negative M02 evidence. Review and execute M03
-  algorithm unrolling as the next independent method.
+- Preserve the accepted M01 and negative M02--M03 evidence. Review and execute
+  M04 free-boundary representation as the next independent method.
 - HD0/HD1 are `deferred` until the independent M01--M24 campaign is complete;
   they are not failed, resource-blocked, or part of the campaign scoreboard.
 

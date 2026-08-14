@@ -1,0 +1,198 @@
+{
+  "actual_counts": {
+    "train_lcp_systems": 2000,
+    "train_regimes": 20,
+    "train_samples": 150000,
+    "training_seeds": 5,
+    "validation_lcp_systems": 1000,
+    "validation_regimes": 10,
+    "validation_samples": 75000
+  },
+  "blind_holdout_accessed": false,
+  "budget": {
+    "elapsed_before_decision_seconds": 592.8520457090344,
+    "exhausted": false,
+    "screen_budget_seconds": 3600.0
+  },
+  "costs_seconds": {
+    "baseline_selection": 6.759186166105792,
+    "candidate_selection": 311.9658752089599,
+    "elapsed_before_writes": 592.8613709589699,
+    "label_generation": 5.007900958065875,
+    "preprocessing": 0.04064666689373553,
+    "selection": 318.7250613750657,
+    "training_total": 282.10838666697964
+  },
+  "decision": {
+    "claim_status": "failed_metric_gate",
+    "diagnostic_gates_passed": false,
+    "promotion_eligible": false,
+    "reason": "diagnostic_gate_failed",
+    "required_diagnostics_available": true,
+    "speed_gate_passed": true,
+    "status": "failed_metric_gate"
+  },
+  "diagnostics": {
+    "baseline": {
+      "boundary_rmse": 1.3217700100381072e-13,
+      "boundary_rmse_reason": null,
+      "complementarity_error": 4.5815582958987294e-12,
+      "complementarity_error_reason": null,
+      "continuation_rmse": 4.944370232399018e-10,
+      "continuation_rmse_reason": null,
+      "delta_rmse": 1.0562408444163742e-09,
+      "delta_rmse_reason": null,
+      "natural_residual": 9.970659562742734e-11,
+      "natural_residual_reason": null,
+      "obstacle_violation": 0.0,
+      "obstacle_violation_reason": null,
+      "price_rmse": 3.7287406023445986e-10,
+      "price_rmse_reason": null,
+      "scaled_gamma_rmse": 8.628602593928663e-09,
+      "scaled_gamma_rmse_reason": null
+    },
+    "candidate": {
+      "boundary_rmse": 3.230764129882151e-13,
+      "boundary_rmse_reason": null,
+      "complementarity_error": 8.21759694308021e-12,
+      "complementarity_error_reason": null,
+      "continuation_rmse": 5.623216302738352e-10,
+      "continuation_rmse_reason": null,
+      "delta_rmse": 1.293134254224781e-09,
+      "delta_rmse_reason": null,
+      "natural_residual": 9.994505223431815e-11,
+      "natural_residual_reason": null,
+      "obstacle_violation": 0.0,
+      "obstacle_violation_reason": null,
+      "price_rmse": 4.160032674661606e-10,
+      "price_rmse_reason": null,
+      "scaled_gamma_rmse": 9.797071754283703e-09,
+      "scaled_gamma_rmse_reason": null
+    },
+    "gates": {
+      "boundary_rmse": {
+        "available": true,
+        "baseline": 1.3217700100381072e-13,
+        "candidate": 3.230764129882151e-13,
+        "limit_percent": 2.0,
+        "passed": false,
+        "reason": null,
+        "threshold": 1.4482054102388694e-13
+      },
+      "complementarity_error": {
+        "available": true,
+        "baseline": 4.5815582958987294e-12,
+        "candidate": 8.21759694308021e-12,
+        "limit_percent": 2.0,
+        "passed": false,
+        "reason": null,
+        "threshold": 4.773189461816704e-12
+      },
+      "continuation_rmse": {
+        "available": true,
+        "baseline": 4.944370232399018e-10,
+        "candidate": 5.623216302738352e-10,
+        "limit_percent": 2.0,
+        "passed": false,
+        "reason": null,
+        "threshold": 5.043357637046999e-10
+      },
+      "delta_rmse": {
+        "available": true,
+        "baseline": 1.0562408444163742e-09,
+        "candidate": 1.293134254224781e-09,
+        "limit_percent": 2.0,
+        "passed": false,
+        "reason": null,
+        "threshold": 1.0773756613047018e-09
+      },
+      "natural_residual": {
+        "available": true,
+        "baseline": 9.970659562742734e-11,
+        "candidate": 9.994505223431815e-11,
+        "limit_percent": 5.0,
+        "passed": true,
+        "reason": null,
+        "threshold": 1.0479192540879872e-10
+      },
+      "obstacle_violation": {
+        "available": true,
+        "baseline": 0.0,
+        "candidate": 0.0,
+        "limit": 1e-10,
+        "passed": true,
+        "reason": null
+      },
+      "price_rmse": {
+        "available": true,
+        "baseline": 3.7287406023445986e-10,
+        "candidate": 4.160032674661606e-10,
+        "limit_percent": 2.0,
+        "passed": false,
+        "reason": null,
+        "threshold": 3.8034154143914903e-10
+      },
+      "scaled_gamma_rmse": {
+        "available": true,
+        "baseline": 8.628602593928663e-09,
+        "candidate": 9.797071754283703e-09,
+        "limit_percent": 2.0,
+        "passed": false,
+        "reason": null,
+        "threshold": 8.801184645807236e-09
+      }
+    }
+  },
+  "evidence": true,
+  "fallback": {
+    "behavior": "project previous solution and run ordinary PSOR cleanup",
+    "count": 0
+  },
+  "memory": {
+    "model_bytes_per_seed": {
+      "101": 40,
+      "203": 40,
+      "307": 40,
+      "409": 40,
+      "503": 40
+    },
+    "process_rss_mb": 480.953125
+  },
+  "method_id": "M03",
+  "paired_total_time": {
+    "baseline_mean_seconds": 0.12024586206185632,
+    "candidate_mean_seconds": 0.10599975418671966,
+    "confidence_interval_seconds": [
+      -0.016284800972399534,
+      -0.012103205174937223
+    ],
+    "mean_difference_seconds": -0.014246107875136657,
+    "paired_p_value": 9.999000099990002e-05,
+    "relative_percent_improvement": 11.847482841287496,
+    "sample_standard_deviation_seconds": 0.0035703357488636634,
+    "sampling_unit": "complete_validation_regime"
+  },
+  "phase": "screen",
+  "promotion_eligible": false,
+  "residual_tolerance": 1e-10,
+  "run_mode": "canonical_screen",
+  "selection": {
+    "baseline_omega": 1.2,
+    "baseline_omega_mean_iterations": 1387.9,
+    "candidate_blend": null,
+    "candidate_config_id": "unrolled_projected_jacobi_k5",
+    "candidate_is_unrolled": true,
+    "candidate_k": 5,
+    "candidate_mean_cleanup_iterations": 1164.5,
+    "candidate_selection_mean_seconds": 0.10628327660262585,
+    "fixed_across_seeds": true,
+    "seeds": [
+      101,
+      203,
+      307,
+      409,
+      503
+    ]
+  },
+  "status": "failed_metric_gate"
+}
