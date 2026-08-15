@@ -81,3 +81,27 @@ def test_smoke_screen_writes_bounded_hashed_nonpromotion_evidence(tmp_path):
     hashes = json.loads((output / "artifact_hashes.json").read_text())["files"]
     for name, digest in hashes.items():
         assert hashlib.sha256((output / name).read_bytes()).hexdigest() == digest
+
+
+def test_screen_runs_each_predeclared_optimizer_configuration(tmp_path):
+    module = _module()
+    config = {
+        "method_id": "M06",
+        "phase": "screen",
+        "output_root": str(tmp_path / "M06"),
+        "solver": {"k": 1.0, "t": 1.0, "r": 0.05, "q": 0.0, "sigma": 0.2, "s_max": 4.0, "time_fraction": 0.5, "time_steps": 4, "tol": 1e-9, "max_iter": 10000},
+        "vqls": {
+            "dimensions": [4],
+            "seeds": [101],
+            "configurations": [
+                {"config_id": "shallow", "layers": 1, "iterations": 1, "learning_rate": 0.05, "finite_difference_step": 1e-4, "cost_tolerance": 1e-12},
+                {"config_id": "deep", "layers": 2, "iterations": 1, "learning_rate": 0.05, "finite_difference_step": 1e-4, "cost_tolerance": 1e-12},
+            ],
+        },
+        "resources": {"pauli_truncation": 1e-10, "target_inverse_error": 1e-3, "projected_shots_per_expectation": 1000},
+        "gates": {"quantum_error_fraction_of_cn_floor": 0.25},
+    }
+    result = module.run_screen(config, provenance={"branch": "test", "commit": "test"})
+    assert len(result["metrics"]) == 2
+    assert {row["config_id"] for row in result["metrics"]} == {"shallow", "deep"}
+    assert set(result["configuration_gate_passed"]) == {"shallow", "deep"}

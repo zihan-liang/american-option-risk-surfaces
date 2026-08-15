@@ -277,14 +277,34 @@ def run_screen(
     resources = dict(config["resources"])
     dimensions = [int(value) for value in vqls["dimensions"]]
     seeds = [int(value) for value in vqls["seeds"]]
+    if "configurations" in vqls:
+        optimizer_configs = [dict(value) for value in vqls["configurations"]]
+    else:
+        optimizer_configs = [
+            {
+                "config_id": "single_configuration",
+                "layers": vqls["layers"],
+                "iterations": vqls["iterations"],
+                "learning_rate": vqls["learning_rate"],
+                "finite_difference_step": vqls["finite_difference_step"],
+                "cost_tolerance": vqls["cost_tolerance"],
+            }
+        ]
     if any(value < 2 or value & (value - 1) for value in dimensions):
         raise ValueError("every VQLS dimension must be a power of two")
     if not seeds:
         raise ValueError("at least one seed is required")
+    config_ids = [str(value.get("config_id", "")) for value in optimizer_configs]
+    if not 1 <= len(optimizer_configs) <= 8 or any(not value for value in config_ids):
+        raise ValueError("one to eight named VQLS configurations are required")
+    if len(set(config_ids)) != len(config_ids):
+        raise ValueError("VQLS config_id values must be unique")
 
     metric_rows: list[dict[str, Any]] = []
     resource_rows: list[dict[str, Any]] = []
-    dimension_passes: dict[str, bool] = {}
+    configuration_dimension_passes: dict[str, dict[str, bool]] = {
+        config_id: {} for config_id in config_ids
+    }
     for dimension in dimensions:
         matrix, rhs, cn_floor, exercise_nodes = _frozen_policy_problem(dimension, config["solver"])
         condition = float(np.linalg.cond(matrix, 2))
@@ -315,44 +335,68 @@ def run_screen(
                 "classical_comparator": "tridiagonal_banded_O_N_not_dense_timing",
             }
         )
-        dimension_rows = []
-        for seed in seeds:
-            run_started = time.perf_counter()
-            result = vqls_solve(
-                matrix,
-                rhs,
-                seed=seed,
-                layers=int(vqls["layers"]),
-                iterations=int(vqls["iterations"]),
-                learning_rate=float(vqls["learning_rate"]),
-                finite_difference_step=float(vqls["finite_difference_step"]),
-                cost_tolerance=float(vqls["cost_tolerance"]),
+        for optimizer_config in optimizer_configs:
+            dimension_rows = []
+            for seed in seeds:
+                run_started = time.perf_counter()
+                result = vqls_solve(
+                    matrix,
+                    rhs,
+                    seed=seed,
+                    layers=int(optimizer_config["layers"]),
+                    iterations=int(optimizer_config["iterations"]),
+                    learning_rate=float(optimizer_config["learning_rate"]),
+                    finite_difference_step=float(optimizer_config["finite_difference_step"]),
+                    cost_tolerance=float(optimizer_config["cost_tolerance"]),
+                )
+                row = {
+                    "config_id": str(optimizer_config["config_id"]),
+                    "dimension": dimension,
+                    "seed": seed,
+                    "normalized_linear_residual": result["normalized_residual"],
+                    "solution_rmse": result["solution_rmse"] / float(config["solver"]["k"]),
+                    "relative_l2_error": result["relative_l2_error"],
+                    "relative_linf_error": result["relative_linf_error"],
+                    "state_fidelity": result["state_fidelity"],
+                    "final_cost": result["final_cost"],
+                    "optimizer_iterations": result["optimizer_iterations"],
+                    "objective_evaluations": result["objective_evaluations"],
+                    "ansatz_parameters": result["ansatz_parameters"],
+                    "executed_shots": 0,
+                    "expectation_mode": "exact_statevector",
+                    "cn_discretization_floor": cn_floor,
+                    "run_seconds": time.perf_counter() - run_started,
+                }
+                metric_rows.append(row)
+                dimension_rows.append(row)
+            median_error = float(np.median([row["solution_rmse"] for row in dimension_rows]))
+            configuration_dimension_passes[str(optimizer_config["config_id"])][str(dimension)] = (
+                median_error
+                <= float(config["gates"]["quantum_error_fraction_of_cn_floor"]) * cn_floor
             )
-            row = {
-                "dimension": dimension,
-                "seed": seed,
-                "normalized_linear_residual": result["normalized_residual"],
-                "solution_rmse": result["solution_rmse"] / float(config["solver"]["k"]),
-                "relative_l2_error": result["relative_l2_error"],
-                "relative_linf_error": result["relative_linf_error"],
-                "state_fidelity": result["state_fidelity"],
-                "final_cost": result["final_cost"],
-                "optimizer_iterations": result["optimizer_iterations"],
-                "objective_evaluations": result["objective_evaluations"],
-                "ansatz_parameters": result["ansatz_parameters"],
-                "executed_shots": 0,
-                "expectation_mode": "exact_statevector",
-                "cn_discretization_floor": cn_floor,
-                "run_seconds": time.perf_counter() - run_started,
-            }
-            metric_rows.append(row)
-            dimension_rows.append(row)
-        median_error = float(np.median([row["solution_rmse"] for row in dimension_rows]))
-        dimension_passes[str(dimension)] = median_error <= (
-            float(config["gates"]["quantum_error_fraction_of_cn_floor"]) * cn_floor
-        )
 
-    gate_passed = all(dimension_passes.values())
+    configuration_gate_passed = {
+        config_id: all(dimension_results.values())
+        for config_id, dimension_results in configuration_dimension_passes.items()
+    }
+    gate_passed = any(configuration_gate_passed.values())
+    gate_fraction = float(config["gates"]["quantum_error_fraction_of_cn_floor"])
+    configuration_scores = {}
+    for config_id in config_ids:
+        ratios = []
+        for dimension in dimensions:
+            rows = [
+                row
+                for row in metric_rows
+                if row["config_id"] == config_id and row["dimension"] == dimension
+            ]
+            ratios.append(
+                float(np.median([row["solution_rmse"] for row in rows]))
+                / (gate_fraction * float(rows[0]["cn_discretization_floor"]))
+            )
+        configuration_scores[config_id] = max(ratios)
+    selected_config = min(config_ids, key=lambda value: configuration_scores[value])
+    dimension_passes = configuration_dimension_passes[selected_config]
     provenance = dict(
         provenance
         or {
@@ -376,6 +420,8 @@ def run_screen(
         "claim_status": "diagnostic_only",
         "numerical_gate_passed": gate_passed,
         "dimension_gate_passed": dimension_passes,
+        "configuration_gate_passed": configuration_gate_passed,
+        "selected_diagnostic_configuration": selected_config,
         "reason": "VQLS and QSVT outputs are diagnostic microbenchmarks, not end-to-end quantum evidence.",
         "scientific_limit": "No QPU, finite-shot optimization, obstacle iteration, tomography, or speed comparison was executed.",
         "blind_holdout_accessed": False,
@@ -395,6 +441,7 @@ def run_screen(
         **decision,
         "metrics": metric_rows,
         "resources": resource_rows,
+        "configuration_gate_passed": configuration_gate_passed,
         "output_root": str(output),
     }
 

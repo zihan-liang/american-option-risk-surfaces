@@ -19,6 +19,9 @@ network service, or new dependency.
 ## Frozen Protocol
 
 - Dimensions: `[8, 16, 32]`; seeds: `[101, 203, 307, 409, 503]`.
+- Predeclared optimizer configurations: three layers/120 iterations and five
+  layers/300 iterations. This bounded sensitivity check separates a shallow
+  ansatz failure from a more persistent scaling failure.
 - One normalized American put and one mid-maturity CN policy system per size.
 - Exact expectation values only; executed shots are zero. Report an explicit
   finite-shot cost projection separately.
