@@ -71,6 +71,22 @@ def test_output_writer_keeps_all_methods_and_seeds_visible_without_nonfinite_val
     assert "NaN" not in (tmp_path / "screen_summary.json").read_text()
 
 
+def test_output_writer_emits_recomputable_manifest_profiles_and_hashes(tmp_path) -> None:
+    from campaign.m04 import write_m04_outputs
+    import hashlib
+    import json
+
+    config = {"branch": "repair/m04-gate-evidence", "commit": "abc", "method_spec": "M04", "dataset_sha256": "dataset", "split_ids": {"train": ["tr"], "validation": ["va"], "legacy_test": ["te"]}, "split_counts_verified": {"train": 1, "validation": 1, "legacy_test": 1}, "normalizations": {"x": {}}, "seeds": [101]}
+    profile = {"method": "scalar_boundary_head", "seed": 101, "scenario_id": "va", "split": "validation", "theta": 0.5, "prediction_boundary": 0.8, "prediction_status": "defined", "prediction_reason": None, "oracle_boundary": 0.7, "oracle_status": "defined", "oracle_reason": None}
+    write_m04_outputs(tmp_path, config=config, run_rows=[{"method": "scalar_boundary_head", "seed": 101, "parameter_count": 7}], scenario_rows=[], profiles=[profile], timing_rows=[], history=[])
+
+    manifest = json.loads((tmp_path / "config_manifest.json").read_text())
+    assert {"branch", "commit", "method_spec", "config_sha256", "dataset_sha256", "split_ids", "split_counts", "normalizations", "parameter_counts", "seeds", "blind_holdout_accessed"}.issubset(manifest)
+    assert "prediction_boundary" in (tmp_path / "boundary_profiles.csv").read_text().splitlines()[0]
+    hashes = json.loads((tmp_path / "artifact_hashes.json").read_text())
+    assert hashes["files"]["config_manifest.json"] == hashlib.sha256((tmp_path / "config_manifest.json").read_bytes()).hexdigest()
+
+
 def test_train_only_normalization_cannot_be_refit_from_validation_features() -> None:
     from campaign.m04 import TrainingNormalizer
 

@@ -1,4 +1,6 @@
 dataset: data/processed/surrogate_dataset.npz
+dataset_sha256: null # Set by a separate data-freeze phase; M04 refuses to run until then.
+split_ids: {train: null, validation: null, legacy_test: null}
 output_root: results/independent_method_campaign/M04
 option_scope: put
 device: cpu
@@ -18,6 +20,7 @@ screen_budget_seconds: 3600
 timing: {warmups: 5, repetitions: 30}
 bootstrap_iterations: 10000
 bootstrap_seed: 2802
+premium_contact_tolerances: [1.0e-6, 1.0e-5, 1.0e-4, 1.0e-3, 1.0e-2]
 configurations:
   - price_surrogate_boundary_extraction
   - scalar_boundary_head

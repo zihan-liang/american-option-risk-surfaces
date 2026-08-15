@@ -9,3 +9,7 @@ Nested accepted-current-M01 CN/PSOR grids provide explicit oracle provenance and
 The scalar head has no natural representation for no finite boundary. It reports this limitation in the evidence schema rather than creating a synthetic numeric label; the price-surrogate and implicit representations preserve their structured missing-boundary states.
 
 The screen records separate oracle, preprocessing, training, inference, extraction, fallback, and memory costs, checks the 3600-second budget before each model/seed and timing block, and writes the compact M04 evidence set. The implementation prepares a screen only; it does not run a canonical screen or access the blind holdout.
+
+## M04 gate-evidence repair notes
+
+The dataset remains deliberately unfrozen in the checked-in configuration: a separate data-freeze phase must set the dataset SHA-256 and explicit disjoint train, validation, and legacy-test regime IDs before any screen can run. The shared campaign dispatcher must require an explicit M04 config path during manager integration; this repair phase does not modify that dispatcher. Boundary-only scalar and implicit heads retain price, Delta, Gamma, and LCP diagnostics as `not_applicable_by_design`; the scalar run evidence also records its no-finite-boundary limitation.

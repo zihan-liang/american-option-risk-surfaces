@@ -44,3 +44,16 @@ def test_root_extraction_never_invents_a_missing_boundary(levels: list[float], s
     assert result.status == status
     assert result.value is None
     assert result.reason
+
+
+def test_scalar_and_implicit_extraction_enforce_american_put_maturity_boundary() -> None:
+    from campaign.m04 import SurfaceScenario, _extract_raw_surface
+    import numpy as np
+
+    scenario = SurfaceScenario("s", "validation", np.zeros((6, 7)), np.zeros((6, 5)), np.array([0.5, 0.8, 1.1]), np.array([0.0, 0.5]), 1.0, 1.0, 0.05, 0.0, 0.2)
+
+    scalar = _extract_raw_surface(np.array([0.2, 0.7]), scenario, "scalar_boundary_head")
+    implicit = _extract_raw_surface(np.array([[1.0, 1.0, 1.0], [-1.0, 0.0, 1.0]]), scenario, "implicit_level_set")
+
+    assert scalar[0].value == pytest.approx(1.0)
+    assert implicit[0].value == pytest.approx(1.0)
