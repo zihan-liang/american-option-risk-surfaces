@@ -1,0 +1,30 @@
+{
+  "method_id": "M07",
+  "phase": "screen",
+  "evidence_mode": "canonical",
+  "output_root": "results/standalone/M07",
+  "budget_seconds": 14400,
+  "model": {
+    "k": 1.0,
+    "t": 1.0,
+    "r": 0.05,
+    "q": 0.0,
+    "sigma": 0.2,
+    "x_min": -1.5,
+    "x_max": 1.5,
+    "x0": 0.0
+  },
+  "grid_pairs": [[4, 4], [8, 8], [16, 16], [32, 32]],
+  "refinement_factor": 2,
+  "timing": {
+    "warmups": 5,
+    "repetitions": 30
+  },
+  "lp": {
+    "method": "highs"
+  },
+  "gates": {
+    "lp_value_atol": 1e-10,
+    "dimension_growth_ratio_max": 1.0
+  }
+}
