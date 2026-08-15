@@ -1,0 +1,8 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "config_manifest.json": "d14503ca68b063dd90e11831f03793bfc70c02cf5f23ac1a28c6e888ab536e02",
+    "decision.json": "beba21cfb7cb0b92f46353adb5cb2a81c293e953e85f23ff18c28bd0b83a6c7c",
+    "metrics.csv": "2e8831c6568a1fde35ded20f8540df38a68876950a6d81e81721baf856648e81"
+  }
+}

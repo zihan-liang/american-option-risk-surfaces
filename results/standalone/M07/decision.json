@@ -1,0 +1,23 @@
+{
+  "best_formulation": "optimal_stopping_lp",
+  "blind_holdout_accessed": false,
+  "claim_status": "diagnostic_only",
+  "dimension_gate_passed": false,
+  "equivalence_gate_passed": true,
+  "formulation_dimension_gate_passed": {
+    "occupation_measure_lp": false,
+    "optimal_stopping_lp": false
+  },
+  "limitations": [
+    "Classical Markov-chain LP audit only; no quantum solver was run.",
+    "Primary denominator is simultaneous direct-LCP unknowns N_S; secondary N_S*N_T denominator is also reported.",
+    "Finite log-price boundaries reflect outgoing probability mass."
+  ],
+  "method_id": "M07",
+  "numerical_gate_passed": false,
+  "primary_metric": "best_formulation_max_dimension_growth_ratio",
+  "primary_metric_value": 96.0,
+  "reason": "Both LP formulations matched the direct value but expanded variables plus constraints relative to direct LCP unknowns.",
+  "status": "failed_metric_gate",
+  "total_seconds": 1.178741610999964
+}

@@ -1,0 +1,64 @@
+{
+  "blind_holdout_accessed": false,
+  "branch": "campaign/independent-methods",
+  "config": {
+    "budget_seconds": 14400,
+    "evidence_mode": "canonical",
+    "gates": {
+      "dimension_growth_ratio_max": 1.0,
+      "lp_value_atol": 1e-10
+    },
+    "grid_pairs": [
+      [
+        4,
+        4
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        16,
+        16
+      ],
+      [
+        32,
+        32
+      ]
+    ],
+    "lp": {
+      "method": "highs"
+    },
+    "method_id": "M07",
+    "model": {
+      "k": 1.0,
+      "q": 0.0,
+      "r": 0.05,
+      "sigma": 0.2,
+      "t": 1.0,
+      "x0": 0.0,
+      "x_max": 1.5,
+      "x_min": -1.5
+    },
+    "output_root": "/mnt/data/m07_canonical",
+    "phase": "screen",
+    "refinement_factor": 2,
+    "timing": {
+      "repetitions": 30,
+      "warmups": 5
+    }
+  },
+  "data_hashes": {},
+  "environment": {
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "scipy": "1.17.0"
+  },
+  "implementation_commit": "9a862f2e9ccd6a9d56c9d8baa85a334ed4ac0780",
+  "method_id": "M07",
+  "method_name": "Nonlinear Quantum Reduction",
+  "method_scope": "classical finite-state optimal-stopping LP falsification experiment; not a quantum run",
+  "method_scope_limitation": "No quantum circuit, QPU, quantum LP backend, or speedup claim is executed or supported.",
+  "seeds": [],
+  "split_identifiers": []
+}
