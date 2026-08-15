@@ -40,6 +40,14 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("--method and --phase are required unless --list-methods or --verify-all is used")
 
     config = load_config(args.config) if args.config else {}
+    if args.method == "M04" and args.phase == RunPhase.SCREEN.value and not bool(config.get("dry_run", False)):
+        from campaign.m04 import run_m04_screen
+
+        return run_m04_screen(
+            config_path=args.config,
+            output_root=Path(args.output_root) / "M04" if args.output_root else None,
+            smoke=bool(args.smoke),
+        )
     if args.method == "M03" and args.phase == RunPhase.SCREEN.value and not bool(config.get("dry_run", False)):
         from campaign.m03 import run_m03_screen
 

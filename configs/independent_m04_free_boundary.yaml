@@ -1,0 +1,24 @@
+dataset: data/processed/surrogate_dataset.npz
+output_root: results/independent_method_campaign/M04
+option_scope: put
+device: cpu
+training_dtype: float64
+seeds: [101, 203, 307, 409, 503]
+split_counts: {train: 10, validation: 5, legacy_test: 5}
+hidden: 128
+depth: 3
+epochs: 30
+batch_size: 8192
+learning_rate: 0.001
+oracle_coarse_grid: 128
+oracle_fine_grid: 512
+oracle_solver_tolerance: 1.0e-10
+oracle_max_refinement_rmse: 0.001
+screen_budget_seconds: 3600
+timing: {warmups: 5, repetitions: 30}
+bootstrap_iterations: 10000
+bootstrap_seed: 2802
+configurations:
+  - price_surrogate_boundary_extraction
+  - scalar_boundary_head
+  - implicit_level_set
