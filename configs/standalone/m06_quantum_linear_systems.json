@@ -1,6 +1,7 @@
 {
   "method_id": "M06",
   "phase": "screen",
+  "evidence_mode": "canonical",
   "output_root": "results/standalone/M06",
   "solver": {
     "k": 1.0,

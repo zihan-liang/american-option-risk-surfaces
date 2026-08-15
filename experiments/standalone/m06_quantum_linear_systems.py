@@ -265,6 +265,14 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         writer.writerows(rows)
 
 
+def classify_status(*, evidence_mode: str, gate_passed: bool) -> str:
+    if evidence_mode not in {"smoke", "canonical"}:
+        raise ValueError("evidence_mode must be smoke or canonical")
+    if evidence_mode == "canonical" and not gate_passed:
+        return "failed_metric_gate"
+    return "diagnostic_only"
+
+
 def run_screen(
     config: Mapping[str, Any],
     *,
@@ -416,7 +424,10 @@ def run_screen(
     }
     decision = {
         "method_id": "M06",
-        "status": "diagnostic_only",
+        "status": classify_status(
+            evidence_mode=str(config.get("evidence_mode", "smoke")),
+            gate_passed=gate_passed,
+        ),
         "claim_status": "diagnostic_only",
         "numerical_gate_passed": gate_passed,
         "dimension_gate_passed": dimension_passes,

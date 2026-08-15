@@ -105,3 +105,10 @@ def test_screen_runs_each_predeclared_optimizer_configuration(tmp_path):
     assert len(result["metrics"]) == 2
     assert {row["config_id"] for row in result["metrics"]} == {"shallow", "deep"}
     assert set(result["configuration_gate_passed"]) == {"shallow", "deep"}
+
+
+def test_only_canonical_failed_gate_is_classified_as_metric_failure():
+    module = _module()
+    assert module.classify_status(evidence_mode="canonical", gate_passed=False) == "failed_metric_gate"
+    assert module.classify_status(evidence_mode="canonical", gate_passed=True) == "diagnostic_only"
+    assert module.classify_status(evidence_mode="smoke", gate_passed=False) == "diagnostic_only"
