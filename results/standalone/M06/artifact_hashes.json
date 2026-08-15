@@ -1,0 +1,9 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "config_manifest.json": "7bebb4348d186a93214e5445b753903829a15d0130a77536363492b2121b0b85",
+    "decision.json": "b5b7e57732ba565c1af9b814189d7530249d60f12caf17fe07c88c4b0309b158",
+    "metrics.csv": "deef55c73e05f87731943efa3a867fedb2f0e5c8ae12f9833e2625e23399510e",
+    "resource_accounting.csv": "af6eb2b323dbeea3a320f4702cac619dbcd1133fbe7fa9d918653f2a57857d4d"
+  }
+}

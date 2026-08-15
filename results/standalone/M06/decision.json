@@ -1,0 +1,20 @@
+{
+  "blind_holdout_accessed": false,
+  "claim_status": "diagnostic_only",
+  "configuration_gate_passed": {
+    "depth3_iter120": false,
+    "depth5_iter300": false
+  },
+  "dimension_gate_passed": {
+    "16": false,
+    "32": false,
+    "8": true
+  },
+  "method_id": "M06",
+  "numerical_gate_passed": false,
+  "reason": "VQLS and QSVT outputs are diagnostic microbenchmarks, not end-to-end quantum evidence.",
+  "scientific_limit": "No QPU, finite-shot optimization, obstacle iteration, tomography, or speed comparison was executed.",
+  "selected_diagnostic_configuration": "depth5_iter300",
+  "status": "failed_metric_gate",
+  "total_seconds": 16.125950791989453
+}

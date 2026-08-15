@@ -1,0 +1,68 @@
+{
+  "blind_holdout_accessed": false,
+  "config": {
+    "evidence_mode": "canonical",
+    "gates": {
+      "quantum_error_fraction_of_cn_floor": 0.25
+    },
+    "method_id": "M06",
+    "output_root": "results/standalone/M06",
+    "phase": "screen",
+    "resources": {
+      "pauli_truncation": "1e-10",
+      "projected_shots_per_expectation": 10000,
+      "target_inverse_error": 0.001
+    },
+    "solver": {
+      "k": 1.0,
+      "max_iter": 20000,
+      "q": 0.0,
+      "r": 0.05,
+      "s_max": 4.0,
+      "sigma": 0.2,
+      "t": 1.0,
+      "time_fraction": 0.5,
+      "time_steps": 32,
+      "tol": "1e-11"
+    },
+    "vqls": {
+      "configurations": [
+        {
+          "config_id": "depth3_iter120",
+          "cost_tolerance": "1e-10",
+          "finite_difference_step": 0.0001,
+          "iterations": 120,
+          "layers": 3,
+          "learning_rate": 0.06
+        },
+        {
+          "config_id": "depth5_iter300",
+          "cost_tolerance": "1e-10",
+          "finite_difference_step": 0.0001,
+          "iterations": 300,
+          "layers": 5,
+          "learning_rate": 0.04
+        }
+      ],
+      "dimensions": [
+        8,
+        16,
+        32
+      ],
+      "seeds": [
+        101,
+        203,
+        307,
+        409,
+        503
+      ]
+    }
+  },
+  "method_id": "M06",
+  "method_name": "Quantum linear systems",
+  "method_scope": "exact-statevector VQLS diagnostic and QSVT resource proxy; no speed claim",
+  "provenance": {
+    "branch": "campaign/independent-methods",
+    "commit": "53b315d4c63483e6dbc68a70e559e03b9481a11f"
+  }
+}
