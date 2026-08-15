@@ -1,0 +1,70 @@
+{
+  "method_id": "M08",
+  "phase": "screen",
+  "evidence_mode": "canonical",
+  "output_root": "results/standalone/M08",
+  "budget_seconds": 3600,
+  "base_solver": {
+    "option_type": "put",
+    "k": 1.0,
+    "t": 2.0,
+    "s_max": 4.0,
+    "m": 128,
+    "n": 64,
+    "omega": 1.2,
+    "tol": 1e-10,
+    "max_iter": 20000,
+    "american": true,
+    "time_scheme": "cn",
+    "lcp_solver": "psor"
+  },
+  "refined_solver": {
+    "m": 256,
+    "n": 128
+  },
+  "parameter_grid": {
+    "sigma": {"min": 0.10, "max": 0.60, "count": 9},
+    "r": {"min": 0.00, "max": 0.10, "count": 7},
+    "q": {"min": 0.00, "max": 0.08, "count": 5}
+  },
+  "split": {
+    "train_fraction": 0.70,
+    "validation_fraction": 0.15,
+    "seed": 808
+  },
+  "tt_completion_seeds": [101, 203, 307, 409, 503],
+  "completion": {
+    "steps": 800,
+    "batch_size": 4096,
+    "learning_rate": 0.01
+  },
+  "timing": {
+    "warmups": 5,
+    "repetitions": 30
+  },
+  "bootstrap": {
+    "repetitions": 500,
+    "seed": 808
+  },
+  "diagnostics": {
+    "contact_tol": 1e-8,
+    "ordinary_floor": 1e-12,
+    "obstacle_floor": 1e-10,
+    "residual_floor": 1e-10
+  },
+  "configurations": [
+    {"id": "tt_svd_r4", "family": "tt_svd", "rank": 4},
+    {"id": "tt_svd_r8", "family": "tt_svd", "rank": 8},
+    {"id": "tt_completion_r4_f10", "family": "tt_completion", "rank": 4, "observed_fraction": 0.10},
+    {"id": "tt_completion_r8_f25", "family": "tt_completion", "rank": 8, "observed_fraction": 0.25},
+    {"id": "pod_r4", "family": "pod", "rank": 4},
+    {"id": "pod_r8", "family": "pod", "rank": 8},
+    {"id": "primal_dual_rb_r4", "family": "primal_dual_rb", "rank": 4},
+    {"id": "primal_dual_rb_r8", "family": "primal_dual_rb", "rank": 8}
+  ],
+  "gates": {
+    "compression_ratio_min": 10.0,
+    "ordinary_degradation_pct_max": 2.0,
+    "residual_degradation_pct_max": 5.0
+  }
+}
