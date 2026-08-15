@@ -37,11 +37,14 @@ This is the short current-session state file for agent continuity. The long rese
   PSOR cleanup is about 11.85% faster on the validation workloads, but it fails
   the frozen price, Greek, boundary, continuation, and complementarity
   non-regression gates.
+- M04 selective implementation is integrated after a rebuild and one bounded
+  repair. It has no accepted experimental evidence yet; dataset identity and
+  explicit regimes must be frozen before a non-evidence smoke run.
 
 ## Next Step
 
-- Preserve the accepted M01 and negative M02--M03 evidence. Review and execute
-  M04 free-boundary representation as the next independent method.
+- Preserve the accepted M01 and negative M02--M03 evidence. Complete the M04
+  data-freeze and smoke-preparation checkpoint; do not run M04 canonical.
 - HD0/HD1 are `deferred` until the independent M01--M24 campaign is complete;
   they are not failed, resource-blocked, or part of the campaign scoreboard.
 

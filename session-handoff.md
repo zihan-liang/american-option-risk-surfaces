@@ -6,7 +6,9 @@
 - Current status: Wave 0 campaign foundation complete; M01 is accepted with
   `cn_policy_iteration` as a scoped candidate, M02 is closed as
   `insufficient_diagnostics`, and M03 is closed as `failed_metric_gate`.
-  M04 is next; HD0/HD1 remain deferred.
+  The M04 implementation is integrated but has no accepted experimental
+  evidence. M04 data freeze and smoke preparation are next; HD0/HD1 remain
+  deferred.
 - Branch: `campaign/independent-methods`.
 - Worktree: `/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/campaign-independent-methods`.
 
@@ -50,6 +52,8 @@
 | Foundation diff hygiene | `git diff --check` | passed | No whitespace errors. |
 | M03 focused integration | `$PY -m pytest -p no:cacheprovider tests/test_m03_algorithm_unrolling.py tests/test_m03_unrolled.py tests/test_m03_campaign.py tests/test_m01_classical_campaign_outputs.py tests/test_m02_obstacle_pinn_outputs.py tests/test_campaign_outputs.py` | passed | 42 tests passed. |
 | M03 canonical screen | `$PY experiments/26_independent_method_campaign.py --method M03 --phase screen --config configs/m03_algorithm_unrolling.yaml --output-root results/independent_method_campaign` | completed | `failed_metric_gate`; 11.85% timing improvement but frozen diagnostic gates failed; blind holdout untouched. |
+| M04 worker focused suite | `$PY -m pytest -p no:cacheprovider tests/test_m04_free_boundary.py tests/test_m04_free_boundary_models.py tests/test_m04_oracle_and_data.py tests/test_m04_metrics_and_budget.py -q` | passed | 29 tests passed after the bounded evidence repair. |
+| M01--M04 integration suite | Focused campaign, dispatcher, and M01--M04 method tests | passed | 71 tests passed after selective M04 integration. |
 
 ## Files Changed
 
@@ -94,7 +98,8 @@
 
 ## Recommended Next Step
 
-Do not rerun M01--M03. Start with a focused review of M04 free-boundary
-representation and run its canonical screen only if its boundary definition,
-sub-grid extraction, split isolation, and comparison gates pass. Keep HD0/HD1
-deferred and outside the campaign scoreboard.
+Do not rerun M01--M03 or run M04 canonical. Freeze the real M04 dataset hash
+and explicit complete-regime IDs, finish the limited evidence/timing guards in
+`docs/campaign/m04_implementation_review.md`, and only then authorize one
+non-evidence M04 smoke run. Keep HD0/HD1 deferred and outside the campaign
+scoreboard.
