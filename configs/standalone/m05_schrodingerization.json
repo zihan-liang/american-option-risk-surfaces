@@ -1,0 +1,25 @@
+{
+  "method_id": "M05",
+  "phase": "screen",
+  "output_root": "results/standalone/M05",
+  "solver": {
+    "k": 1.0,
+    "t": 1.0,
+    "r": 0.05,
+    "q": 0.0,
+    "sigma": 0.2,
+    "s_max": 4.0,
+    "medium_m": 32,
+    "medium_n": 32,
+    "fine_multiplier": 2,
+    "tol": 1e-11,
+    "max_iter": 20000
+  },
+  "experiment": {
+    "time_fraction": 0.5,
+    "decay_tolerance": 1e-8
+  },
+  "gates": {
+    "obstacle_tolerance": 1e-10
+  }
+}
