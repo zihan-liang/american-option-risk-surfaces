@@ -1,0 +1,36 @@
+{
+  "blind_holdout_accessed": false,
+  "config": {
+    "blind_holdout_accessed": false,
+    "experiment": {
+      "decay_tolerance": "1e-8",
+      "time_fraction": 0.5
+    },
+    "gates": {
+      "obstacle_tolerance": "1e-10"
+    },
+    "method_id": "M05",
+    "output_root": "results/standalone/M05",
+    "phase": "screen",
+    "solver": {
+      "fine_multiplier": 2,
+      "k": 1.0,
+      "max_iter": 20000,
+      "medium_m": 32,
+      "medium_n": 32,
+      "q": 0.0,
+      "r": 0.05,
+      "s_max": 4.0,
+      "sigma": 0.2,
+      "t": 1.0,
+      "tol": "1e-11"
+    }
+  },
+  "method_id": "M05",
+  "method_name": "Schrodingerization",
+  "method_scope": "classical dissipative-recovery proxy; no quantum circuit or speedup claim",
+  "provenance": {
+    "branch": "campaign/independent-methods",
+    "commit": "a78451383a697ad07cab09cd503633b6cfcc3aeb"
+  }
+}

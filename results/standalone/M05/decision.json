@@ -1,0 +1,11 @@
+{
+  "blind_holdout_accessed": false,
+  "claim_status": "diagnostic_only",
+  "method_id": "M05",
+  "numerical_gate_passed": true,
+  "oracle_seconds": 0.06386712496168911,
+  "reason": "Both bounded inner-solve diagnostics are below the classical discretization floor.",
+  "scientific_limit": "No American obstacle Schr\u00f6dingerization or quantum advantage is established.",
+  "status": "diagnostic_only",
+  "total_seconds": 0.08300529199186713
+}
