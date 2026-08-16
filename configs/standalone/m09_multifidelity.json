@@ -1,0 +1,25 @@
+{
+  "method_id": "M09",
+  "phase": "screen",
+  "evidence_mode": "canonical",
+  "output_root": "results/standalone/M09",
+  "budget_seconds": 3600,
+  "coarse_solver": {"option_type":"put","k":1.0,"t":2.0,"s_max":4.0,"m":60,"n":60,"omega":1.2,"tol":1e-10,"max_iter":20000,"american":true,"time_scheme":"cn","lcp_solver":"psor"},
+  "fine_solver": {"option_type":"put","k":1.0,"t":2.0,"s_max":4.0,"m":120,"n":120,"omega":1.2,"tol":1e-10,"max_iter":20000,"american":true,"time_scheme":"cn","lcp_solver":"psor"},
+  "parameter_grid": {
+    "sigma": {"min":0.12,"max":0.52,"count":3},
+    "r": {"min":-0.02,"max":0.10,"count":3},
+    "q": {"min":0.00,"max":0.08,"count":3}
+  },
+  "split": {"train_fraction":0.70,"validation_fraction":0.15,"seed":909},
+  "selection_seed": 909,
+  "training_seeds": [101,203,307,409,503],
+  "fine_fractions": [0.10,0.25,0.50,1.00],
+  "model": {"hidden":64,"depth":2,"epochs":8,"batch_size":4096,"learning_rate":0.001,"patience":3,"device":"cpu","dtype":"float64"},
+  "matching": {"relative_price_tolerance":0.02},
+  "timing": {"warmups":5,"repetitions":30},
+  "bootstrap": {"repetitions":1000,"seed":909},
+  "diagnostics": {"contact_tol":1e-8,"ordinary_floor":1e-12,"obstacle_floor":1e-10,"residual_floor":1e-10},
+  "gates": {"fine_label_cost_reduction_pct_min":2.0,"ordinary_degradation_pct_max":2.0,"residual_degradation_pct_max":5.0,"hard_obstacle_violation_max":1e-10},
+  "smoke": {"max_regimes":9,"training_seeds":[101],"fine_fractions":[0.50,1.00],"epochs":2}
+}
