@@ -1,0 +1,72 @@
+{
+  "blind_holdout_accessed": false,
+  "claim_status": "diagnostic_only",
+  "coarse_label_seconds": 1.5471068733604625,
+  "fine_eval_label_seconds": 6.21847283304669,
+  "fine_label_cost_reduction_ci_high_pct": 50.120184102689905,
+  "fine_label_cost_reduction_ci_low_pct": 10.024036820537981,
+  "fine_label_cost_reduction_pct": 30.072110461613942,
+  "interpolation_seconds": 0.0,
+  "limitations": [
+    "The primary cost claim counts fine training-label generation only; validation/test fine-oracle generation is fixed audit overhead and reported separately.",
+    "Coarse pretraining uses complete global coarse surfaces and fine tuning uses complete selected fine regimes; no boundary-local patch labels are used.",
+    "Known payoff, terminal, and spatial boundary constraints are imposed identically on every learned arm before diagnostics.",
+    "Interpolation cost is exactly zero because both fidelities train the same continuous-coordinate MLP; no coarse surface is interpolated into a fine label field.",
+    "Ordinary-test fine oracles and model diagnostics are generated only after validation-only matched-accuracy selection is frozen."
+  ],
+  "matched_accuracy_complete": true,
+  "method_id": "M09",
+  "numerical_gate_passed": false,
+  "reason": "Multi-fidelity did not satisfy matched-accuracy fine-label cost and all shared diagnostic gates.",
+  "selected_candidate_obstacle_violation": 0.0,
+  "selected_fractions_by_seed": {
+    "101": {
+      "coarse_plus_few_fine": 0.5,
+      "fine_only": 1.0
+    },
+    "203": {
+      "coarse_plus_few_fine": 1.0,
+      "fine_only": 1.0
+    },
+    "307": {
+      "coarse_plus_few_fine": 0.5,
+      "fine_only": 1.0
+    },
+    "409": {
+      "coarse_plus_few_fine": 0.5,
+      "fine_only": 1.0
+    },
+    "503": {
+      "coarse_plus_few_fine": 1.0,
+      "fine_only": 1.0
+    }
+  },
+  "shared_diagnostic_degradation": {
+    "degradation_ci_low_pct_boundary_rmse": 1.91770454344461,
+    "degradation_ci_low_pct_complementarity": -17.90024280065021,
+    "degradation_ci_low_pct_continuation_residual": 0.35175264900639114,
+    "degradation_ci_low_pct_delta_rmse": -18.835448604217873,
+    "degradation_ci_low_pct_dual_violation": -19.92891410653337,
+    "degradation_ci_low_pct_gamma_rmse": -9.078825714349449,
+    "degradation_ci_low_pct_obstacle_violation": 0.0,
+    "degradation_ci_low_pct_price_rmse": -23.553709502207568,
+    "degradation_ci_upper_pct_boundary_rmse": 27.46841777035628,
+    "degradation_ci_upper_pct_complementarity": 41.97682674997809,
+    "degradation_ci_upper_pct_continuation_residual": 75.74611002661743,
+    "degradation_ci_upper_pct_delta_rmse": 10.940026123728765,
+    "degradation_ci_upper_pct_dual_violation": 6.245295749351481,
+    "degradation_ci_upper_pct_gamma_rmse": 16.578426315372198,
+    "degradation_ci_upper_pct_obstacle_violation": 0.0,
+    "degradation_ci_upper_pct_price_rmse": 2.17902873091737,
+    "degradation_pct_boundary_rmse": 12.790341594023875,
+    "degradation_pct_complementarity": 13.563609259654848,
+    "degradation_pct_continuation_residual": 37.73454772629288,
+    "degradation_pct_delta_rmse": -3.9477112402445536,
+    "degradation_pct_dual_violation": -8.791500216272487,
+    "degradation_pct_gamma_rmse": 4.273179609564186,
+    "degradation_pct_obstacle_violation": 0.0,
+    "degradation_pct_price_rmse": -13.101590627519588
+  },
+  "status": "failed_metric_gate",
+  "total_seconds": 41.939708000048995
+}

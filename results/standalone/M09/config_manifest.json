@@ -1,0 +1,127 @@
+{
+  "blind_holdout_accessed": false,
+  "branch": "campaign/independent-methods",
+  "coarse_grid": {
+    "m": 60,
+    "n": 60
+  },
+  "config_path": "configs/standalone/m09_multifidelity.json",
+  "config_sha256": "a8a695ba414783522876deae6b7c34034c28d7f21c5f222a8c413473f246838a",
+  "evidence_mode": "canonical",
+  "feature_names": [
+    "log_moneyness",
+    "tau_over_T",
+    "r",
+    "q",
+    "sigma",
+    "T",
+    "is_call"
+  ],
+  "fine_fractions": [
+    0.1,
+    0.25,
+    0.5,
+    1.0
+  ],
+  "fine_grid": {
+    "m": 120,
+    "n": 120
+  },
+  "implementation_sha": "198b9bef9c7f7de22997ba5ea7b986c2a0e50c47",
+  "method_id": "M09",
+  "model_parameter_count": 4737,
+  "nested_fine_regime_subsets": {
+    "0.1": [
+      "regime_0003",
+      "regime_0015"
+    ],
+    "0.25": [
+      "regime_0003",
+      "regime_0011",
+      "regime_0014",
+      "regime_0015",
+      "regime_0017"
+    ],
+    "0.5": [
+      "regime_0001",
+      "regime_0003",
+      "regime_0011",
+      "regime_0013",
+      "regime_0014",
+      "regime_0015",
+      "regime_0016",
+      "regime_0017",
+      "regime_0018",
+      "regime_0023"
+    ],
+    "1.0": [
+      "regime_0001",
+      "regime_0002",
+      "regime_0003",
+      "regime_0004",
+      "regime_0005",
+      "regime_0008",
+      "regime_0009",
+      "regime_0010",
+      "regime_0011",
+      "regime_0013",
+      "regime_0014",
+      "regime_0015",
+      "regime_0016",
+      "regime_0017",
+      "regime_0018",
+      "regime_0022",
+      "regime_0023",
+      "regime_0024",
+      "regime_0025"
+    ]
+  },
+  "numpy": "2.4.6",
+  "phase": "screen",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "scope_limitation": "Classical 1D American-put multi-fidelity falsification screen using complete matched CN/PSOR surfaces only; validation freezes fractions before ordinary-test oracle generation/evaluation; no local patch solves and no blind holdout access.",
+  "split_regime_keys": {
+    "test": [
+      "regime_0020",
+      "regime_0012",
+      "regime_0021",
+      "regime_0006"
+    ],
+    "train": [
+      "regime_0005",
+      "regime_0002",
+      "regime_0016",
+      "regime_0023",
+      "regime_0004",
+      "regime_0010",
+      "regime_0017",
+      "regime_0014",
+      "regime_0011",
+      "regime_0001",
+      "regime_0008",
+      "regime_0022",
+      "regime_0018",
+      "regime_0025",
+      "regime_0003",
+      "regime_0015",
+      "regime_0013",
+      "regime_0024",
+      "regime_0009"
+    ],
+    "validation": [
+      "regime_0019",
+      "regime_0000",
+      "regime_0007",
+      "regime_0026"
+    ]
+  },
+  "torch": "2.13.0",
+  "training_seeds": [
+    101,
+    203,
+    307,
+    409,
+    503
+  ]
+}
