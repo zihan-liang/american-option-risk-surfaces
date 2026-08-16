@@ -1,0 +1,25 @@
+{
+  "blind_holdout_accessed": false,
+  "claim_status": "diagnostic_only",
+  "frozen_validation_winners": {
+    "pod": "pod_r8",
+    "primal_dual_rb": "primal_dual_rb_r4",
+    "tt_completion": "tt_completion_r4_f10",
+    "tt_svd": "tt_svd_r4"
+  },
+  "label_generation_seconds": 64.55085708294064,
+  "limitations": [
+    "Classical tensor/model-reduction experiment only; no quantum hardware or QTT PDE solver.",
+    "TT-SVD, POD, and primal-dual RB are oracle compressibility baselines with complete-tensor access.",
+    "tt_completion alone restricts observed fitting data to complete training regimes and is run with all five campaign seeds.",
+    "primal_dual_rb uses CN LCP residual snapshots as the dual basis but is a compression baseline, not a reduced variational-inequality solver.",
+    "No post-reconstruction obstacle repair is applied before diagnostics."
+  ],
+  "method_id": "M08",
+  "numerical_gate_passed": false,
+  "passing_test_configurations": [],
+  "reason": "No frozen low-rank configuration passed compression and all shared diagnostic gates.",
+  "refined_oracle_seconds": 171.96190858294722,
+  "status": "failed_metric_gate",
+  "total_seconds": 245.8827602500096
+}
