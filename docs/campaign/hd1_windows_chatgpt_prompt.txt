@@ -1,0 +1,37 @@
+Implement and run only the HD1 Windows high-dimensional PINN 48-hour pilot.
+
+Repository: zihan-liang/american-option-risk-surfaces
+Base: latest pushed origin/campaign/independent-methods
+Branch to create: exp/hd1-windows-high-dimensional-pinn-48h
+
+Before doing work, report:
+git rev-parse --show-toplevel
+git status --short --branch
+git rev-parse HEAD
+nvidia-smi
+python --version
+python -c "import torch; print({'torch': torch.__version__, 'cuda': torch.cuda.is_available(), 'runtime': torch.version.cuda, 'device': torch.cuda.get_device_name(0) if torch.cuda.is_available() else None})"
+
+Read only:
+- AGENTS.md
+- docs/campaign/token_budget_policy.md
+- docs/campaign/hd1_windows_high_dimensional_pinn_48h_pilot.md
+- /Users/liangzihan/Documents/SURF_0159/SURF/deep_research/2.md if available
+- /Users/liangzihan/Documents/SURF_0159/SURF/deep-research-report_PINNs.md if available
+- the smallest existing CN/PSOR, obstacle-PINN, residual, and test files found with rg
+
+Follow the HD1 pilot document exactly. Do not redesign the experiment. Use TDD.
+First perform the environment, oracle, Hessian-estimator, focused-test, and
+500-step smoke gates. If they pass, commit the implementation and run the eight
+single-seed canonical jobs sequentially. Apply only the documented time and OOM
+fallbacks. Keep every negative, failed, and resource-blocked result.
+
+Do not access the campaign blind holdout. Do not run M01--M24. Do not add more
+seeds, dimensions, models, Heston, arithmetic baskets, or hyperparameter search.
+Do not call this reducible geometric-basket control a general high-dimensional
+American-option solution. Do not claim statistical superiority or GPU speedup.
+
+Commit implementation before canonical execution, then commit compact results.
+Push only exp/hd1-windows-high-dimensional-pinn-48h; do not merge it.
+
+Return at most 30 lines using the exact completion format in the pilot document.
