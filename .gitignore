@@ -49,3 +49,4 @@ reports/*.toc
 reports/*.xdv
 results/test_stage*/
 results/test_m02_obstacle_pinn/
+results/hd1_windows_high_dimensional_pinn_48h/status/
