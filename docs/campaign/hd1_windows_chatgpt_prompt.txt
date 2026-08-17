@@ -1,37 +1,79 @@
-Implement and run only the HD1 Windows high-dimensional PINN 48-hour pilot.
+You are the implementation author for a Windows high-dimensional PINN pilot.
+You have access to GitHub, but you do NOT have access to my Windows machine,
+local files, NVIDIA RTX 4060, CUDA runtime, or local datasets. Do not claim that
+you ran a GPU experiment.
 
-Repository: zihan-liang/american-option-risk-surfaces
-Base: latest pushed origin/campaign/independent-methods
-Branch to create: exp/hd1-windows-high-dimensional-pinn-48h
+GitHub repository: zihan-liang/american-option-risk-surfaces
+Base branch: latest campaign/independent-methods
+Implementation branch: exp/hd1-windows-high-dimensional-pinn-48h
 
-Before doing work, report:
-git rev-parse --show-toplevel
-git status --short --branch
-git rev-parse HEAD
-nvidia-smi
-python --version
-python -c "import torch; print({'torch': torch.__version__, 'cuda': torch.cuda.is_available(), 'runtime': torch.version.cuda, 'device': torch.cuda.get_device_name(0) if torch.cuda.is_available() else None})"
-
-Read only:
+Read from GitHub:
 - AGENTS.md
 - docs/campaign/token_budget_policy.md
 - docs/campaign/hd1_windows_high_dimensional_pinn_48h_pilot.md
-- /Users/liangzihan/Documents/SURF_0159/SURF/deep_research/2.md if available
-- /Users/liangzihan/Documents/SURF_0159/SURF/deep-research-report_PINNs.md if available
-- the smallest existing CN/PSOR, obstacle-PINN, residual, and test files found with rg
+- the smallest relevant CN/PSOR, obstacle-PINN, residual, and test files found
+  through repository search
 
-Follow the HD1 pilot document exactly. Do not redesign the experiment. Use TDD.
-First perform the environment, oracle, Hessian-estimator, focused-test, and
-500-step smoke gates. If they pass, commit the implementation and run the eight
-single-seed canonical jobs sequentially. Apply only the documented time and OOM
-fallbacks. Keep every negative, failed, and resource-blocked result.
+The experiment specification summarizes the required Deep Research. The local
+paths mentioned in that document are unavailable to you and are not required
+for this implementation-only phase.
 
-Do not access the campaign blind holdout. Do not run M01--M24. Do not add more
-seeds, dimensions, models, Heston, arithmetic baskets, or hyperparameter search.
-Do not call this reducible geometric-basket control a general high-dimensional
-American-option solution. Do not claim statistical superiority or GPU speedup.
+Implement the frozen experiment exactly. Do not redesign or expand it. Use TDD
+for the mathematical operator, geometric-basket reduction, DeepSets symmetry,
+Hutchinson estimator, loss curriculum, output schema, and no-promotion rules.
 
-Commit implementation before canonical execution, then commit compact results.
-Push only exp/hd1-windows-high-dimensional-pinn-48h; do not merge it.
+In addition to the files required by the specification, create:
 
-Return at most 30 lines using the exact completion format in the pilot document.
+- scripts/run_hd1_windows_48h.ps1
+- scripts/check_hd1_windows_status.ps1
+- docs/campaign/hd1_windows_execution_instructions.md
+
+The runner must support these explicit phases:
+
+- preflight: Python, PyTorch, CUDA, GPU identity, memory, writable directories,
+  dependency versions, CPU float64 oracle smoke, and focused tests
+- smoke: the two documented 500-step smokes only
+- canonical: the eight documented single-seed jobs in fixed order
+- all: preflight, smoke, then canonical only when every preceding gate passes
+- status: print compact process/result status without modifying files
+
+The PowerShell runner must:
+
+1. use paths relative to the repository root;
+2. stop on errors and preserve nonzero exit codes;
+3. write full logs to an ignored local log directory;
+4. write a compact exit-status JSON file for every phase;
+5. save PID, start time, end time, command, Git commit, and environment details;
+6. refuse canonical execution unless preflight and smoke pass;
+7. execute canonical jobs sequentially, never concurrently;
+8. support safe resume by skipping only jobs with verified artifact hashes;
+9. enforce the 3-hour per-run, 24-GPU-hour, 7-GiB, dimension-ladder, and OOM
+   fallback rules in the specification;
+10. never access the campaign blind holdout;
+11. never install or upgrade dependencies automatically;
+12. never fabricate canonical result files during tests.
+
+Cloud/CPU tests may be run for implementation verification. CUDA tests must be
+marked as Windows runtime checks, not reported as passed unless they actually
+ran on the target machine.
+
+Commit the implementation before any future canonical result commit. If your
+GitHub capability permits, push only
+exp/hd1-windows-high-dimensional-pinn-48h and open a draft PR against
+campaign/independent-methods. Do not merge it. If your GitHub connection is
+read-only, state that immediately and return a complete unified patch or
+downloadable code artifact; do not claim that a branch or commit was created.
+
+Do not create canonical metrics, a closure result, or a GPU claim. The user
+will pull the implementation branch and run the PowerShell script on Windows.
+
+Return at most 25 lines:
+- GitHub capability: read-only or read/write
+- base commit
+- branch and implementation commit, if created
+- draft PR link, if created
+- files changed
+- CPU/focused tests actually run
+- CUDA tests not run
+- exact Windows commands for preflight, smoke, all, and status
+- known blockers and limitations
