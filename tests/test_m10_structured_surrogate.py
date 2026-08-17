@@ -116,7 +116,9 @@ def test_tiny_oracle_surface_has_exact_european_terminal_anchor_and_finite_diagn
     regime = {"id": "tiny", "sigma": 0.2, "r": 0.03, "q": 0.01}
     base = {"option_type":"put","k":1.0,"t":0.25,"s_max":3.0,"m":16,"n":12,"omega":1.2,"tol":1e-10,"max_iter":20000,"american":True,"time_scheme":"cn","lcp_solver":"psor"}
     surface = runner.solve_surface(base, regime)
-    assert np.allclose(surface["european"][0], surface["result"].payoff / surface["cfg"].k, atol=1e-12)
+    assert surface["european"].shape == surface["target"].shape
+    european_surface = surface["european"].reshape(surface["result"].values.shape)
+    assert np.allclose(european_surface[0], surface["result"].payoff / surface["cfg"].k, atol=1e-12)
     metrics = runner.surface_metrics(surface["result"].values.copy(), surface, contact_tol=1e-8)
     assert metrics["price_rmse"] == pytest.approx(0.0, abs=1e-14)
     assert metrics["delta_rmse"] == pytest.approx(0.0, abs=1e-14)
