@@ -1,0 +1,22 @@
+{
+  "method_id": "M10",
+  "phase": "screen",
+  "evidence_mode": "canonical",
+  "output_root": "results/standalone/M10",
+  "budget_seconds": 3600,
+  "solver": {"option_type":"put","k":1.0,"t":2.0,"s_max":4.0,"m":80,"n":80,"omega":1.2,"tol":1e-10,"max_iter":20000,"american":true,"time_scheme":"cn","lcp_solver":"psor"},
+  "parameter_grid": {
+    "sigma": {"min":0.12,"max":0.52,"count":4},
+    "r": {"min":-0.02,"max":0.10,"count":4},
+    "q": {"min":0.00,"max":0.08,"count":4}
+  },
+  "split": {"train_fraction":0.70,"validation_fraction":0.15,"seed":1010},
+  "training_seeds": [101,203,307,409,503],
+  "arms": ["direct_price","positive_premium","terminal_scaled_premium","european_anchor_correction"],
+  "model": {"hidden":64,"depth":2,"epochs":8,"batch_size":4096,"learning_rate":0.001,"optimizer":"adam","device":"cpu","dtype":"float64"},
+  "timing": {"warmups":5,"repetitions":30},
+  "bootstrap": {"repetitions":2000,"seed":1010,"confidence":0.95},
+  "diagnostics": {"contact_tol":1e-8,"ordinary_floor":1e-12,"residual_floor":1e-10,"output_scale_floor":1e-8},
+  "gates": {"price_improvement_pct_min":2.0,"ordinary_degradation_pct_max":2.0,"residual_degradation_pct_max":5.0,"hard_obstacle_violation_max":1e-10,"family_alpha":0.05},
+  "smoke": {"max_regimes":12,"training_seeds":[101],"epochs":2,"timing_warmups":1,"timing_repetitions":2}
+}
