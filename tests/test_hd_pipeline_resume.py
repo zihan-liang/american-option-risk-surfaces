@@ -22,6 +22,8 @@ from hd_pipeline_windows import (
     should_enable_parallel,
 )
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def test_jsonl_recovery_ignores_only_incomplete_final_line(tmp_path: Path):
     path = tmp_path / "history.jsonl"
@@ -193,3 +195,26 @@ def test_parallelism_requires_speed_gain_memory_headroom_and_success():
         speed_ratio_max=0.90,
         memory_limit_gib=7.2,
     )
+
+
+def test_windows_runner_exposes_only_supported_phases_and_never_installs_packages():
+    path = ROOT / "scripts" / "run_hd_pipeline_windows.ps1"
+    text = path.read_text(encoding="utf-8")
+    for phase in ("all", "preflight", "hd2", "hd3", "finalize", "status"):
+        assert phase in text
+    assert "experiments\\hd_pipeline_windows.py" in text
+    assert "$LASTEXITCODE" in text
+    lowered = text.lower()
+    assert "pip install" not in lowered
+    assert "conda install" not in lowered
+    assert "winget" not in lowered
+    assert ".venv-pinn" in text
+
+
+def test_status_wrapper_is_read_only_pipeline_status_call():
+    path = ROOT / "scripts" / "check_hd_pipeline_status.ps1"
+    text = path.read_text(encoding="utf-8")
+    assert "run_hd_pipeline_windows.ps1" in text
+    assert "-Phase status" in text
+    assert "Remove-Item" not in text
+    assert "Set-Content" not in text
