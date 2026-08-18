@@ -1,0 +1,102 @@
+{
+  "experiment_id": "hd2_hvi_objective_stabilization",
+  "diagnostic_only": true,
+  "seed": 101,
+  "dimensions": [2, 5],
+  "contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "r": 0.05,
+    "q": 0.02,
+    "sigma": 0.25,
+    "rho": 0.30
+  },
+  "log_moneyness": [-0.6931471805599453, 0.4054651081081644],
+  "tau": [0.0025, 1.0],
+  "supervised_train_points": 20000,
+  "validation_points": 8192,
+  "test_points": 16384,
+  "sobol_seeds": {
+    "train": 20260101,
+    "validation": 20260102,
+    "test": 20260103,
+    "physics": 20260104,
+    "diagnostic": 20260105,
+    "hutchinson_diagnostic": 20260106
+  },
+  "candidates": [
+    "SUP-HD2",
+    "HVI-HD1-anchor",
+    "HVI-low",
+    "HVI-warm",
+    "HVI-warm-low"
+  ],
+  "candidate_settings": {
+    "SUP-HD2": {
+      "warm_start_steps": 10000,
+      "final_physics_weight": 0.0
+    },
+    "HVI-HD1-anchor": {
+      "warm_start_steps": 2000,
+      "final_physics_weight": 0.1
+    },
+    "HVI-low": {
+      "warm_start_steps": 2000,
+      "final_physics_weight": 0.01
+    },
+    "HVI-warm": {
+      "warm_start_steps": 5000,
+      "final_physics_weight": 0.1
+    },
+    "HVI-warm-low": {
+      "warm_start_steps": 5000,
+      "final_physics_weight": 0.01
+    }
+  },
+  "total_steps": 10000,
+  "learning_rate": 0.001,
+  "initial_batch_size": 2048,
+  "oom_batch_fallbacks": [1024, 512],
+  "fb_epsilon_initial": 0.01,
+  "fb_epsilon_final": 0.0001,
+  "hutchinson_probe_count": 2,
+  "hutchinson_probe_seed": 101,
+  "conditional_hutchinson_probe_count": 8,
+  "oracle_grids": [[256, 256], [512, 512]],
+  "oracle_rmse_max": 0.0001,
+  "checkpoint_interval": 250,
+  "train_log_interval": 100,
+  "validation_interval": 500,
+  "gradient_diagnostic_interval": 500,
+  "layerwise_gradient_interval": 1000,
+  "gradient_diagnostic_batch_size": {
+    "2": 128,
+    "5": 64
+  },
+  "gradient_diagnostic_batch_fallbacks": [64, 32, 16],
+  "hutchinson_gradient_checkpoints": [2000, 5000, 10000],
+  "hutchinson_gradient_batch_size": 16,
+  "hutchinson_relative_error_trigger": 0.05,
+  "hutchinson_gradient_cosine_trigger": 0.95,
+  "persistent_conflict_window_steps": 500,
+  "persistent_conflict_median_cosine": -0.1,
+  "selection_gates": {
+    "price_ratio_max": 1.05,
+    "gamma_ratio_max": 1.10,
+    "boundary_ratio_max": 1.10,
+    "pde_p95_ratio_max": 0.75,
+    "fb_p95_ratio_max": 0.75
+  },
+  "fallback_objective": {
+    "candidate": "HVI-warm-low",
+    "warm_fraction": 0.5,
+    "final_physics_weight": 0.01
+  },
+  "max_cuda_allocation_gib": 7.2,
+  "pipeline_wall_clock_hours": 18.0,
+  "mixed_precision": false,
+  "canonical_dtype": "float32",
+  "oracle_dtype": "float64",
+  "claim_status": "diagnostic_only",
+  "blind_holdout_access": false
+}
