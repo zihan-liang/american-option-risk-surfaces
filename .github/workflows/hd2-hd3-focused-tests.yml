@@ -31,6 +31,7 @@ jobs:
           tests/test_hd1_high_dimensional_pinn.py
           tests/test_hd2_hvi_objective_stabilization.py
           tests/test_hd3_high_dimensional_pinn.py
+          tests/test_hd_pipeline_resume.py
       - name: Compile HD code
         run: >-
           python -m compileall -q
@@ -38,3 +39,4 @@ jobs:
           src/physics/high_dimensional_black_scholes.py
           tests/test_hd2_hvi_objective_stabilization.py
           tests/test_hd3_high_dimensional_pinn.py
+          tests/test_hd_pipeline_resume.py
