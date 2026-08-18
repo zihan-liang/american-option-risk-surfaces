@@ -7,6 +7,10 @@ from pathlib import Path
 import pytest
 import torch
 
+from hd3_classical_vs_structured_high_dimensional_pinn import (
+    freeze_objective,
+    resolve_objective,
+)
 from models.hd3_high_dimensional_pinn import FCPINN
 from models.high_dimensional_pinn import initialize_model as initialize_deepsets
 from physics.hd3_high_dimensional_sampling import (
@@ -18,8 +22,14 @@ from physics.hd3_high_dimensional_sampling import (
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _hd3_config() -> dict:
+    return json.loads(
+        (ROOT / "configs" / "hd3_classical_vs_structured_high_dimensional_pinn.json").read_text()
+    )
+
+
 def test_hd3_frozen_config_contract():
-    cfg = json.loads((ROOT / "configs" / "hd3_classical_vs_structured_high_dimensional_pinn.json").read_text())
+    cfg = _hd3_config()
     assert cfg["seed"] == 101
     assert cfg["canonical_dimensions"] == [10, 20, 50]
     assert cfg["stress_dimensions"] == [100]
@@ -34,12 +44,67 @@ def test_hd3_frozen_config_contract():
 
 
 def test_hd3_architecture_and_budget_are_frozen():
-    cfg = json.loads((ROOT / "configs" / "hd3_classical_vs_structured_high_dimensional_pinn.json").read_text())
+    cfg = _hd3_config()
     assert cfg["fc_hidden_layers"] == 6
     assert cfg["fc_width"] == 128
     assert cfg["transverse_scale"] == 0.35
     assert cfg["hutchinson_probe_count"] == 2
     assert cfg["pipeline_wall_clock_hours"] == 18.0
+
+
+def test_hd3_objective_fallback_is_exact_when_hd2_has_no_candidate(tmp_path: Path):
+    selection = tmp_path / "selection.json"
+    selection.write_text(json.dumps({"selection_status": "no_stabilized_candidate"}), encoding="utf-8")
+    got = resolve_objective(selection, _hd3_config())
+    assert got == {
+        "candidate": "HVI-warm-low",
+        "warm_fraction": 0.5,
+        "final_physics_weight": 0.01,
+        "fallback_objective": True,
+    }
+
+
+def test_hd3_objective_uses_selected_hd2_candidate(tmp_path: Path):
+    selected = {
+        "candidate": "HVI-low",
+        "warm_fraction": 0.2,
+        "final_physics_weight": 0.01,
+        "fallback_objective": False,
+    }
+    selection = tmp_path / "selection.json"
+    selection.write_text(
+        json.dumps(
+            {
+                "selection_status": "stabilized_candidate_selected",
+                "resolved_objective": selected,
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert resolve_objective(selection, _hd3_config()) == selected
+
+
+def test_frozen_objective_cannot_change_after_canonical_started(tmp_path: Path):
+    path = tmp_path / "resolved_objective.json"
+    first = {
+        "candidate": "HVI-low",
+        "warm_fraction": 0.2,
+        "final_physics_weight": 0.01,
+        "fallback_objective": False,
+    }
+    first_hash = freeze_objective(path, first, canonical_started=False)
+    assert freeze_objective(path, first, canonical_started=True) == first_hash
+    with pytest.raises(RuntimeError, match="objective_immutable"):
+        freeze_objective(
+            path,
+            {
+                "candidate": "HVI-warm-low",
+                "warm_fraction": 0.5,
+                "final_physics_weight": 0.01,
+                "fallback_objective": True,
+            },
+            canonical_started=True,
+        )
 
 
 def test_fc_model_accepts_all_declared_dimensions_and_hard_terminal_obstacle():
