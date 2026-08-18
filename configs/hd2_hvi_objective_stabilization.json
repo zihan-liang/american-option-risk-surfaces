@@ -53,6 +53,35 @@
       "final_physics_weight": 0.01
     }
   },
+  "conditional_methods": {
+    "HVI-CAGrad": {
+      "trigger": "persistent_directional_conflict",
+      "warm_start_steps": 2000,
+      "final_physics_weight": 0.1,
+      "optimizer_mode": "cagrad",
+      "cagrad_alpha": 0.5,
+      "cagrad_rescale": 1,
+      "hutchinson_probe_count": 2
+    },
+    "HVI-HD1-anchor-8probe": {
+      "trigger": "material_hutchinson_gradient_error",
+      "warm_start_steps": 2000,
+      "final_physics_weight": 0.1,
+      "optimizer_mode": "fixed",
+      "hutchinson_probe_count": 8,
+      "reuse_exact_d2_anchor": true
+    },
+    "HVI-ReLoBRaLo": {
+      "trigger": "no_fixed_candidate_and_budget_safe",
+      "warm_start_steps": 2000,
+      "final_physics_weight": 1.0,
+      "optimizer_mode": "relobralo",
+      "relobralo_temperature": 1.0,
+      "relobralo_alpha": 0.999,
+      "relobralo_rho": 1.0,
+      "hutchinson_probe_count": 2
+    }
+  },
   "total_steps": 10000,
   "learning_rate": 0.001,
   "initial_batch_size": 2048,
