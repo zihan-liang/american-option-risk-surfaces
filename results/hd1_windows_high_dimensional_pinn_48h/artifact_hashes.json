@@ -1,0 +1,12 @@
+{
+  "git_commit": "37e36f820699ceae150c7ae9eb9f0ea7f2c44cba",
+  "sha256": {
+    "config_manifest.json": "1924f6ef8b5c63a6ae2400fc93841531765030ae235e77c4e98a0a9777c10f05",
+    "decision.json": "e490438213da36e06614cd221090852c05e501d990e5044373fbd0ddf0c6507a",
+    "dimension_summary.csv": "7520ea30ded9a5ca17e2ba8a876c457fc45343721617f1dcb3a1940b3127a3db",
+    "environment_manifest.json": "20f2b5db9d29719712903b56f7b36c5cd7074a3baab992b26238344a5be0b83b",
+    "hessian_validation.csv": "bf913e23830b534693ec9989db4bfa515c725e44fc567f2103f9a1ad23550959",
+    "run_metrics.csv": "cc9b3c3a91ed0917228a70816d846db04ce47705cbb29c6a2b3a5bf971ef4dfb",
+    "training_history.csv": "b6cbff77ee2bdacf0d24cf9e8195c53d28ccbee2e7d186a3bb3203270d1e1b87"
+  }
+}

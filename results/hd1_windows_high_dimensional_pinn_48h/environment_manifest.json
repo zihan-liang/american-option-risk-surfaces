@@ -1,0 +1,14 @@
+{
+  "cuda_available": true,
+  "cuda_driver": "570.124.04",
+  "git_commit": "37e36f820699ceae150c7ae9eb9f0ea7f2c44cba",
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "gpu_total_memory_bytes": 25262096384,
+  "mixed_precision": false,
+  "numpy": "2.3.2",
+  "platform": "Linux-5.15.0-94-generic-x86_64-with-glibc2.35",
+  "python": "3.12.3",
+  "scipy": "1.18.0",
+  "torch": "2.8.0+cu128",
+  "torch_cuda": "12.8"
+}

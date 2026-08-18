@@ -1,0 +1,71 @@
+{
+  "candidate_supported": false,
+  "diagnostic_only": true,
+  "dimensions": [
+    {
+      "candidate_supported": false,
+      "classification": "diagnostic_only",
+      "diagnostic_only": true,
+      "dimension": 1,
+      "gates": {
+        "boundary_nonregression": true,
+        "cuda_allocation": true,
+        "finite_metrics_and_hashes": true,
+        "gamma_nonregression": false,
+        "no_hidden_failures": true,
+        "obstacle_violation": true,
+        "pde_nonregression": true,
+        "price_nonregression": true
+      }
+    },
+    {
+      "candidate_supported": false,
+      "classification": "diagnostic_only",
+      "diagnostic_only": true,
+      "dimension": 2,
+      "gates": {
+        "boundary_nonregression": true,
+        "cuda_allocation": true,
+        "finite_metrics_and_hashes": true,
+        "gamma_nonregression": true,
+        "no_hidden_failures": true,
+        "obstacle_violation": true,
+        "pde_nonregression": true,
+        "price_nonregression": false
+      }
+    },
+    {
+      "candidate_supported": false,
+      "classification": "diagnostic_only",
+      "diagnostic_only": true,
+      "dimension": 5,
+      "gates": {
+        "boundary_nonregression": true,
+        "cuda_allocation": true,
+        "finite_metrics_and_hashes": true,
+        "gamma_nonregression": true,
+        "no_hidden_failures": true,
+        "obstacle_violation": true,
+        "pde_nonregression": true,
+        "price_nonregression": false
+      }
+    },
+    {
+      "candidate_supported": false,
+      "classification": "diagnostic_only",
+      "diagnostic_only": true,
+      "dimension": 10,
+      "gates": {
+        "boundary_nonregression": true,
+        "cuda_allocation": true,
+        "finite_metrics_and_hashes": true,
+        "gamma_nonregression": true,
+        "no_hidden_failures": true,
+        "obstacle_violation": true,
+        "pde_nonregression": true,
+        "price_nonregression": false
+      }
+    }
+  ],
+  "seed": 101
+}

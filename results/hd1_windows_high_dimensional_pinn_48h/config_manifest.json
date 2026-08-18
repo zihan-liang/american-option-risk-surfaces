@@ -1,0 +1,97 @@
+{
+  "config": {
+    "adam_steps": 10000,
+    "canonical_dtype": "float32",
+    "canonical_order": [
+      "d1_SUP",
+      "d1_HVI",
+      "d2_SUP",
+      "d2_HVI",
+      "d5_SUP",
+      "d5_HVI",
+      "d10_SUP",
+      "d10_HVI"
+    ],
+    "complementarity_weight_final": 0.1,
+    "contract": {
+      "K": 1.0,
+      "T": 1.0,
+      "q": 0.02,
+      "r": 0.05,
+      "rho": 0.3,
+      "sigma": 0.25
+    },
+    "diagnostic_only": true,
+    "dimensions": [
+      1,
+      2,
+      5,
+      10
+    ],
+    "experiment_id": "hd1_windows_high_dimensional_pinn_48h",
+    "fallback_adam_steps": 6000,
+    "fb_epsilon_final": 0.0001,
+    "fb_epsilon_initial": 0.01,
+    "hutchinson_probe_count": 2,
+    "hutchinson_probe_seed": 101,
+    "initial_batch_size": 2048,
+    "learning_rate": 0.001,
+    "log_moneyness": [
+      "log(0.5)",
+      "log(1.5)"
+    ],
+    "max_cuda_allocation_gib": 7.0,
+    "max_gpu_hours": 24.0,
+    "max_run_hours": 3.0,
+    "mixed_precision": false,
+    "models": [
+      "SUP",
+      "HVI"
+    ],
+    "oom_batch_fallbacks": [
+      1024,
+      512
+    ],
+    "oracle_dtype": "float64",
+    "oracle_grids": [
+      [
+        256,
+        256
+      ],
+      [
+        512,
+        512
+      ]
+    ],
+    "oracle_rmse_max": 0.0001,
+    "seed": 101,
+    "smokes": [
+      {
+        "dimension": 1,
+        "model": "HVI",
+        "steps": 500
+      },
+      {
+        "dimension": 2,
+        "model": "HVI",
+        "steps": 500
+      }
+    ],
+    "sobol_seeds": {
+      "physics": 10104,
+      "test": 10103,
+      "train": 10101,
+      "validation": 10102
+    },
+    "supervised_train_points": 20000,
+    "tau": [
+      0.0025,
+      1.0
+    ],
+    "test_points": 16384,
+    "validation_points": 8192,
+    "warm_start_steps": 2000
+  },
+  "config_sha256": "4cff2198da76cf34b283b4af5bbfb84eb824da872eb35cbd9076e25ea93457b8",
+  "git_commit": "37e36f820699ceae150c7ae9eb9f0ea7f2c44cba"
+}

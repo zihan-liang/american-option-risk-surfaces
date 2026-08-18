@@ -1,0 +1,2 @@
+dimension,probe_seed,probe_count,relative_error,full_seconds,hutchinson_seconds,peak_cuda_gib,passed
+2,101,2,8.58839044326487e-08,0.15612047910690308,0.05518306791782379,0.026665210723876953,True
