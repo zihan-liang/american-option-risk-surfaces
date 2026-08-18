@@ -170,6 +170,19 @@ def canonical_json_hash(payload: Any) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def reported_completed_step(*, status_step: int | None, checkpoint_step: int | None) -> int:
+    """Return the durable resume point for status reporting.
+
+    When a checkpoint exists it is the only progress guaranteed recoverable
+    after an abrupt stop, so it takes precedence over an in-memory/status loop
+    counter that may have advanced further.  Without a checkpoint, retain the
+    best status value available.
+    """
+    if checkpoint_step is not None:
+        return max(0, int(checkpoint_step))
+    return max(0, int(status_step or 0))
+
+
 def verified_completed_status(
     path: Path,
     *,
