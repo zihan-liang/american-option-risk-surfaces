@@ -1,9 +1,8 @@
 """Release entrypoint for the final HD2 -> HD3 Windows pipeline.
 
 The implementation lives in ``hd_pipeline_windows_final``.  This thin wrapper
-only pins the release preflight test set, replacing one superseded development
-CAGrad tolerance test with the release-grade check that matches the official
-reference implementation's 1e-4 denominator stabilizer.
+pins the release preflight test set and applies release-only compatibility
+shims that must not change the scientific training objective.
 """
 from __future__ import annotations
 
@@ -42,6 +41,23 @@ def release_focused_tests() -> None:
 
 
 pipeline._run_focused_tests = release_focused_tests
+
+# Windows process-memory telemetry is non-scientific bookkeeping.  The inherited
+# HD1 ctypes helper can fail on some Windows builds even when CUDA training is
+# healthy.  Do not abort price/PDE/gradient experiments because this optional
+# telemetry query failed; record 0 bytes instead.
+_original_peak_cpu_memory_bytes = pipeline.hd2.peak_cpu_memory_bytes
+
+
+def safe_peak_cpu_memory_bytes() -> int:
+    try:
+        return int(_original_peak_cpu_memory_bytes())
+    except OSError:
+        return 0
+
+
+pipeline.hd2.peak_cpu_memory_bytes = safe_peak_cpu_memory_bytes
+pipeline.hd3.peak_cpu_memory_bytes = safe_peak_cpu_memory_bytes
 
 
 def main(argv: list[str] | None = None) -> int:
