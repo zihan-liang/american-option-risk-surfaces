@@ -17,6 +17,10 @@ from hd_pipeline.runtime import (
     sha256_file,
     verified_completed_status,
 )
+from hd_pipeline_windows import (
+    run_state_machine,
+    should_enable_parallel,
+)
 
 
 def test_jsonl_recovery_ignores_only_incomplete_final_line(tmp_path: Path):
@@ -95,3 +99,97 @@ def test_rng_roundtrip_restores_torch_stream():
     torch.rand(8)
     restore_rng_state(state)
     assert torch.equal(torch.rand(4), expected)
+
+
+def _fake_jobs(calls: list[str]):
+    def job(name: str):
+        def run():
+            calls.append(name)
+            return {"phase": name, "ok": True}
+        return run
+
+    return {
+        "preflight": job("preflight"),
+        "hd2": job("hd2"),
+        "hd2_select": job("hd2_select"),
+        "hd3": job("hd3"),
+        "finalize": job("finalize"),
+    }
+
+
+def test_pipeline_resumes_after_middle_phase_without_rerunning_completed(tmp_path: Path):
+    calls: list[str] = []
+    jobs = _fake_jobs(calls)
+    run_state_machine(
+        tmp_path,
+        jobs,
+        implementation_sha="abc",
+        config_hash="cfg",
+        stop_after="hd2_select",
+    )
+    assert calls == ["preflight", "hd2", "hd2_select"]
+    calls.clear()
+    run_state_machine(
+        tmp_path,
+        jobs,
+        implementation_sha="abc",
+        config_hash="cfg",
+    )
+    assert calls == ["hd3", "finalize"]
+
+
+def test_pipeline_rejects_stale_phase_provenance(tmp_path: Path):
+    calls: list[str] = []
+    run_state_machine(
+        tmp_path,
+        _fake_jobs(calls),
+        implementation_sha="abc",
+        config_hash="cfg",
+        stop_after="hd2",
+    )
+    with pytest.raises(RuntimeError, match="stale_pipeline_provenance"):
+        run_state_machine(
+            tmp_path,
+            _fake_jobs([]),
+            implementation_sha="different",
+            config_hash="cfg",
+        )
+
+
+def test_parallelism_requires_speed_gain_memory_headroom_and_success():
+    assert should_enable_parallel(
+        fc_sequential_seconds=100.0,
+        deepsets_sequential_seconds=120.0,
+        concurrent_wall_seconds=180.0,
+        concurrent_peak_cuda_gib=6.5,
+        jobs_succeeded=True,
+        speed_ratio_max=0.90,
+        memory_limit_gib=7.2,
+    )
+    assert not should_enable_parallel(
+        fc_sequential_seconds=100.0,
+        deepsets_sequential_seconds=120.0,
+        concurrent_wall_seconds=205.0,
+        concurrent_peak_cuda_gib=6.5,
+        jobs_succeeded=True,
+        speed_ratio_max=0.90,
+        memory_limit_gib=7.2,
+    )
+    assert not should_enable_parallel(
+        fc_sequential_seconds=100.0,
+        deepsets_sequential_seconds=120.0,
+        concurrent_wall_seconds=180.0,
+        concurrent_peak_cuda_gib=7.3,
+        jobs_succeeded=True,
+        speed_ratio_max=0.90,
+        memory_limit_gib=7.2,
+    )
+    assert not should_enable_parallel(
+        fc_sequential_seconds=100.0,
+        deepsets_sequential_seconds=120.0,
+        concurrent_wall_seconds=180.0,
+        concurrent_peak_cuda_gib=6.5,
+        jobs_succeeded=False,
+        speed_ratio_max=0.90,
+        memory_limit_gib=7.2,
+    )
