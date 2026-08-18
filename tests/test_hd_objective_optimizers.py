@@ -12,10 +12,12 @@ from hd_pipeline.objective_optimizers import (
 )
 
 
-def test_cagrad_identical_tasks_returns_the_same_gradient():
+def test_cagrad_identical_tasks_matches_official_rescale_one_formula():
     g = torch.tensor([1.0, -2.0, 0.5], dtype=torch.float64)
     combined, meta = cagrad_combine(g, g, alpha=0.5, rescale=1)
-    assert torch.allclose(combined, g, atol=1e-10, rtol=1e-10)
+    # Official CAGrad: g0=g, gw=g, lambda=alpha=0.5, then
+    # rescale=1 divides by (1+alpha^2), giving 1.5/1.25 = 1.2.
+    assert torch.allclose(combined, 1.2 * g, atol=1e-8, rtol=1e-8)
     assert meta["solver_success"] is True
     assert 0.0 <= meta["task1_weight"] <= 1.0
 
