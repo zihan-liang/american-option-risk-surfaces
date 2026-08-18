@@ -30,7 +30,7 @@ from hd1_windows_high_dimensional_pinn_48h import environment_manifest, git_comm
 
 PIPELINE_DIR = ROOT / "results" / "hd_pipeline"
 PIPELINE_RUNTIME_DIR = PIPELINE_DIR / "runtime"
-PHASE_STATUS_DIR = PIPELINE_RUNTIME_DIR / "phases"
+PHASE_STATUS_DIR = PIPELINE_RUNTIME_DIR / "phase_status"
 LOG_DIR = PIPELINE_RUNTIME_DIR / "logs"
 HD2_CONFIG = ROOT / "configs" / "hd2_hvi_objective_stabilization.json"
 HD3_CONFIG = ROOT / "configs" / "hd3_classical_vs_structured_high_dimensional_pinn.json"
