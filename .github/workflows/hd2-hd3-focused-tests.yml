@@ -35,8 +35,13 @@ jobs:
       - name: Compile HD code
         run: >-
           python -m compileall -q
+          src/hd_pipeline
           src/models/high_dimensional_pinn.py
+          src/models/hd3_high_dimensional_pinn.py
           src/physics/high_dimensional_black_scholes.py
+          src/physics/hd3_high_dimensional_sampling.py
+          experiments/hd2_hvi_objective_stabilization.py
+          experiments/hd3_classical_vs_structured_high_dimensional_pinn.py
           tests/test_hd2_hvi_objective_stabilization.py
           tests/test_hd3_high_dimensional_pinn.py
           tests/test_hd_pipeline_resume.py
