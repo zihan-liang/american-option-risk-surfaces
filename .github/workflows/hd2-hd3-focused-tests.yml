@@ -33,6 +33,7 @@ jobs:
           tests/test_hd3_high_dimensional_pinn.py
           tests/test_hd_pipeline_resume.py
           tests/test_hd_pipeline_review_regressions.py
+          tests/test_hd_objective_optimizers.py
       - name: Compile HD code
         run: >-
           python -m compileall -q
@@ -48,3 +49,4 @@ jobs:
           tests/test_hd3_high_dimensional_pinn.py
           tests/test_hd_pipeline_resume.py
           tests/test_hd_pipeline_review_regressions.py
+          tests/test_hd_objective_optimizers.py
