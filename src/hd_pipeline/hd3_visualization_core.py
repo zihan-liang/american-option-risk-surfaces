@@ -336,24 +336,33 @@ def oracle_path(d: int) -> Path:
 
 
 def load_frozen_evidence() -> tuple[dict[str, Any], dict[str, Any], str, str]:
+    """Load the executed HD3 contract and its frozen provenance identities.
+
+    The checkpoint ``config_hash`` is the byte hash captured during the
+    canonical run. Later commits may serialize the same JSON contract with
+    different insignificant whitespace. For post-hoc reconstruction, require
+    exact semantic equality with the committed config manifest and keep the
+    training-time hash as the checkpoint identity rather than substituting a
+    hash of today's serialization.
+    """
     for path in (CONFIG_MANIFEST_PATH, RESOLVED_OBJECTIVE_PATH, CONFIG_PATH):
         if not path.is_file():
             raise FileNotFoundError(path)
     manifest = json.loads(CONFIG_MANIFEST_PATH.read_text(encoding="utf-8"))
-    cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    current_cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    manifest_cfg = manifest.get("config")
+    if not isinstance(manifest_cfg, dict):
+        raise RuntimeError("visualization_config_manifest_missing_config")
+    if current_cfg != manifest_cfg:
+        raise RuntimeError("visualization_config_manifest_content_mismatch")
     objective = json.loads(RESOLVED_OBJECTIVE_PATH.read_text(encoding="utf-8"))
     expected_cfg_hash = str(manifest["config_sha256"])
-    actual_cfg_hash = sha256_path(CONFIG_PATH)
-    if actual_cfg_hash != expected_cfg_hash:
-        raise RuntimeError(f"visualization_config_hash_mismatch:{actual_cfg_hash}!={expected_cfg_hash}")
     objective_hash = sha256_path(RESOLVED_OBJECTIVE_PATH)
     if objective_hash != str(manifest["resolved_objective_hash"]):
         raise RuntimeError("visualization_objective_hash_mismatch")
     if str(manifest["git_commit"]) != TRAINING_IMPLEMENTATION_SHA:
         raise RuntimeError("visualization_training_sha_mismatch")
-    if cfg != manifest["config"]:
-        raise RuntimeError("visualization_config_manifest_content_mismatch")
-    return cfg, objective, expected_cfg_hash, objective_hash
+    return dict(manifest_cfg), objective, expected_cfg_hash, objective_hash
 
 
 def checkpoint_expectation(
