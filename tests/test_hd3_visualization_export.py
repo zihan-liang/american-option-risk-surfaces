@@ -128,6 +128,16 @@ def test_write_rows_csv_preserves_stress_labels_and_sha256(tmp_path: Path):
     assert len(sha256_path(path)) == 64
 
 
+def test_committed_frozen_evidence_hashes_match_training_manifest():
+    cfg, objective, config_hash, objective_hash = export_module.load_frozen_evidence()
+    manifest = json.loads(export_module.core.CONFIG_MANIFEST_PATH.read_text(encoding="utf-8"))
+    assert config_hash == manifest["config_sha256"]
+    assert objective_hash == manifest["resolved_objective_hash"]
+    assert manifest["git_commit"] == TRAINING_IMPLEMENTATION_SHA
+    assert cfg == manifest["config"]
+    assert objective["candidate"] == "HVI-warm-low"
+
+
 @pytest.mark.parametrize("mode", ["--all", "--reference-only", "--data-only", "--figures-only"])
 def test_cli_accepts_declared_modes(mode: str):
     args = build_parser().parse_args([mode])
