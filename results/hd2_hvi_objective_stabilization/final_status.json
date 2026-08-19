@@ -1,0 +1,15 @@
+{
+  "candidate_supported": false,
+  "diagnostic_only": true,
+  "resolved_objective": {
+    "candidate": "HVI-warm-low",
+    "fallback_objective": true,
+    "final_physics_weight": 0.01,
+    "hutchinson_probe_count": 2,
+    "optimizer_mode": "fixed",
+    "warm_fraction": 0.5
+  },
+  "rows": 6,
+  "selection_status": "no_stabilized_candidate",
+  "status": "completed"
+}

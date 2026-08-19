@@ -1,0 +1,19 @@
+{
+  "candidate_supported": false,
+  "canonical_dimensions": [
+    10,
+    20,
+    50
+  ],
+  "diagnostic_only": true,
+  "resolved_objective": {
+    "candidate": "HVI-warm-low",
+    "fallback_objective": true,
+    "final_physics_weight": 0.01,
+    "warm_fraction": 0.5
+  },
+  "resolved_objective_hash": "480d1d16ab5f28d8dd1eb2e1f325751cc5a795d96b1852ddf14c927494f8c1cf",
+  "rows": 8,
+  "status": "completed",
+  "stress_dimension_attempted": true
+}

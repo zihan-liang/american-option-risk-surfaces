@@ -1,0 +1,164 @@
+{
+  "config": {
+    "blind_holdout_access": false,
+    "candidate_settings": {
+      "HVI-HD1-anchor": {
+        "final_physics_weight": 0.1,
+        "warm_start_steps": 2000
+      },
+      "HVI-low": {
+        "final_physics_weight": 0.01,
+        "warm_start_steps": 2000
+      },
+      "HVI-warm": {
+        "final_physics_weight": 0.1,
+        "warm_start_steps": 5000
+      },
+      "HVI-warm-low": {
+        "final_physics_weight": 0.01,
+        "warm_start_steps": 5000
+      },
+      "SUP-HD2": {
+        "final_physics_weight": 0.0,
+        "warm_start_steps": 10000
+      }
+    },
+    "candidates": [
+      "SUP-HD2",
+      "HVI-HD1-anchor",
+      "HVI-low",
+      "HVI-warm",
+      "HVI-warm-low"
+    ],
+    "canonical_dtype": "float32",
+    "checkpoint_interval": 250,
+    "claim_status": "diagnostic_only",
+    "conditional_hutchinson_probe_count": 8,
+    "conditional_methods": {
+      "HVI-CAGrad": {
+        "cagrad_alpha": 0.5,
+        "cagrad_rescale": 1,
+        "final_physics_weight": 0.1,
+        "hutchinson_probe_count": 2,
+        "optimizer_mode": "cagrad",
+        "trigger": "persistent_directional_conflict",
+        "warm_start_steps": 2000
+      },
+      "HVI-HD1-anchor-8probe": {
+        "final_physics_weight": 0.1,
+        "hutchinson_probe_count": 8,
+        "optimizer_mode": "fixed",
+        "reuse_exact_d2_anchor": true,
+        "trigger": "material_hutchinson_gradient_error",
+        "warm_start_steps": 2000
+      },
+      "HVI-ReLoBRaLo": {
+        "final_physics_weight": 1.0,
+        "hutchinson_probe_count": 2,
+        "optimizer_mode": "relobralo",
+        "relobralo_alpha": 0.999,
+        "relobralo_rho": 1.0,
+        "relobralo_temperature": 1.0,
+        "trigger": "no_fixed_candidate_and_budget_safe",
+        "warm_start_steps": 2000
+      }
+    },
+    "contract": {
+      "K": 1.0,
+      "T": 1.0,
+      "q": 0.02,
+      "r": 0.05,
+      "rho": 0.3,
+      "sigma": 0.25
+    },
+    "diagnostic_only": true,
+    "dimensions": [
+      2,
+      5
+    ],
+    "experiment_id": "hd2_hvi_objective_stabilization",
+    "fallback_objective": {
+      "candidate": "HVI-warm-low",
+      "final_physics_weight": 0.01,
+      "warm_fraction": 0.5
+    },
+    "fb_epsilon_final": 0.0001,
+    "fb_epsilon_initial": 0.01,
+    "gradient_diagnostic_batch_fallbacks": [
+      64,
+      32,
+      16
+    ],
+    "gradient_diagnostic_batch_size": {
+      "2": 128,
+      "5": 64
+    },
+    "gradient_diagnostic_interval": 500,
+    "hutchinson_gradient_batch_size": 16,
+    "hutchinson_gradient_checkpoints": [
+      2000,
+      5000,
+      10000
+    ],
+    "hutchinson_gradient_cosine_trigger": 0.95,
+    "hutchinson_probe_count": 2,
+    "hutchinson_probe_seed": 101,
+    "hutchinson_relative_error_trigger": 0.05,
+    "initial_batch_size": 2048,
+    "layerwise_gradient_interval": 1000,
+    "learning_rate": 0.001,
+    "log_moneyness": [
+      -0.6931471805599453,
+      0.4054651081081644
+    ],
+    "max_cuda_allocation_gib": 7.2,
+    "mixed_precision": false,
+    "oom_batch_fallbacks": [
+      1024,
+      512
+    ],
+    "oracle_dtype": "float64",
+    "oracle_grids": [
+      [
+        256,
+        256
+      ],
+      [
+        512,
+        512
+      ]
+    ],
+    "oracle_rmse_max": 0.0001,
+    "persistent_conflict_median_cosine": -0.1,
+    "persistent_conflict_window_steps": 500,
+    "pipeline_wall_clock_hours": 18.0,
+    "seed": 101,
+    "selection_gates": {
+      "boundary_ratio_max": 1.1,
+      "fb_p95_ratio_max": 0.75,
+      "gamma_ratio_max": 1.1,
+      "pde_p95_ratio_max": 0.75,
+      "price_ratio_max": 1.05
+    },
+    "sobol_seeds": {
+      "diagnostic": 20260105,
+      "hutchinson_diagnostic": 20260106,
+      "physics": 20260104,
+      "test": 20260103,
+      "train": 20260101,
+      "validation": 20260102
+    },
+    "supervised_train_points": 20000,
+    "tau": [
+      0.0025,
+      1.0
+    ],
+    "test_points": 16384,
+    "total_steps": 10000,
+    "train_log_interval": 100,
+    "validation_interval": 500,
+    "validation_points": 8192
+  },
+  "config_sha256": "e4e94e494df0db3c54de43b1f18cd00e8604d0ce56a0e232784f3fc440ca6217",
+  "git_commit": "6c1bd658098698b69d49415c1ac1f0cf280d3c30"
+}

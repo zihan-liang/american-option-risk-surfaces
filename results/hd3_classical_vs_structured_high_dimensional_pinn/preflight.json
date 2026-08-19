@@ -1,0 +1,42 @@
+{
+  "hessian": {
+    "dimension": 2,
+    "full_seconds": 0.004018499999801861,
+    "hutchinson_seconds": 0.00437459999739076,
+    "passed": true,
+    "peak_cuda_gib": 0.028768062591552734,
+    "probe_count": 2,
+    "probe_seed": 101,
+    "relative_error": 8.302843923502223e-08
+  },
+  "oracles": [
+    {
+      "dimension": 10,
+      "refinement_rmse": 2.3382320071672722e-05,
+      "seconds": 5.101027799999429
+    },
+    {
+      "dimension": 20,
+      "refinement_rmse": 2.3841287413372295e-05,
+      "seconds": 5.045783500001562
+    },
+    {
+      "dimension": 50,
+      "refinement_rmse": 2.4115555134863827e-05,
+      "seconds": 5.097343000001274
+    },
+    {
+      "dimension": 100,
+      "refinement_rmse": 2.4220187888982288e-05,
+      "seconds": 5.385542500000156
+    }
+  ],
+  "passed": true,
+  "resolved_objective": {
+    "candidate": "HVI-warm-low",
+    "fallback_objective": true,
+    "final_physics_weight": 0.01,
+    "warm_fraction": 0.5
+  },
+  "resolved_objective_hash": "480d1d16ab5f28d8dd1eb2e1f325751cc5a795d96b1852ddf14c927494f8c1cf"
+}

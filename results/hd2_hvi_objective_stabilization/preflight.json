@@ -1,0 +1,25 @@
+{
+  "hessian": {
+    "dimension": 2,
+    "full_seconds": 0.030614499999501277,
+    "hutchinson_seconds": 0.013685199999599718,
+    "passed": true,
+    "peak_cuda_gib": 0.026665210723876953,
+    "probe_count": 2,
+    "probe_seed": 101,
+    "relative_error": 6.823196940786147e-08
+  },
+  "oracles": [
+    {
+      "dimension": 2,
+      "refinement_rmse": 2.150739980395541e-05,
+      "seconds": 6.5199489000006
+    },
+    {
+      "dimension": 5,
+      "refinement_rmse": 2.2722866307354317e-05,
+      "seconds": 4.847846299999219
+    }
+  ],
+  "passed": true
+}

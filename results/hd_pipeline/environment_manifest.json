@@ -1,0 +1,21 @@
+{
+  "branch": "exp/hd2-hvi-objective-stabilization",
+  "combined_config_hash": "dd3414d25dc8df63fe0cab0bc0fb1f5ef83a91a94ad6067c871b3d1809f92946",
+  "disk_free_bytes": 7630200832,
+  "environment": {
+    "cuda_available": true,
+    "cuda_driver": "576.57",
+    "git_commit": "6c1bd658098698b69d49415c1ac1f0cf280d3c30",
+    "gpu_name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+    "gpu_total_memory_bytes": 8585216000,
+    "mixed_precision": false,
+    "numpy": "1.26.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.9",
+    "scipy": "1.16.0",
+    "torch": "2.7.1+cu128",
+    "torch_cuda": "12.8"
+  },
+  "git_commit": "6c1bd658098698b69d49415c1ac1f0cf280d3c30",
+  "nvidia_smi": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB, 576.57"
+}

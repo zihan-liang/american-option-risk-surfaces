@@ -1,0 +1,128 @@
+{
+  "canonical_available_seconds_after_finalization_reserve": 59680.6748596,
+  "comparison_sequential_d10": {
+    "DEEPSETS_HVI": {
+      "batch_size": 256,
+      "dimension": 10,
+      "hutchinson_probe_count": 2,
+      "model_id": "DEEPSETS_HVI",
+      "non_evidence": true,
+      "optimizer_mode": "fixed",
+      "peak_cuda_gib": 0.04949665069580078,
+      "seconds_per_step": 0.008058238499997969,
+      "steps": 200,
+      "training_wall_seconds": 1.611647699999594,
+      "wall_seconds": 4.624414699999761
+    },
+    "FC_HVI": {
+      "batch_size": 256,
+      "dimension": 10,
+      "hutchinson_probe_count": 2,
+      "model_id": "FC_HVI",
+      "non_evidence": true,
+      "optimizer_mode": "fixed",
+      "peak_cuda_gib": 0.03246450424194336,
+      "seconds_per_step": 0.008192927500003862,
+      "steps": 200,
+      "training_wall_seconds": 1.6385855000007723,
+      "wall_seconds": 4.666976100001193
+    }
+  },
+  "concurrent_batch_size": 256,
+  "concurrent_d10": {
+    "child_metrics": {
+      "DEEPSETS_HVI": {
+        "batch_size": 256,
+        "dimension": 10,
+        "hutchinson_probe_count": 2,
+        "model_id": "DEEPSETS_HVI",
+        "non_evidence": true,
+        "optimizer_mode": "fixed",
+        "peak_cuda_gib": 0.04949665069580078,
+        "seconds_per_step": 0.010825810000005731,
+        "steps": 200,
+        "wall_seconds": 2.1651620000011462
+      },
+      "FC_HVI": {
+        "batch_size": 256,
+        "dimension": 10,
+        "hutchinson_probe_count": 2,
+        "model_id": "FC_HVI",
+        "non_evidence": true,
+        "optimizer_mode": "fixed",
+        "peak_cuda_gib": 0.03246450424194336,
+        "seconds_per_step": 0.010904329499990126,
+        "steps": 200,
+        "wall_seconds": 2.1808658999980253
+      }
+    },
+    "jobs_succeeded": true,
+    "peak_total_cuda_gib": 0.0,
+    "return_codes": [
+      0,
+      0
+    ],
+    "wall_seconds": 5.524795900000754
+  },
+  "hours_remaining_before_canonical": 17.57796523877778,
+  "non_evidence": true,
+  "parallel_enabled_10d_20d": true,
+  "projected_canonical_seconds": 643.110278971702,
+  "resource_blocked": false,
+  "sequential": {
+    "d10_DEEPSETS_HVI": {
+      "batch_size": 512,
+      "dimension": 10,
+      "hutchinson_probe_count": 2,
+      "model_id": "DEEPSETS_HVI",
+      "non_evidence": true,
+      "optimizer_mode": "fixed",
+      "peak_cuda_gib": 0.08220577239990234,
+      "seconds_per_step": 0.009054132999990543,
+      "steps": 200,
+      "training_wall_seconds": 1.8108265999981086,
+      "wall_seconds": 4.868375499998365
+    },
+    "d10_FC_HVI": {
+      "batch_size": 512,
+      "dimension": 10,
+      "hutchinson_probe_count": 2,
+      "model_id": "FC_HVI",
+      "non_evidence": true,
+      "optimizer_mode": "fixed",
+      "peak_cuda_gib": 0.047605037689208984,
+      "seconds_per_step": 0.010052482499995677,
+      "steps": 200,
+      "training_wall_seconds": 2.0104964999991353,
+      "wall_seconds": 5.075209800001176
+    },
+    "d50_DEEPSETS_HVI": {
+      "batch_size": 512,
+      "dimension": 50,
+      "hutchinson_probe_count": 2,
+      "model_id": "DEEPSETS_HVI",
+      "non_evidence": true,
+      "optimizer_mode": "fixed",
+      "peak_cuda_gib": 0.26409053802490234,
+      "seconds_per_step": 0.010278514000001451,
+      "steps": 200,
+      "training_wall_seconds": 2.05570280000029,
+      "wall_seconds": 5.106151600000885
+    },
+    "d50_FC_HVI": {
+      "batch_size": 512,
+      "dimension": 50,
+      "hutchinson_probe_count": 2,
+      "model_id": "FC_HVI",
+      "non_evidence": true,
+      "optimizer_mode": "fixed",
+      "peak_cuda_gib": 0.048978328704833984,
+      "seconds_per_step": 0.00917865299999903,
+      "steps": 200,
+      "training_wall_seconds": 1.8357305999998061,
+      "wall_seconds": 4.886210699998628
+    }
+  },
+  "sequential_batch_size": 512,
+  "smoke_steps": 200
+}

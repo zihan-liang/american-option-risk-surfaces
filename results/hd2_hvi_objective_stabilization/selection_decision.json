@@ -1,0 +1,256 @@
+{
+  "cagrad_triggered": true,
+  "candidate_audit": {
+    "HVI-CAGrad": {
+      "dimensions": {
+        "2": {
+          "boundary_ratio": 1.0107172666014694,
+          "fb_p95_ratio": 0.21343880162393775,
+          "gamma_ratio": 1.1003921567767352,
+          "passes": false,
+          "pde_p95_ratio": 0.24084403774835056,
+          "price_ratio": 1.970867505125335,
+          "reused_anchor_d2": false
+        },
+        "5": {
+          "boundary_ratio": 0.9804198805711221,
+          "fb_p95_ratio": 0.05464834722199493,
+          "gamma_ratio": 0.5145391349544512,
+          "passes": false,
+          "pde_p95_ratio": 0.24540066050154866,
+          "price_ratio": 6.694285554057947,
+          "reused_anchor_d2": false
+        }
+      },
+      "eligible": false,
+      "physics_score": 0.1620374903247176
+    },
+    "HVI-HD1-anchor": {
+      "dimensions": {
+        "2": {
+          "boundary_ratio": 1.0001444895145029,
+          "fb_p95_ratio": 0.16028322474543358,
+          "gamma_ratio": 1.4172321989274355,
+          "passes": false,
+          "pde_p95_ratio": 0.1635379229087378,
+          "price_ratio": 1.6689296531908187,
+          "reused_anchor_d2": false
+        },
+        "5": {
+          "boundary_ratio": 0.9323427777192824,
+          "fb_p95_ratio": 0.03802853580758992,
+          "gamma_ratio": 0.6195488733474325,
+          "passes": false,
+          "pde_p95_ratio": 0.1405451386894168,
+          "price_ratio": 6.410637487530454,
+          "reused_anchor_d2": false
+        }
+      },
+      "eligible": false,
+      "physics_score": 0.10879476424483565
+    },
+    "HVI-HD1-anchor-8probe": {
+      "dimensions": {
+        "2": {
+          "boundary_ratio": 1.0001444895145029,
+          "fb_p95_ratio": 0.16028322474543358,
+          "gamma_ratio": 1.4172321989274355,
+          "passes": false,
+          "pde_p95_ratio": 0.1635379229087378,
+          "price_ratio": 1.6689296531908187,
+          "reused_anchor_d2": true
+        },
+        "5": {
+          "boundary_ratio": 1.0000981347335098,
+          "fb_p95_ratio": 0.4150803454932557,
+          "gamma_ratio": 1.2992020046794994,
+          "passes": false,
+          "pde_p95_ratio": 0.11183845546947874,
+          "price_ratio": 2.401384360974715,
+          "reused_anchor_d2": false
+        }
+      },
+      "eligible": false,
+      "physics_score": 0.18677015095000765,
+      "reused_anchor_d2": true
+    },
+    "HVI-ReLoBRaLo": {
+      "dimensions": {
+        "2": {
+          "boundary_ratio": 1.0106955051071946,
+          "fb_p95_ratio": 0.31352919985206673,
+          "gamma_ratio": 0.4633011377721692,
+          "passes": false,
+          "pde_p95_ratio": 0.4611736053663123,
+          "price_ratio": 10.1201576360835,
+          "reused_anchor_d2": false
+        },
+        "5": {
+          "boundary_ratio": 1.01024715530603,
+          "fb_p95_ratio": 0.04511083430419042,
+          "gamma_ratio": 0.1513119732562786,
+          "passes": false,
+          "pde_p95_ratio": 0.14131634900417914,
+          "price_ratio": 19.923968554087498,
+          "reused_anchor_d2": false
+        }
+      },
+      "eligible": false,
+      "physics_score": 0.17424243285261937
+    },
+    "HVI-low": {
+      "dimensions": {
+        "2": {
+          "boundary_ratio": 0.9898044578630852,
+          "fb_p95_ratio": 0.1922735979139116,
+          "gamma_ratio": 1.1291834688651687,
+          "passes": false,
+          "pde_p95_ratio": 0.396277328540437,
+          "price_ratio": 0.6237461624304964,
+          "reused_anchor_d2": false
+        },
+        "5": {
+          "boundary_ratio": 0.9315265244386189,
+          "fb_p95_ratio": 0.08043965342384159,
+          "gamma_ratio": 0.7018540288850657,
+          "passes": false,
+          "pde_p95_ratio": 0.12307408689457264,
+          "price_ratio": 4.289158787907735,
+          "reused_anchor_d2": false
+        }
+      },
+      "eligible": false,
+      "physics_score": 0.16572534172394712
+    },
+    "HVI-warm": {
+      "dimensions": {
+        "2": {
+          "boundary_ratio": 1.0000808796333547,
+          "fb_p95_ratio": 0.23446838102555073,
+          "gamma_ratio": 0.9998176980792123,
+          "passes": false,
+          "pde_p95_ratio": 0.44619440583197617,
+          "price_ratio": 1.4616591871380804,
+          "reused_anchor_d2": false
+        },
+        "5": {
+          "boundary_ratio": 0.9418443050088589,
+          "fb_p95_ratio": 0.05329548067901016,
+          "gamma_ratio": 0.46282026673637994,
+          "passes": false,
+          "pde_p95_ratio": 0.36810850158916125,
+          "price_ratio": 6.168811018999968,
+          "reused_anchor_d2": false
+        }
+      },
+      "eligible": false,
+      "physics_score": 0.21284755180550666
+    },
+    "HVI-warm-low": {
+      "dimensions": {
+        "2": {
+          "boundary_ratio": 1.0000284179813825,
+          "fb_p95_ratio": 0.19690196085901324,
+          "gamma_ratio": 1.0528672424515306,
+          "passes": true,
+          "pde_p95_ratio": 0.47323707877235227,
+          "price_ratio": 0.722182551427135,
+          "reused_anchor_d2": false
+        },
+        "5": {
+          "boundary_ratio": 0.9410746815937645,
+          "fb_p95_ratio": 0.07620229281926862,
+          "gamma_ratio": 0.5802481475806637,
+          "passes": false,
+          "pde_p95_ratio": 0.3938488712468956,
+          "price_ratio": 4.566542746641643,
+          "reused_anchor_d2": false
+        }
+      },
+      "eligible": false,
+      "physics_score": 0.22996228349695
+    }
+  },
+  "conditional_candidates_executed": [
+    "HVI-CAGrad",
+    "HVI-HD1-anchor-8probe",
+    "HVI-ReLoBRaLo"
+  ],
+  "config_hash": "e4e94e494df0db3c54de43b1f18cd00e8604d0ce56a0e232784f3fc440ca6217",
+  "diagnostic_only": true,
+  "eight_probe_triggered": true,
+  "eligible_candidates": [],
+  "hutchinson_diagnostics": [
+    {
+      "conditional_eight_probe_trigger": true,
+      "dimension": 5,
+      "exact_physics_loss": 0.00026671463274396956,
+      "hutchinson_physics_loss": 0.0018264645477756858,
+      "peak_cuda_gib": 0.02022552490234375,
+      "physics_gradient_cosine": -0.8931272625923157,
+      "physics_gradient_norm_ratio": 42.511138916015625,
+      "probe_count": 2,
+      "relative_contraction_error": 2.3305718898773193,
+      "seconds": 0.0374733999997261,
+      "step": 2000
+    },
+    {
+      "conditional_eight_probe_trigger": true,
+      "dimension": 5,
+      "exact_physics_loss": 0.00019187260477337986,
+      "hutchinson_physics_loss": 0.00022873113630339503,
+      "peak_cuda_gib": 0.0203704833984375,
+      "physics_gradient_cosine": 0.9330286979675293,
+      "physics_gradient_norm_ratio": 1.5536422729492188,
+      "probe_count": 2,
+      "relative_contraction_error": 2.353057384490967,
+      "seconds": 0.030847400001221104,
+      "step": 5000
+    },
+    {
+      "conditional_eight_probe_trigger": true,
+      "dimension": 5,
+      "exact_physics_loss": 9.847736509982497e-05,
+      "hutchinson_physics_loss": 9.974231943488121e-06,
+      "peak_cuda_gib": 0.0203704833984375,
+      "physics_gradient_cosine": 0.6013897061347961,
+      "physics_gradient_norm_ratio": 0.9136950373649597,
+      "probe_count": 2,
+      "relative_contraction_error": 2.4090726375579834,
+      "seconds": 0.031175500000244938,
+      "step": 10000
+    }
+  ],
+  "implementation_sha": "6c1bd658098698b69d49415c1ac1f0cf280d3c30",
+  "persistent_conflict": [
+    {
+      "dimension": 2,
+      "median_cosine": -0.4646124839782715,
+      "trigger_steps": [
+        7500,
+        8000
+      ],
+      "triggered": true,
+      "validation_stalled": true
+    },
+    {
+      "dimension": 5,
+      "median_cosine": -0.7208272516727448,
+      "trigger_steps": [
+        4000,
+        4500
+      ],
+      "triggered": true,
+      "validation_stalled": true
+    }
+  ],
+  "resolved_objective": {
+    "candidate": "HVI-warm-low",
+    "fallback_objective": true,
+    "final_physics_weight": 0.01,
+    "hutchinson_probe_count": 2,
+    "optimizer_mode": "fixed",
+    "warm_fraction": 0.5
+  },
+  "selection_status": "no_stabilized_candidate"
+}

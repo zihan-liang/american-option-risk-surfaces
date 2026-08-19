@@ -1,0 +1,11 @@
+{
+  "active_elapsed_seconds": 1744.6546440999919,
+  "candidate_supported": false,
+  "combined_config_hash": "dd3414d25dc8df63fe0cab0bc0fb1f5ef83a91a94ad6067c871b3d1809f92946",
+  "compact_files": 27,
+  "diagnostic_only": true,
+  "git_commit": "6c1bd658098698b69d49415c1ac1f0cf280d3c30",
+  "hashes": 27,
+  "hd3_rows": 8,
+  "status": "completed"
+}

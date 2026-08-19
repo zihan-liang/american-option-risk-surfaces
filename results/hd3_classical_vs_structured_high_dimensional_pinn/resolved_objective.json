@@ -1,0 +1,6 @@
+{
+  "candidate": "HVI-warm-low",
+  "fallback_objective": true,
+  "final_physics_weight": 0.01,
+  "warm_fraction": 0.5
+}

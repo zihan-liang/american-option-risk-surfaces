@@ -1,0 +1,101 @@
+{
+  "config": {
+    "aggregate_log_moneyness": [
+      -0.6931471805599453,
+      0.4054651081081644
+    ],
+    "blind_holdout_access": false,
+    "canonical_dimensions": [
+      10,
+      20,
+      50
+    ],
+    "canonical_dtype": "float32",
+    "canonical_steps": 6000,
+    "canonical_time_allocation_hours": 10.0,
+    "checkpoint_interval": 250,
+    "claim_status": "diagnostic_only",
+    "concurrent_batch_fallbacks": [
+      128
+    ],
+    "concurrent_batch_size": 256,
+    "contract": {
+      "K": 1.0,
+      "T": 1.0,
+      "q": 0.02,
+      "r": 0.05,
+      "rho": 0.3,
+      "sigma": 0.25
+    },
+    "deepsets_architecture": "hd1_exact",
+    "diagnostic_only": true,
+    "experiment_id": "hd3_classical_vs_structured_high_dimensional_pinn",
+    "fallback_objective": {
+      "candidate": "HVI-warm-low",
+      "final_physics_weight": 0.01,
+      "warm_fraction": 0.5
+    },
+    "fb_epsilon_final": 0.0001,
+    "fb_epsilon_initial": 0.01,
+    "fc_activation": "tanh",
+    "fc_hidden_layers": 6,
+    "fc_width": 128,
+    "finalization_reserve_hours": 1.0,
+    "hutchinson_probe_count": 2,
+    "hutchinson_probe_seed": 101,
+    "initial_batch_size": 512,
+    "learning_rate": 0.001,
+    "max_cuda_allocation_gib": 7.2,
+    "mixed_precision": false,
+    "models": [
+      "FC_HVI",
+      "DEEPSETS_HVI"
+    ],
+    "oom_batch_fallbacks": [
+      256,
+      128
+    ],
+    "oracle_dtype": "float64",
+    "oracle_grids": [
+      [
+        256,
+        256
+      ],
+      [
+        512,
+        512
+      ]
+    ],
+    "oracle_rmse_max": 0.0001,
+    "parallelism_smoke_steps": 200,
+    "parallelism_speed_ratio_max": 0.9,
+    "pipeline_wall_clock_hours": 18.0,
+    "seed": 101,
+    "sobol_seeds": {
+      "parallelism_smoke": 30310106,
+      "physics": 30310104,
+      "structural": 30310105,
+      "test": 30310103,
+      "train": 30310101,
+      "validation": 30310102
+    },
+    "stress_dimensions": [
+      100
+    ],
+    "stress_steps": 4000,
+    "stress_time_allocation_hours": 2.0,
+    "supervised_train_points": 20000,
+    "tau": [
+      0.0025,
+      1.0
+    ],
+    "test_points": 16384,
+    "train_log_interval": 100,
+    "transverse_scale": 0.35,
+    "validation_interval": 500,
+    "validation_points": 8192
+  },
+  "config_sha256": "406f64fd651e6e658009eb862f26278ce204248cfe255be15b1b7edba1564682",
+  "git_commit": "6c1bd658098698b69d49415c1ac1f0cf280d3c30",
+  "resolved_objective_hash": "480d1d16ab5f28d8dd1eb2e1f325751cc5a795d96b1852ddf14c927494f8c1cf"
+}
