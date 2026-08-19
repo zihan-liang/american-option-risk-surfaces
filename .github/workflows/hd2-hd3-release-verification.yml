@@ -33,6 +33,10 @@ jobs:
           tests/test_hd2_conditional_methods.py
           tests/test_hd3_high_dimensional_pinn.py
           tests/test_hd3_parallelism_benchmark.py
+          tests/test_crr_american.py
+          tests/test_hd3_visualization_export.py
+          tests/test_hd3_visualization_data.py
+          tests/test_hd3_visualization_plots.py
           tests/test_hd_pipeline_resume.py
           tests/test_hd_pipeline_review_regressions.py
           tests/test_hd_objective_optimizers_release.py
@@ -42,6 +46,7 @@ jobs:
         run: >-
           python -m compileall -q
           src/hd_pipeline
+          src/solvers/crr_american.py
           src/models/high_dimensional_pinn.py
           src/models/hd3_high_dimensional_pinn.py
           src/physics/high_dimensional_black_scholes.py
@@ -50,12 +55,17 @@ jobs:
           experiments/hd2_conditional_methods.py
           experiments/hd3_classical_vs_structured_high_dimensional_pinn.py
           experiments/hd3_parallelism_benchmark.py
+          experiments/hd3_visualization_export.py
           experiments/hd_pipeline_windows_final.py
           experiments/hd_pipeline_windows_release.py
+          tests/test_crr_american.py
           tests/test_hd2_hvi_objective_stabilization.py
           tests/test_hd2_conditional_methods.py
           tests/test_hd3_high_dimensional_pinn.py
           tests/test_hd3_parallelism_benchmark.py
+          tests/test_hd3_visualization_export.py
+          tests/test_hd3_visualization_data.py
+          tests/test_hd3_visualization_plots.py
           tests/test_hd_pipeline_resume.py
           tests/test_hd_pipeline_review_regressions.py
           tests/test_hd_objective_optimizers_release.py
