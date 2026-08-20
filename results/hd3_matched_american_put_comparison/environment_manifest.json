@@ -1,0 +1,14 @@
+{
+  "cuda_available": true,
+  "cuda_driver": "576.57",
+  "git_commit": "986a65c0b727881e65dd4bdf23d30eeb99e8c3aa",
+  "gpu_name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "gpu_total_memory_bytes": 8585216000,
+  "mixed_precision": false,
+  "numpy": "1.26.4",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9",
+  "scipy": "1.16.0",
+  "torch": "2.7.1+cu128",
+  "torch_cuda": "12.8"
+}

@@ -1,0 +1,75 @@
+{
+  "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "jobs": [
+    {
+      "batch_size": 512,
+      "dimension": 10,
+      "evaluation_seconds": 0.39022639999984676,
+      "inference_seconds": 0.1160823000000164,
+      "model_id": "FC_HVI",
+      "parameter_count": 84225,
+      "peak_cuda_gib": 0.07514524459838867,
+      "run_class": "canonical",
+      "training_seconds": 46.246260099999745
+    },
+    {
+      "batch_size": 512,
+      "dimension": 10,
+      "evaluation_seconds": 0.26346400000056747,
+      "inference_seconds": 0.011801899999227317,
+      "model_id": "DEEPSETS_HVI",
+      "parameter_count": 62401,
+      "peak_cuda_gib": 0.1392354965209961,
+      "run_class": "canonical",
+      "training_seconds": 48.27651429999969
+    },
+    {
+      "batch_size": 512,
+      "dimension": 20,
+      "evaluation_seconds": 0.209225300000071,
+      "inference_seconds": 0.010814899999786576,
+      "model_id": "FC_HVI",
+      "parameter_count": 85505,
+      "peak_cuda_gib": 0.1392354965209961,
+      "run_class": "canonical",
+      "training_seconds": 45.904084299999795
+    },
+    {
+      "batch_size": 512,
+      "dimension": 20,
+      "evaluation_seconds": 0.23961469999994733,
+      "inference_seconds": 0.011378500000319036,
+      "model_id": "DEEPSETS_HVI",
+      "parameter_count": 62401,
+      "peak_cuda_gib": 0.22243690490722656,
+      "run_class": "canonical",
+      "training_seconds": 48.225589700000455
+    },
+    {
+      "batch_size": 512,
+      "dimension": 50,
+      "evaluation_seconds": 0.21610859999964305,
+      "inference_seconds": 0.011611400000219874,
+      "model_id": "FC_HVI",
+      "parameter_count": 89345,
+      "peak_cuda_gib": 0.22243690490722656,
+      "run_class": "canonical",
+      "training_seconds": 46.45634699999937
+    },
+    {
+      "batch_size": 512,
+      "dimension": 50,
+      "evaluation_seconds": 0.2593644000007771,
+      "inference_seconds": 0.01286660000005213,
+      "model_id": "DEEPSETS_HVI",
+      "parameter_count": 62401,
+      "peak_cuda_gib": 0.4720478057861328,
+      "run_class": "canonical",
+      "training_seconds": 55.217789499999526
+    }
+  ],
+  "scope_note": "Engineering compute accounting for this matched pilot; do not interpret raw ratios as pure algorithmic speedups against Ruixi's 67 regime-specific trainings.",
+  "seed": 101,
+  "single_seed": true,
+  "total_gpu_training_seconds_sum": 290.3265848999986
+}

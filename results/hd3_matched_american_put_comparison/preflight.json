@@ -1,0 +1,102 @@
+{
+  "binomial": {
+    "check_spots": [
+      0.6,
+      0.7,
+      0.7999999999999999,
+      0.8999999999999999,
+      1.0,
+      1.0999999999999999,
+      1.2,
+      1.2999999999999998,
+      1.4
+    ],
+    "contract": {
+      "K": 1.0,
+      "T": 1.0,
+      "option_type": "put",
+      "q_g": 0.1,
+      "r": 0.05,
+      "sigma_g": 0.6
+    },
+    "convergence": [
+      {
+        "max_abs_change_from_previous": null,
+        "rmse_change_from_previous": null,
+        "steps": 256
+      },
+      {
+        "max_abs_change_from_previous": 0.00027284791592499524,
+        "rmse_change_from_previous": 0.00015199008506204607,
+        "steps": 512
+      },
+      {
+        "max_abs_change_from_previous": 0.00012026825792005313,
+        "rmse_change_from_previous": 6.78786008559895e-05,
+        "steps": 1024
+      },
+      {
+        "max_abs_change_from_previous": 6.755311653339202e-05,
+        "rmse_change_from_previous": 3.64831061025801e-05,
+        "steps": 2048
+      }
+    ],
+    "final_curve_anchor_points": 101,
+    "final_curve_output_points": 401,
+    "final_curve_steps": 1024
+  },
+  "mappings": [
+    {
+      "asset_q": 0.060487804878048806,
+      "asset_sigma": 0.6625891564490792,
+      "dimension": 10,
+      "effective_q_g": 0.1,
+      "effective_sigma_g": 0.6,
+      "rho": 0.8
+    },
+    {
+      "asset_q": 0.05777777777777779,
+      "asset_sigma": 0.6666666666666666,
+      "dimension": 20,
+      "effective_q_g": 0.1,
+      "effective_sigma_g": 0.6,
+      "rho": 0.8
+    },
+    {
+      "asset_q": 0.056119402985074646,
+      "asset_sigma": 0.6691496051182058,
+      "dimension": 50,
+      "effective_q_g": 0.1,
+      "effective_sigma_g": 0.6,
+      "rho": 0.8
+    },
+    {
+      "asset_q": 0.05556109725685787,
+      "asset_sigma": 0.66998343672533,
+      "dimension": 100,
+      "effective_q_g": 0.1,
+      "effective_sigma_g": 0.6,
+      "rho": 0.8
+    }
+  ],
+  "oracle_consistency": {
+    "comparisons": [
+      {
+        "max_abs_difference": 0.0,
+        "pair": "d10_vs_d20",
+        "passed": true,
+        "rmse_difference": 0.0,
+        "same_grid": true
+      },
+      {
+        "max_abs_difference": 0.0,
+        "pair": "d10_vs_d50",
+        "passed": true,
+        "rmse_difference": 0.0,
+        "same_grid": true
+      }
+    ],
+    "passed": true
+  },
+  "passed": true
+}

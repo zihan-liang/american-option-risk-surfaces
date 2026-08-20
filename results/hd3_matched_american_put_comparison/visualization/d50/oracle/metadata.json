@@ -1,0 +1,9 @@
+{
+  "dimension": 50,
+  "effective_q_g": 0.1,
+  "effective_sigma_g": 0.6,
+  "model": "CN_PSOR_reduced_oracle",
+  "oracle_runtime_sha256": "e10b4d9fd0a13ccda419c676c3d32359d20b7cba8c72db6d6298b3b477d68fee",
+  "refinement_rmse": 1.9205440499331208e-05,
+  "source_git_commit": "986a65c0b727881e65dd4bdf23d30eeb99e8c3aa"
+}

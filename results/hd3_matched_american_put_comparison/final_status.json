@@ -1,0 +1,28 @@
+{
+  "candidate_supported": false,
+  "canonical_dimensions": [
+    10,
+    20,
+    50
+  ],
+  "diagnostic_only": true,
+  "models": [
+    "FC_HVI",
+    "DEEPSETS_HVI"
+  ],
+  "posthoc_matched_contract": true,
+  "random_seed_robustness": false,
+  "rows": 6,
+  "seed": 101,
+  "single_seed": true,
+  "status": "completed",
+  "stress_included": false,
+  "target_reduced_contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "option_type": "put",
+    "q_g": 0.1,
+    "r": 0.05,
+    "sigma_g": 0.6
+  }
+}

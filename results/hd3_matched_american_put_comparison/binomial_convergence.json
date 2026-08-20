@@ -1,0 +1,46 @@
+{
+  "check_spots": [
+    0.6,
+    0.7,
+    0.7999999999999999,
+    0.8999999999999999,
+    1.0,
+    1.0999999999999999,
+    1.2,
+    1.2999999999999998,
+    1.4
+  ],
+  "contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "option_type": "put",
+    "q_g": 0.1,
+    "r": 0.05,
+    "sigma_g": 0.6
+  },
+  "convergence": [
+    {
+      "max_abs_change_from_previous": null,
+      "rmse_change_from_previous": null,
+      "steps": 256
+    },
+    {
+      "max_abs_change_from_previous": 0.00027284791592499524,
+      "rmse_change_from_previous": 0.00015199008506204607,
+      "steps": 512
+    },
+    {
+      "max_abs_change_from_previous": 0.00012026825792005313,
+      "rmse_change_from_previous": 6.78786008559895e-05,
+      "steps": 1024
+    },
+    {
+      "max_abs_change_from_previous": 6.755311653339202e-05,
+      "rmse_change_from_previous": 3.64831061025801e-05,
+      "steps": 2048
+    }
+  ],
+  "final_curve_anchor_points": 101,
+  "final_curve_output_points": 401,
+  "final_curve_steps": 1024
+}

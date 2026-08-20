@@ -1,0 +1,43 @@
+{
+  "asset_contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "q": 0.056119402985074646,
+    "r": 0.05,
+    "rho": 0.8,
+    "sigma": 0.6691496051182058
+  },
+  "boundary_found_fraction": 0.0,
+  "boundary_mae_found": null,
+  "boundary_max_abs_found": null,
+  "boundary_rmse_found": null,
+  "diagnostic_only": true,
+  "dimension": 50,
+  "max_obstacle_violation_on_surface": 0.0,
+  "model": "DEEPSETS_HVI",
+  "normalization": "K=1; exported S/K, tau/T, V/K",
+  "parameter_mapping": {
+    "asset_q": 0.056119402985074646,
+    "asset_sigma": 0.6691496051182058,
+    "dimension": 50,
+    "effective_q_g": 0.1,
+    "effective_sigma_g": 0.6,
+    "rho": 0.8
+  },
+  "posthoc_matched_contract": true,
+  "random_seed_robustness": false,
+  "seed": 101,
+  "single_seed": true,
+  "slice_definition": "S_1=...=S_d=S; therefore geometric mean G=S",
+  "source_checkpoint_sha256": "ce70c0e2b32f8698fe4edabe9103f7bf14cc3351f7805ca4404d99c29fa8ad91",
+  "source_git_commit": "986a65c0b727881e65dd4bdf23d30eeb99e8c3aa",
+  "surface_points": 64561,
+  "target_reduced_contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "option_type": "put",
+    "q_g": 0.1,
+    "r": 0.05,
+    "sigma_g": 0.6
+  }
+}
