@@ -227,9 +227,10 @@ def transition_boundary(
         return {"found": False, "S_star_over_K": None, "reason": "expected_exercise_side_absent"}
     first_cont = int(np.flatnonzero(~ex)[0])
     needed = first_cont + max(1, int(min_continuation_nodes))
+    itm_recontact = bool(np.any(ex[needed:] & (s[needed:] < 1.0))) if needed < len(ex) else False
     if (
         first_cont < 1 or not np.all(ex[:first_cont]) or needed > len(ex)
-        or not np.all(~ex[first_cont:needed])
+        or not np.all(~ex[first_cont:needed]) or itm_recontact
     ):
         return {"found": False, "S_star_over_K": None, "reason": "no_clean_transition"}
     left, right = first_cont - 1, first_cont
