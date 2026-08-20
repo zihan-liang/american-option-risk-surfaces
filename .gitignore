@@ -23,8 +23,9 @@ id.png
 /*.toc
 /*.xdv
 results/**/*.npz
-# The matched HD3 experiment intentionally commits only its compact post-processing surfaces.
+# The matched HD3 experiments intentionally commit only compact post-processing surfaces.
 !results/hd3_matched_american_put_comparison/visualization/**/*.npz
+!results/hd3_matched_american_put_boundary_complete/visualization/**/*.npz
 results/**/*.pt
 results/**/*.png
 results/**/*.pdf
@@ -53,3 +54,4 @@ results/test_stage*/
 results/test_m02_obstacle_pinn/
 results/hd1_windows_high_dimensional_pinn_48h/status/
 results/hd3_matched_american_put_comparison/runtime/
+results/hd3_matched_american_put_boundary_complete/runtime/
