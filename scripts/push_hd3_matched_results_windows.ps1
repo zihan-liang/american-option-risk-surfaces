@@ -39,7 +39,12 @@ try {
     }
 
     foreach ($File in $Files) {
-        $Relative = [System.IO.Path]::GetRelativePath($RepoRoot, $File.FullName)
+        # Compatible with Windows PowerShell 5.1 / .NET Framework (no Path.GetRelativePath dependency).
+        $Prefix = $RepoRoot.TrimEnd('\') + '\'
+        if (-not $File.FullName.StartsWith($Prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Artifact is unexpectedly outside the repository: $($File.FullName)"
+        }
+        $Relative = $File.FullName.Substring($Prefix.Length)
         if ($File.Extension -eq ".npz") {
             git add -f -- $Relative
         }
