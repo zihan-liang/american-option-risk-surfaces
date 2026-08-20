@@ -70,3 +70,16 @@ def test_checkpoint_save_hook_adds_final_namespace_and_training_domain(monkeypat
     assert captured["target_reduced_contract"] == cfg["target_reduced_contract"]
     assert captured["objective"] == cfg["objective"]
     assert captured["parameter_mapping"]["dimension"] == 10
+
+
+def test_put_transition_ignores_low_premium_otm_tail_after_true_boundary():
+    # Near expiry, a far-OTM American put can have value below the contact
+    # tolerance even though that region is continuation, not exercise. The
+    # free-boundary detector must use the economically relevant ITM side and
+    # must not interpret the near-zero OTM tail as a second exercise region.
+    spots = np.asarray([0.20, 0.30, 0.40, 0.50, 0.80, 0.99, 1.00, 1.10, 1.20])
+    premium = np.asarray([0.0, 0.0, 0.5e-6, 2.0e-6, 3.0e-6, 4.0e-6, 2.0e-6, 0.2e-6, 0.0])
+    result = hd3f.transition_boundary(spots, premium, tolerance=1e-6, min_continuation_nodes=2)
+    assert result["found"] is True
+    assert result["reason"] == "clean_transition"
+    assert np.isclose(result["S_star_over_K"], 0.43333333333333335, atol=1e-12, rtol=0.0)
