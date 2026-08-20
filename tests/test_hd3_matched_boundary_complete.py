@@ -140,6 +140,14 @@ def test_transition_boundary_ignores_deep_otm_near_expiry_recontact_after_confir
     assert math.isclose(result["S_star_over_K"], 0.43333333333333335, rel_tol=0.0, abs_tol=1e-12)
 
 
+def test_transition_boundary_rejects_itm_recontact_after_local_confirmation():
+    spots = np.array([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0, 1.2])
+    premium = np.array([0.0, 0.0, 0.5e-6, 2.0e-6, 4.0e-6, 0.2e-6, 5.0e-6, 2.0e-3, 0.0])
+    result = hd3f.transition_boundary(spots, premium, tolerance=1e-6, min_continuation_nodes=2)
+    assert result["found"] is False
+    assert result["reason"] == "no_clean_transition"
+
+
 def test_transition_boundary_rejects_isolated_false_contact():
     spots = np.linspace(0.2, 0.7, 6)
     premium = np.array([2e-6, 3e-6, 0.0, 4e-6, 5e-6, 6e-6])
