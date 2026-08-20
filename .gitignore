@@ -23,6 +23,8 @@ id.png
 /*.toc
 /*.xdv
 results/**/*.npz
+# The matched HD3 experiment intentionally commits only its compact post-processing surfaces.
+!results/hd3_matched_american_put_comparison/visualization/**/*.npz
 results/**/*.pt
 results/**/*.png
 results/**/*.pdf
