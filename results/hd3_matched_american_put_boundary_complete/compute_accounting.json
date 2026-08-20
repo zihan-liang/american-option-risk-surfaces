@@ -1,0 +1,94 @@
+{
+  "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "jobs": [
+    {
+      "batch_size": 512,
+      "derivative_seconds": 0.2166066999998293,
+      "dimension": 10,
+      "evaluation_seconds": 0.5378227000001061,
+      "inference_seconds": 0.11076859999957378,
+      "model_id": "FC_HVI",
+      "oracle_seconds": 134.06827580000027,
+      "parameter_count": 84225,
+      "peak_cuda_gib": 0.07514524459838867,
+      "training_plus_oracle_seconds": 180.76161259999935,
+      "training_seconds": 46.69333679999909
+    },
+    {
+      "batch_size": 512,
+      "derivative_seconds": 0.17807119999997667,
+      "dimension": 10,
+      "evaluation_seconds": 0.3848070000003645,
+      "inference_seconds": 0.010165000001506996,
+      "model_id": "DEEPSETS_HVI",
+      "oracle_seconds": 134.06827580000027,
+      "parameter_count": 62401,
+      "peak_cuda_gib": 0.1392354965209961,
+      "training_plus_oracle_seconds": 182.60727939999924,
+      "training_seconds": 48.53900359999898
+    },
+    {
+      "batch_size": 512,
+      "derivative_seconds": 0.15752659999998286,
+      "dimension": 20,
+      "evaluation_seconds": 0.35632059999988996,
+      "inference_seconds": 0.009964099999706377,
+      "model_id": "FC_HVI",
+      "oracle_seconds": 134.6104188999998,
+      "parameter_count": 85505,
+      "peak_cuda_gib": 0.1392354965209961,
+      "training_plus_oracle_seconds": 180.95757269999922,
+      "training_seconds": 46.34715379999943
+    },
+    {
+      "batch_size": 512,
+      "derivative_seconds": 0.17860790000122506,
+      "dimension": 20,
+      "evaluation_seconds": 0.396193200000198,
+      "inference_seconds": 0.010378500001024804,
+      "model_id": "DEEPSETS_HVI",
+      "oracle_seconds": 134.6104188999998,
+      "parameter_count": 62401,
+      "peak_cuda_gib": 0.22243690490722656,
+      "training_plus_oracle_seconds": 183.2215844000002,
+      "training_seconds": 48.611165500000425
+    },
+    {
+      "batch_size": 512,
+      "derivative_seconds": 0.16130680000060238,
+      "dimension": 50,
+      "evaluation_seconds": 0.36484870000094816,
+      "inference_seconds": 0.013400800000454183,
+      "model_id": "FC_HVI",
+      "oracle_seconds": 134.51648060000116,
+      "parameter_count": 89345,
+      "peak_cuda_gib": 0.22243690490722656,
+      "training_plus_oracle_seconds": 181.06463350000195,
+      "training_seconds": 46.54815290000079
+    },
+    {
+      "batch_size": 512,
+      "derivative_seconds": 0.19962269999996352,
+      "dimension": 50,
+      "evaluation_seconds": 0.4425257999992027,
+      "inference_seconds": 0.023908799999844632,
+      "model_id": "DEEPSETS_HVI",
+      "oracle_seconds": 134.51648060000116,
+      "parameter_count": 62401,
+      "peak_cuda_gib": 0.4720478057861328,
+      "training_plus_oracle_seconds": 189.68095730000096,
+      "training_seconds": 55.164476699999796
+    }
+  ],
+  "oracle_seconds_by_dimension": {
+    "10": 134.06827580000027,
+    "20": 134.6104188999998,
+    "50": 134.51648060000116
+  },
+  "protocol_disclosure": "HD uses oracle-assisted supervised learning plus an HVI physics term; Ruixi Arm C/D are physics-only PINNs. Report observed accuracy-compute trade-off under the respective protocols, not a pure algorithmic speedup.",
+  "seed": 101,
+  "single_seed": true,
+  "total_gpu_training_seconds_sum": 291.9032892999985,
+  "total_oracle_generation_seconds": 403.1951753000012,
+  "training_plus_oracle_seconds_definition": "per-job training time plus that dimension's one-time CN/PSOR oracle generation cost"
+}

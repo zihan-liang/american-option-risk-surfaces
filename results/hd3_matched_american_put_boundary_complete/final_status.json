@@ -1,0 +1,43 @@
+{
+  "blind_holdout_access": false,
+  "candidate_supported": false,
+  "canonical_dimensions": [
+    10,
+    20,
+    50
+  ],
+  "common_reference_note": "Cross-repository ranking must later use one shared Ruixi DIRK+Policy Iteration+sinh-grid high-accuracy reference.",
+  "config_sha256": "ad20bb8757e71a68148c685ca0f01f7d6bc78da8f08c69b1d4447333fee03fe8",
+  "diagnostic_only": true,
+  "experiment_id": "hd3_matched_american_put_boundary_complete",
+  "historical_result_directory_modified": false,
+  "implementation_sha": "e4e263ae061bf82ffa19aff5f482bd1ab76cb835",
+  "models": [
+    "FC_HVI",
+    "DEEPSETS_HVI"
+  ],
+  "posthoc_matched_contract": true,
+  "random_seed_robustness": false,
+  "rows": 6,
+  "seed": 101,
+  "single_seed": true,
+  "status": "completed",
+  "target_reduced_contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "option_type": "put",
+    "q_g": 0.1,
+    "r": 0.05,
+    "sigma_g": 0.6
+  },
+  "training_domain": {
+    "G_over_K": [
+      0.2,
+      1.5
+    ],
+    "tau_over_T": [
+      0.0025,
+      1.0
+    ]
+  }
+}

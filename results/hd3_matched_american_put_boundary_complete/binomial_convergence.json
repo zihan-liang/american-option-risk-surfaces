@@ -1,0 +1,103 @@
+{
+  "check_spots": [
+    0.25,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.8,
+    1.0,
+    1.2,
+    1.4
+  ],
+  "check_taus": [
+    1.0,
+    0.5,
+    0.1
+  ],
+  "contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "option_type": "put",
+    "q_g": 0.1,
+    "r": 0.05,
+    "sigma_g": 0.6
+  },
+  "convergence": [
+    {
+      "max_abs_change_from_previous": null,
+      "rmse_change_from_previous": null,
+      "steps": 256,
+      "tau_over_T": 1.0
+    },
+    {
+      "max_abs_change_from_previous": 0.00016540253028635155,
+      "rmse_change_from_previous": 8.320101184496973e-05,
+      "steps": 512,
+      "tau_over_T": 1.0
+    },
+    {
+      "max_abs_change_from_previous": 0.00012026825792005313,
+      "rmse_change_from_previous": 5.984756797251805e-05,
+      "steps": 1024,
+      "tau_over_T": 1.0
+    },
+    {
+      "max_abs_change_from_previous": 6.755311653339202e-05,
+      "rmse_change_from_previous": 2.947023173100086e-05,
+      "steps": 2048,
+      "tau_over_T": 1.0
+    },
+    {
+      "max_abs_change_from_previous": null,
+      "rmse_change_from_previous": null,
+      "steps": 256,
+      "tau_over_T": 0.5
+    },
+    {
+      "max_abs_change_from_previous": 0.00014903489865236708,
+      "rmse_change_from_previous": 7.893765573791475e-05,
+      "steps": 512,
+      "tau_over_T": 0.5
+    },
+    {
+      "max_abs_change_from_previous": 8.967154130357091e-05,
+      "rmse_change_from_previous": 3.9778456388919635e-05,
+      "steps": 1024,
+      "tau_over_T": 0.5
+    },
+    {
+      "max_abs_change_from_previous": 3.1093386560696046e-05,
+      "rmse_change_from_previous": 1.709933906662354e-05,
+      "steps": 2048,
+      "tau_over_T": 0.5
+    },
+    {
+      "max_abs_change_from_previous": null,
+      "rmse_change_from_previous": null,
+      "steps": 256,
+      "tau_over_T": 0.1
+    },
+    {
+      "max_abs_change_from_previous": 3.661447322818312e-05,
+      "rmse_change_from_previous": 1.670940951248205e-05,
+      "steps": 512,
+      "tau_over_T": 0.1
+    },
+    {
+      "max_abs_change_from_previous": 1.831400492569024e-05,
+      "rmse_change_from_previous": 9.888798852298179e-06,
+      "steps": 1024,
+      "tau_over_T": 0.1
+    },
+    {
+      "max_abs_change_from_previous": 9.15868744691406e-06,
+      "rmse_change_from_previous": 3.829602682154244e-06,
+      "steps": 2048,
+      "tau_over_T": 0.1
+    }
+  ],
+  "final_curve_anchor_points": 101,
+  "final_curve_output_points": 401,
+  "final_curve_steps": 2048
+}

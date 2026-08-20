@@ -1,0 +1,151 @@
+{
+  "config": {
+    "aggregate_log_moneyness": [
+      -1.6094379124341003,
+      0.4054651081081644
+    ],
+    "binomial_check_spots": [
+      0.25,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.8,
+      1.0,
+      1.2,
+      1.4
+    ],
+    "binomial_check_taus": [
+      1.0,
+      0.5,
+      0.1
+    ],
+    "binomial_steps": [
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "blind_holdout_access": false,
+    "boundary": {
+      "min_continuation_nodes": 2,
+      "primary_tolerance": 1e-06,
+      "s_max": 1.2,
+      "s_min": 0.2,
+      "s_points": 801,
+      "sensitivity_tolerances": [
+        1e-05,
+        0.0001
+      ],
+      "tau_max": 1.0,
+      "tau_min": 0.01,
+      "tau_points": 201,
+      "tube_width": 0.02
+    },
+    "candidate_supported": false,
+    "canonical_dimensions": [
+      10,
+      20,
+      50
+    ],
+    "canonical_dtype": "float32",
+    "canonical_steps": 6000,
+    "checkpoint_interval": 250,
+    "claim_status": "diagnostic_only",
+    "deepsets_architecture": "hd1_exact",
+    "diagnostic_only": true,
+    "experiment_id": "hd3_matched_american_put_boundary_complete",
+    "fb_epsilon_final": 0.0001,
+    "fb_epsilon_initial": 0.01,
+    "fc_activation": "tanh",
+    "fc_hidden_layers": 6,
+    "fc_width": 128,
+    "hutchinson_probe_count": 2,
+    "hutchinson_probe_seed": 101,
+    "initial_batch_size": 512,
+    "learning_rate": 0.001,
+    "max_cuda_allocation_gib": 7.2,
+    "mixed_precision": false,
+    "models": [
+      "FC_HVI",
+      "DEEPSETS_HVI"
+    ],
+    "objective": {
+      "candidate": "HVI-warm-low",
+      "fallback_objective": true,
+      "final_physics_weight": 0.01,
+      "hutchinson_probe_count": 2,
+      "optimizer_mode": "fixed",
+      "warm_fraction": 0.5
+    },
+    "oom_batch_fallbacks": [
+      256,
+      128
+    ],
+    "oracle_dtype": "float64",
+    "oracle_grids": [
+      [
+        256,
+        256
+      ],
+      [
+        512,
+        512
+      ]
+    ],
+    "oracle_refinement_g_points": 513,
+    "oracle_refinement_tau_points": 129,
+    "oracle_rmse_max": 0.0001,
+    "oracle_s_max": 4.0,
+    "posthoc_matched_contract": true,
+    "random_seed_robustness": false,
+    "rho": 0.8,
+    "seed": 101,
+    "single_seed": true,
+    "sobol_seeds": {
+      "physics": 40310104,
+      "structural": 40310105,
+      "test": 40310103,
+      "train": 40310101,
+      "validation": 40310102
+    },
+    "supervised_train_points": 20000,
+    "target_reduced_contract": {
+      "K": 1.0,
+      "T": 1.0,
+      "option_type": "put",
+      "q_g": 0.1,
+      "r": 0.05,
+      "sigma_g": 0.6
+    },
+    "tau": [
+      0.0025,
+      1.0
+    ],
+    "test_points": 16384,
+    "train_log_interval": 100,
+    "transverse_scale": 0.35,
+    "validation_interval": 500,
+    "validation_points": 8192,
+    "visualization": {
+      "slice_points": 401,
+      "slice_s_max": 1.5,
+      "slice_s_min": 0.2,
+      "slice_taus": [
+        1.0,
+        0.5,
+        0.1
+      ],
+      "surface_s_max": 1.5,
+      "surface_s_min": 0.2,
+      "surface_s_points": 401,
+      "surface_tau_max": 1.0,
+      "surface_tau_min": 0.01,
+      "surface_tau_points": 161
+    }
+  },
+  "config_sha256": "ad20bb8757e71a68148c685ca0f01f7d6bc78da8f08c69b1d4447333fee03fe8",
+  "experiment_id": "hd3_matched_american_put_boundary_complete",
+  "historical_result_directory_preserved": "results\\hd3_matched_american_put_comparison",
+  "implementation_sha": "e4e263ae061bf82ffa19aff5f482bd1ab76cb835"
+}

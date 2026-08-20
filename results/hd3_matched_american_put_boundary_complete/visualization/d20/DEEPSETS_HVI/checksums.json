@@ -1,0 +1,9 @@
+{
+  "free_boundary.csv": "0b63246dc900e4cb55284e5e874fde43253186559d06ca349be2408451628fba",
+  "free_boundary_sensitivity.csv": "26cd2cb77f3c5070bf7da9f6a8cdd414d66f28fb5bc18af7a35bd92fb9d6a5d0",
+  "metadata.json": "34d0760ab668fb8e61bba4cc4f673c6c810cd7f2a169e68bd4e421595e0a1d4d",
+  "price_slice_tau_01.csv": "0edf5059dab3f1d3a77af6f3a0a35e1771f6c558c6c7206a5377a059b56fb2e1",
+  "price_slice_tau_05.csv": "82bdcab98ee4e0ae09af1a524738740ed0a95521aaf3f1432d7e4e2b4513ef98",
+  "price_slice_tau_1.csv": "5bc629ae9be2951c487aa336077bd95f282d439d988471ec6b031b12aa501b2b",
+  "surface.npz": "4498aefd22df5f7f6759593e517693760fcd979ac81ae20bdf2b2dfd3a9f4b62"
+}

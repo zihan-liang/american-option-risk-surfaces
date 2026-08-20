@@ -1,0 +1,113 @@
+{
+  "asset_contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "q": 0.060487804878048806,
+    "r": 0.05,
+    "rho": 0.8,
+    "sigma": 0.6625891564490792
+  },
+  "blind_holdout_access": false,
+  "boundary_conditional_mae": null,
+  "boundary_conditional_max_abs": null,
+  "boundary_conditional_rmse": null,
+  "boundary_coverage": 0.0,
+  "boundary_definition": "contiguous_low_G_exercise_to_continuation_linear_interpolation",
+  "boundary_evaluation_domain": {
+    "G_over_K": [
+      0.2,
+      1.2
+    ],
+    "G_points": 801,
+    "tau_over_T": [
+      0.01,
+      1.0
+    ],
+    "tau_points": 201
+  },
+  "boundary_false_count": 0,
+  "boundary_full_rmse": null,
+  "boundary_missed_count": 201,
+  "boundary_sensitivity_tolerances": [
+    1e-05,
+    0.0001
+  ],
+  "candidate_supported": false,
+  "common_reference_policy": "Later Arm C/Arm D/HD ranking must use Ruixi DIRK+Policy Iteration+sinh-grid M=480,N=960 as one external reference; it is not accessed during HD training.",
+  "component_delta_definition": "component_delta=dV/dS_i on sampled high-dimensional states",
+  "config_sha256": "ad20bb8757e71a68148c685ca0f01f7d6bc78da8f08c69b1d4447333fee03fe8",
+  "diagnostic_only": true,
+  "dimension": 10,
+  "experiment_id": "hd3_matched_american_put_boundary_complete",
+  "gamma_contraction_definition": "covariance-weighted Hessian contraction in log coordinates",
+  "matched_boundary_count": 0,
+  "max_obstacle_violation_on_surface": 0.0,
+  "model": "DEEPSETS_HVI",
+  "objective": {
+    "candidate": "HVI-warm-low",
+    "fallback_objective": true,
+    "final_physics_weight": 0.01,
+    "hutchinson_probe_count": 2,
+    "optimizer_mode": "fixed",
+    "warm_fraction": 0.5
+  },
+  "parameter_mapping": {
+    "asset_q": 0.060487804878048806,
+    "asset_sigma": 0.6625891564490792,
+    "dimension": 10,
+    "effective_q_g": 0.1,
+    "effective_sigma_g": 0.6,
+    "rho": 0.8
+  },
+  "pointwise_fb_residual_exported": false,
+  "pointwise_pde_residual_exported": false,
+  "posthoc_matched_contract": true,
+  "predicted_boundary_count": 0,
+  "primary_boundary_tolerance": 1e-06,
+  "random_seed_robustness": false,
+  "reduced_delta_definition": "Delta_G=dV(G,...,G,tau)/dG=sum_i dV/dS_i",
+  "reduced_gamma_definition": "Gamma_G=d2V(G,...,G,tau)/dG2",
+  "reference_boundary_count": 201,
+  "residual_export_note": "PDE/FB residuals are summarized in run_metrics.csv but omitted from dense surface.npz.",
+  "rho": 0.8,
+  "scaled_reduced_gamma_definition": "K*Gamma_G; K=1 for this matched contract",
+  "seed": 101,
+  "single_seed": true,
+  "source_checkpoint_sha256": "cfd55664c14761a55c0983bf477b61bc5dcba317978289c26c05b52d7bdbfc45",
+  "source_git_commit": "e4e263ae061bf82ffa19aff5f482bd1ab76cb835",
+  "surface_points": 64561,
+  "target_reduced_contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "option_type": "put",
+    "q_g": 0.1,
+    "r": 0.05,
+    "sigma_g": 0.6
+  },
+  "training_domain": {
+    "G_over_K": [
+      0.2,
+      1.5
+    ],
+    "tau_over_T": [
+      0.0025,
+      1.0
+    ]
+  },
+  "visualization_domain": {
+    "slice_points": 401,
+    "slice_s_max": 1.5,
+    "slice_s_min": 0.2,
+    "slice_taus": [
+      1.0,
+      0.5,
+      0.1
+    ],
+    "surface_s_max": 1.5,
+    "surface_s_min": 0.2,
+    "surface_s_points": 401,
+    "surface_tau_max": 1.0,
+    "surface_tau_min": 0.01,
+    "surface_tau_points": 161
+  }
+}

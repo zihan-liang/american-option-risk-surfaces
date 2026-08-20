@@ -1,0 +1,114 @@
+{
+  "domain": {
+    "G_over_K": [
+      0.2,
+      1.5
+    ],
+    "tau_over_T": [
+      0.0025,
+      1.0
+    ]
+  },
+  "passed": true,
+  "rows": [
+    {
+      "boundary_method": "contiguous_low_G_exercise_to_continuation_linear_interpolation",
+      "boundary_missing_reasons": {
+        "clean_transition": 512
+      },
+      "boundary_tolerance": 1e-06,
+      "coarse_grid": [
+        256,
+        256
+      ],
+      "dimension": 10,
+      "fine_grid": [
+        512,
+        512
+      ],
+      "no_extrapolation_asserted": true,
+      "oracle_seconds": 134.06827580000027,
+      "refinement_domain": {
+        "G_over_K": [
+          0.2,
+          1.5
+        ],
+        "G_points": 513,
+        "tau_over_T": [
+          0.0025,
+          1.0
+        ],
+        "tau_points": 129
+      },
+      "refinement_rmse": 1.697361548087944e-05,
+      "refinement_rmse_max": 0.0001,
+      "solver_s_max": 4.0
+    },
+    {
+      "boundary_method": "contiguous_low_G_exercise_to_continuation_linear_interpolation",
+      "boundary_missing_reasons": {
+        "clean_transition": 512
+      },
+      "boundary_tolerance": 1e-06,
+      "coarse_grid": [
+        256,
+        256
+      ],
+      "dimension": 20,
+      "fine_grid": [
+        512,
+        512
+      ],
+      "no_extrapolation_asserted": true,
+      "oracle_seconds": 134.6104188999998,
+      "refinement_domain": {
+        "G_over_K": [
+          0.2,
+          1.5
+        ],
+        "G_points": 513,
+        "tau_over_T": [
+          0.0025,
+          1.0
+        ],
+        "tau_points": 129
+      },
+      "refinement_rmse": 1.697361548087944e-05,
+      "refinement_rmse_max": 0.0001,
+      "solver_s_max": 4.0
+    },
+    {
+      "boundary_method": "contiguous_low_G_exercise_to_continuation_linear_interpolation",
+      "boundary_missing_reasons": {
+        "clean_transition": 512
+      },
+      "boundary_tolerance": 1e-06,
+      "coarse_grid": [
+        256,
+        256
+      ],
+      "dimension": 50,
+      "fine_grid": [
+        512,
+        512
+      ],
+      "no_extrapolation_asserted": true,
+      "oracle_seconds": 134.51648060000116,
+      "refinement_domain": {
+        "G_over_K": [
+          0.2,
+          1.5
+        ],
+        "G_points": 513,
+        "tau_over_T": [
+          0.0025,
+          1.0
+        ],
+        "tau_points": 129
+      },
+      "refinement_rmse": 1.697361548087944e-05,
+      "refinement_rmse_max": 0.0001,
+      "solver_s_max": 4.0
+    }
+  ]
+}

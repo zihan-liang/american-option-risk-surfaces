@@ -1,0 +1,19 @@
+{
+  "comparisons": [
+    {
+      "max_abs_difference": 0.0,
+      "pair": "d10_vs_d20",
+      "passed": true,
+      "rmse_difference": 0.0,
+      "same_grid": true
+    },
+    {
+      "max_abs_difference": 0.0,
+      "pair": "d10_vs_d50",
+      "passed": true,
+      "rmse_difference": 0.0,
+      "same_grid": true
+    }
+  ],
+  "passed": true
+}

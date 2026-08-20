@@ -1,0 +1,256 @@
+{
+  "binomial": {
+    "check_spots": [
+      0.25,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.8,
+      1.0,
+      1.2,
+      1.4
+    ],
+    "check_taus": [
+      1.0,
+      0.5,
+      0.1
+    ],
+    "contract": {
+      "K": 1.0,
+      "T": 1.0,
+      "option_type": "put",
+      "q_g": 0.1,
+      "r": 0.05,
+      "sigma_g": 0.6
+    },
+    "convergence": [
+      {
+        "max_abs_change_from_previous": null,
+        "rmse_change_from_previous": null,
+        "steps": 256,
+        "tau_over_T": 1.0
+      },
+      {
+        "max_abs_change_from_previous": 0.00016540253028635155,
+        "rmse_change_from_previous": 8.320101184496973e-05,
+        "steps": 512,
+        "tau_over_T": 1.0
+      },
+      {
+        "max_abs_change_from_previous": 0.00012026825792005313,
+        "rmse_change_from_previous": 5.984756797251805e-05,
+        "steps": 1024,
+        "tau_over_T": 1.0
+      },
+      {
+        "max_abs_change_from_previous": 6.755311653339202e-05,
+        "rmse_change_from_previous": 2.947023173100086e-05,
+        "steps": 2048,
+        "tau_over_T": 1.0
+      },
+      {
+        "max_abs_change_from_previous": null,
+        "rmse_change_from_previous": null,
+        "steps": 256,
+        "tau_over_T": 0.5
+      },
+      {
+        "max_abs_change_from_previous": 0.00014903489865236708,
+        "rmse_change_from_previous": 7.893765573791475e-05,
+        "steps": 512,
+        "tau_over_T": 0.5
+      },
+      {
+        "max_abs_change_from_previous": 8.967154130357091e-05,
+        "rmse_change_from_previous": 3.9778456388919635e-05,
+        "steps": 1024,
+        "tau_over_T": 0.5
+      },
+      {
+        "max_abs_change_from_previous": 3.1093386560696046e-05,
+        "rmse_change_from_previous": 1.709933906662354e-05,
+        "steps": 2048,
+        "tau_over_T": 0.5
+      },
+      {
+        "max_abs_change_from_previous": null,
+        "rmse_change_from_previous": null,
+        "steps": 256,
+        "tau_over_T": 0.1
+      },
+      {
+        "max_abs_change_from_previous": 3.661447322818312e-05,
+        "rmse_change_from_previous": 1.670940951248205e-05,
+        "steps": 512,
+        "tau_over_T": 0.1
+      },
+      {
+        "max_abs_change_from_previous": 1.831400492569024e-05,
+        "rmse_change_from_previous": 9.888798852298179e-06,
+        "steps": 1024,
+        "tau_over_T": 0.1
+      },
+      {
+        "max_abs_change_from_previous": 9.15868744691406e-06,
+        "rmse_change_from_previous": 3.829602682154244e-06,
+        "steps": 2048,
+        "tau_over_T": 0.1
+      }
+    ],
+    "final_curve_anchor_points": 101,
+    "final_curve_output_points": 401,
+    "final_curve_steps": 2048
+  },
+  "config_sha256": "ad20bb8757e71a68148c685ca0f01f7d6bc78da8f08c69b1d4447333fee03fe8",
+  "implementation_sha": "e4e263ae061bf82ffa19aff5f482bd1ab76cb835",
+  "mappings": [
+    {
+      "asset_q": 0.060487804878048806,
+      "asset_sigma": 0.6625891564490792,
+      "dimension": 10,
+      "effective_q_g": 0.1,
+      "effective_sigma_g": 0.6,
+      "rho": 0.8
+    },
+    {
+      "asset_q": 0.05777777777777779,
+      "asset_sigma": 0.6666666666666666,
+      "dimension": 20,
+      "effective_q_g": 0.1,
+      "effective_sigma_g": 0.6,
+      "rho": 0.8
+    },
+    {
+      "asset_q": 0.056119402985074646,
+      "asset_sigma": 0.6691496051182058,
+      "dimension": 50,
+      "effective_q_g": 0.1,
+      "effective_sigma_g": 0.6,
+      "rho": 0.8
+    }
+  ],
+  "new_result_namespace": "results\\hd3_matched_american_put_boundary_complete",
+  "old_result_namespace": "results\\hd3_matched_american_put_comparison",
+  "oracle_consistency": {
+    "comparisons": [
+      {
+        "max_abs_difference": 0.0,
+        "pair": "d10_vs_d20",
+        "passed": true,
+        "rmse_difference": 0.0,
+        "same_grid": true
+      },
+      {
+        "max_abs_difference": 0.0,
+        "pair": "d10_vs_d50",
+        "passed": true,
+        "rmse_difference": 0.0,
+        "same_grid": true
+      }
+    ],
+    "passed": true
+  },
+  "oracle_refinement": [
+    {
+      "boundary_method": "contiguous_low_G_exercise_to_continuation_linear_interpolation",
+      "boundary_missing_reasons": {
+        "clean_transition": 512
+      },
+      "boundary_tolerance": 1e-06,
+      "coarse_grid": [
+        256,
+        256
+      ],
+      "dimension": 10,
+      "fine_grid": [
+        512,
+        512
+      ],
+      "no_extrapolation_asserted": true,
+      "oracle_seconds": 134.06827580000027,
+      "refinement_domain": {
+        "G_over_K": [
+          0.2,
+          1.5
+        ],
+        "G_points": 513,
+        "tau_over_T": [
+          0.0025,
+          1.0
+        ],
+        "tau_points": 129
+      },
+      "refinement_rmse": 1.697361548087944e-05,
+      "refinement_rmse_max": 0.0001,
+      "solver_s_max": 4.0
+    },
+    {
+      "boundary_method": "contiguous_low_G_exercise_to_continuation_linear_interpolation",
+      "boundary_missing_reasons": {
+        "clean_transition": 512
+      },
+      "boundary_tolerance": 1e-06,
+      "coarse_grid": [
+        256,
+        256
+      ],
+      "dimension": 20,
+      "fine_grid": [
+        512,
+        512
+      ],
+      "no_extrapolation_asserted": true,
+      "oracle_seconds": 134.6104188999998,
+      "refinement_domain": {
+        "G_over_K": [
+          0.2,
+          1.5
+        ],
+        "G_points": 513,
+        "tau_over_T": [
+          0.0025,
+          1.0
+        ],
+        "tau_points": 129
+      },
+      "refinement_rmse": 1.697361548087944e-05,
+      "refinement_rmse_max": 0.0001,
+      "solver_s_max": 4.0
+    },
+    {
+      "boundary_method": "contiguous_low_G_exercise_to_continuation_linear_interpolation",
+      "boundary_missing_reasons": {
+        "clean_transition": 512
+      },
+      "boundary_tolerance": 1e-06,
+      "coarse_grid": [
+        256,
+        256
+      ],
+      "dimension": 50,
+      "fine_grid": [
+        512,
+        512
+      ],
+      "no_extrapolation_asserted": true,
+      "oracle_seconds": 134.51648060000116,
+      "refinement_domain": {
+        "G_over_K": [
+          0.2,
+          1.5
+        ],
+        "G_points": 513,
+        "tau_over_T": [
+          0.0025,
+          1.0
+        ],
+        "tau_points": 129
+      },
+      "refinement_rmse": 1.697361548087944e-05,
+      "refinement_rmse_max": 0.0001,
+      "solver_s_max": 4.0
+    }
+  ],
+  "passed": true
+}
