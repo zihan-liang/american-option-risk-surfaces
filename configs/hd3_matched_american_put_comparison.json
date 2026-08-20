@@ -76,7 +76,7 @@
     "boundary_tau_points": 201,
     "boundary_contact_tolerance": 1e-5
   },
-  "binomial_steps": [1024, 2048, 4096, 8192],
+  "binomial_steps": [256, 512, 1024, 2048],
   "mixed_precision": false,
   "canonical_dtype": "float32",
   "oracle_dtype": "float64",
