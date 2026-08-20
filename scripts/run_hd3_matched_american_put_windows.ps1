@@ -9,7 +9,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$Experiment = Join-Path $RepoRoot "experiments\hd3_matched_american_put_comparison.py"
+$Experiment = Join-Path $RepoRoot "experiments\hd3_matched_windows_entrypoint.py"
 $ResultRoot = Join-Path $RepoRoot "results\hd3_matched_american_put_comparison"
 $LogDir = Join-Path $ResultRoot "runtime\logs"
 
@@ -18,9 +18,22 @@ function Invoke-PythonPhase {
     $Stamp = Get-Date -Format "yyyyMMdd-HHmmss"
     $LogFile = Join-Path $LogDir "$Name-$Stamp.log"
     Write-Host "`n===== HD3 MATCHED: $Name =====" -ForegroundColor Cyan
-    & $PythonExe $Experiment "--phase" $Name @ExtraArgs 2>&1 | Tee-Object -FilePath $LogFile
-    if ($LASTEXITCODE -ne 0) {
-        throw "Phase '$Name' exited with code $LASTEXITCODE. Re-run the same command to resume. Log: $LogFile"
+
+    # Windows PowerShell 5.1 can promote native stderr to a terminating
+    # NativeCommandError when ErrorActionPreference is Stop.  Temporarily use
+    # Continue so the complete Python traceback reaches both the console and
+    # the durable log, then enforce failure from the native exit code.
+    $PreviousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        & $PythonExe $Experiment "--phase" $Name @ExtraArgs 2>&1 | Tee-Object -FilePath $LogFile
+        $ExitCode = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $PreviousErrorActionPreference
+    }
+    if ($ExitCode -ne 0) {
+        throw "Phase '$Name' exited with code $ExitCode. Re-run the same command to resume. Log: $LogFile"
     }
 }
 
@@ -36,7 +49,7 @@ try {
         throw "Python interpreter not found: $PythonExe"
     }
     if (-not (Test-Path $Experiment)) {
-        throw "Experiment script not found: $Experiment"
+        throw "Experiment entry point not found: $Experiment"
     }
     New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
 
@@ -51,6 +64,7 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "Focused tests failed." }
         & $PythonExe -m compileall -q `
             "experiments\hd3_matched_american_put_comparison.py" `
+            "experiments\hd3_matched_windows_entrypoint.py" `
             "tests\test_hd3_matched_american_put_comparison.py"
         if ($LASTEXITCODE -ne 0) { throw "Compile check failed." }
     }
