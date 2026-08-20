@@ -40,8 +40,21 @@ jobs:
             experiments/hd3_matched_boundary_complete_windows_entrypoint.py \
             tests/test_hd3_matched_boundary_complete.py \
             tests/test_hd3_matched_boundary_complete_invariants.py
-      - name: Boundary-complete oracle preflight integration
-        run: python experiments/hd3_matched_boundary_complete_windows_entrypoint.py --phase preflight
+      - name: Boundary-complete oracle integration
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'experiments')
+          import hd3_matched_boundary_complete_core as c
+
+          cfg = c.load_config()
+          for d in cfg['canonical_dimensions']:
+              dim_cfg = c.dimension_config(int(d), cfg)
+              oracle, evidence = c.build_boundary_complete_oracle(int(d), dim_cfg)
+              assert evidence['boundary_missing_reasons'].get('clean_transition', 0) > 0
+              assert evidence['refinement_rmse'] <= cfg['oracle_rmse_max']
+              assert not __import__('numpy').any(~__import__('numpy').isfinite(oracle.boundary))
+          PY
       - name: CPU-safe status CLI smoke
         run: python experiments/hd3_matched_boundary_complete_windows_entrypoint.py --phase status
       - name: PowerShell parser checks
