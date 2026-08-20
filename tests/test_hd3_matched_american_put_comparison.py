@@ -14,6 +14,12 @@ assert spec and spec.loader
 hd3m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(hd3m)
 
+ENTRYPOINT_PATH = ROOT / "experiments" / "hd3_matched_windows_entrypoint.py"
+entry_spec = importlib.util.spec_from_file_location("hd3_matched_windows_entrypoint", ENTRYPOINT_PATH)
+assert entry_spec and entry_spec.loader
+hd3entry = importlib.util.module_from_spec(entry_spec)
+entry_spec.loader.exec_module(hd3entry)
+
 import hd3_classical_vs_structured_high_dimensional_pinn as hd3base
 
 
@@ -81,9 +87,9 @@ def test_oracle_consistency_accepts_identical_surfaces():
     assert all(row["max_abs_difference"] == 0.0 for row in result["comparisons"])
 
 
-def test_cpu_memory_telemetry_failure_is_nonfatal(monkeypatch):
+def test_cpu_memory_telemetry_failure_is_nonfatal():
     def fail_memory_probe():
         raise OSError("GetProcessMemoryInfo failed")
 
-    monkeypatch.setattr(hd3base, "peak_cpu_memory_bytes", fail_memory_probe)
-    assert hd3base._safe_peak_cpu_memory_bytes() is None
+    assert hd3entry.safe_peak_cpu_memory_bytes(fail_memory_probe) is None
+    assert hd3base.peak_cpu_memory_bytes is hd3entry.safe_peak_cpu_memory_bytes
