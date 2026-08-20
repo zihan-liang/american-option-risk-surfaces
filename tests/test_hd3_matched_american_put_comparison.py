@@ -14,6 +14,8 @@ assert spec and spec.loader
 hd3m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(hd3m)
 
+import hd3_classical_vs_structured_high_dimensional_pinn as hd3base
+
 
 def test_parameter_mapping_matches_same_reduced_contract_for_all_canonical_dimensions():
     cfg = hd3m.load_config()
@@ -77,3 +79,11 @@ def test_oracle_consistency_accepts_identical_surfaces():
     result = hd3m._oracle_consistency(oracles)
     assert result["passed"] is True
     assert all(row["max_abs_difference"] == 0.0 for row in result["comparisons"])
+
+
+def test_cpu_memory_telemetry_failure_is_nonfatal(monkeypatch):
+    def fail_memory_probe():
+        raise OSError("GetProcessMemoryInfo failed")
+
+    monkeypatch.setattr(hd3base, "peak_cpu_memory_bytes", fail_memory_probe)
+    assert hd3base._safe_peak_cpu_memory_bytes() is None
