@@ -1,5 +1,6 @@
 param(
-    [string]$CommitMessage = "results(hd3): add matched American-put single-seed run"
+    [string]$CommitMessage = "results(hd3): add matched American-put single-seed run",
+    [string]$TargetRepoUrl = "https://github.com/zihan-liang/american-option-risk-surfaces.git"
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,9 +22,8 @@ try {
         throw "Final status is not completed."
     }
 
-    $Remote = (git remote get-url origin).Trim()
-    if ($Remote -notmatch "zihan-liang/american-option-risk-surfaces") {
-        throw "Origin does not appear to be the intended repository: $Remote"
+    if ($TargetRepoUrl -notmatch "github\.com[:/]zihan-liang/american-option-risk-surfaces(?:\.git)?$") {
+        throw "Refusing to push to unexpected repository URL: $TargetRepoUrl"
     }
 
     $Files = Get-ChildItem $ResultRoot -Recurse -File | Where-Object {
@@ -70,7 +70,8 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "git commit failed." }
     }
 
-    git -c http.version=HTTP/1.1 push origin "HEAD:$ExpectedBranch"
+    Write-Host "`nPushing matched results to: $TargetRepoUrl" -ForegroundColor Cyan
+    git -c http.version=HTTP/1.1 push $TargetRepoUrl "HEAD:$ExpectedBranch"
     if ($LASTEXITCODE -ne 0) { throw "git push failed." }
 
     Write-Host "`nMatched comparison results pushed successfully." -ForegroundColor Green
