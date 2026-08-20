@@ -40,6 +40,8 @@ jobs:
             experiments/hd3_matched_boundary_complete_windows_entrypoint.py \
             tests/test_hd3_matched_boundary_complete.py \
             tests/test_hd3_matched_boundary_complete_invariants.py
+      - name: Boundary-complete oracle preflight integration
+        run: python experiments/hd3_matched_boundary_complete_windows_entrypoint.py --phase preflight
       - name: CPU-safe status CLI smoke
         run: python experiments/hd3_matched_boundary_complete_windows_entrypoint.py --phase status
       - name: PowerShell parser checks
