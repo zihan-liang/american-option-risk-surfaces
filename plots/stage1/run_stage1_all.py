@@ -19,7 +19,8 @@ def main() -> None:
     run("plot_hd_scaling.py")
     run("plot_hd_boundary_and_compute.py")
     run("plot_binomial_convergence.py")
-    print("\nAll Stage 1 plots completed successfully.", flush=True)
+    run("verify_stage1_outputs.py")
+    print("\nAll Stage 1 plots completed and verified successfully.", flush=True)
 
 
 if __name__ == "__main__":
