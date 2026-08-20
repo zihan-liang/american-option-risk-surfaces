@@ -60,7 +60,10 @@ try {
 
     if ($Phase -eq "test" -or $Phase -eq "all") {
         Write-Host "`n===== HD3 BOUNDARY-COMPLETE: focused CPU-safe tests =====" -ForegroundColor Cyan
-        & $PythonExe -m pytest "tests\test_hd3_matched_boundary_complete.py" -q
+        & $PythonExe -m pytest `
+            "tests\test_hd3_matched_boundary_complete.py" `
+            "tests\test_hd3_matched_boundary_complete_invariants.py" `
+            -q
         if ($LASTEXITCODE -ne 0) { throw "Focused tests failed." }
 
         Write-Host "`n===== HD3 BOUNDARY-COMPLETE: compile check =====" -ForegroundColor Cyan
@@ -68,7 +71,8 @@ try {
             "experiments\hd3_matched_boundary_complete_core.py" `
             "experiments\hd3_matched_american_put_boundary_complete.py" `
             "experiments\hd3_matched_boundary_complete_windows_entrypoint.py" `
-            "tests\test_hd3_matched_boundary_complete.py"
+            "tests\test_hd3_matched_boundary_complete.py" `
+            "tests\test_hd3_matched_boundary_complete_invariants.py"
         if ($LASTEXITCODE -ne 0) { throw "Compile check failed." }
     }
 
