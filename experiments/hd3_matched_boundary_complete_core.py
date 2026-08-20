@@ -229,7 +229,7 @@ def transition_boundary(
     needed = first_cont + max(1, int(min_continuation_nodes))
     if (
         first_cont < 1 or not np.all(ex[:first_cont]) or needed > len(ex)
-        or not np.all(~ex[first_cont:needed]) or np.any(ex[needed:])
+        or not np.all(~ex[first_cont:needed])
     ):
         return {"found": False, "S_star_over_K": None, "reason": "no_clean_transition"}
     left, right = first_cont - 1, first_cont
