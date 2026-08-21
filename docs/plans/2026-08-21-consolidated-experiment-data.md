@@ -77,6 +77,8 @@ Write under `results/consolidated_csv/`:
 - `README.md`
 - `source_artifact_inventory.csv`
 - `provenance.csv`
+- `source_records.csv`
+- `array_artifacts.csv`
 - `experiment_runs.csv`
 - `price_metrics.csv`
 - `greek_metrics.csv`
@@ -97,7 +99,7 @@ Write under `results/consolidated_csv/`:
 - `surface_artifacts.csv`
 - `dirk_common_reference_metrics.csv`
 - `manifest.json`
-- optional deduplicated/chunked `surfaces/*.csv.gz`
+- deduplicated numeric-array CSV gzip files under `arrays/` when readable.
 
 Empty specialized tables are permitted only when the all-branch inventory
 contains no source artifact supporting that schema; headers must still be
@@ -112,8 +114,9 @@ present and the README/manifest must say why.
      `.pt`, `.pth` files;
    - computes content hashes for unique artifacts;
    - writes occurrence provenance and deduplicated artifact inventory;
+   - preserves all parseable CSV/JSON scalar records in a generic long-form CSV;
+   - registers/exports readable NPZ/NPY arrays to compressed CSV;
    - parses known structured result schemas into normalized CSVs;
-   - exports unique numerical surfaces to compressed CSV where practical;
    - recomputes the two DIRK RMSE definitions above.
 3. Add a GitHub Actions workflow that checks out this data branch, fetches all
    Zihan refs, clones/fetches all Ruixi refs, downloads/verifies the official
@@ -128,3 +131,8 @@ present and the README/manifest must say why.
 - No blind-holdout access.
 - No mutation of accepted campaign/result branches.
 - No automatic merge into `campaign/independent-methods`.
+
+## Build status
+
+The contract suite is green and this revision intentionally triggers the first
+full all-branch build and DIRK rescoring run.
