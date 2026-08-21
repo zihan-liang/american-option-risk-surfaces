@@ -92,6 +92,51 @@ class RefineConsolidatedDatasetContract(unittest.TestCase):
         self.assertEqual(audit["missing_key_rows"], 1)
         self.assertEqual(audit["status"], "needs_review")
 
+    def test_nested_environment_manifest_is_unwrapped(self):
+        import analysis.refine_consolidated_dataset as mod
+        self.assertTrue(hasattr(mod, "parse_environment_manifest"))
+        obj = {
+            "branch": "exp/x",
+            "environment": {
+                "cuda_available": True,
+                "platform": "Windows-10",
+                "python": "3.11.9",
+                "torch": "2.7.1+cu128",
+                "torch_cuda": "12.8",
+                "gpu_name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+            },
+        }
+        row = mod.parse_environment_manifest(
+            obj,
+            {"repo": "r", "branch": "b", "source_commit": "c"},
+            "results/hd_pipeline/environment_manifest.json",
+            {"method_id": "", "seed": ""},
+        )
+        self.assertEqual(row["experiment_id"], "hd_pipeline")
+        self.assertEqual(row["os"], "Windows-10")
+        self.assertEqual(row["python"], "3.11.9")
+        self.assertEqual(row["pytorch"], "2.7.1+cu128")
+        self.assertEqual(row["cuda"], "12.8")
+        self.assertEqual(row["gpu"], "NVIDIA GeForce RTX 4070 Laptop GPU")
+        self.assertEqual(row["device"], "cuda")
+
+    def test_semantic_audit_rejects_nearly_empty_environment_rows(self):
+        from analysis.refine_consolidated_dataset import audit_rows
+        rows = [{
+            "experiment_id": "hd_pipeline", "method_id": "", "seed": "", "os": "", "python": "",
+            "pytorch": "", "cuda": "", "gpu": "", "cpu": "", "ram": "", "device": "",
+        }]
+        audit = audit_rows("environment_runs.csv", rows, ["experiment_id"])
+        self.assertEqual(audit["status"], "needs_review")
+        self.assertIn("environment", audit["notes"].lower())
+
+    def test_semantic_audit_rejects_identifier_names_in_metric_tables(self):
+        from analysis.refine_consolidated_dataset import audit_rows
+        rows = [{"model_id": "SUP", "dimension": "5", "seed": "101", "metric_name": "dimension", "metric_value": "5"}]
+        audit = audit_rows("hd1_metrics.csv", rows, ["model_id", "dimension", "metric_name"])
+        self.assertEqual(audit["status"], "needs_review")
+        self.assertIn("identifier", audit["notes"].lower())
+
 
 if __name__ == "__main__":
     unittest.main()
