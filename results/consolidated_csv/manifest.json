@@ -51,21 +51,21 @@
     "provenance.csv": 6398,
     "source_records.csv": 2599013,
     "array_artifacts.csv": 161,
-    "experiment_runs.csv": 37,
+    "experiment_runs.csv": 36,
     "price_metrics.csv": 3556,
     "greek_metrics.csv": 1820,
-    "boundary_metrics.csv": 61,
+    "boundary_metrics.csv": 160,
     "free_boundary_points.csv": 1293,
     "price_slices.csv": 22794,
     "structural_metrics.csv": 44,
     "compute_metrics.csv": 26,
-    "classical_solver_metrics.csv": 20790,
+    "classical_solver_metrics.csv": 19929,
     "binomial_convergence.csv": 2422,
-    "ruixi_arm_metrics.csv": 19240,
-    "hd1_metrics.csv": 256,
-    "hd2_candidate_metrics.csv": 234,
-    "hd3_metrics.csv": 384,
-    "campaign_method_results.csv": 14918,
+    "ruixi_arm_metrics.csv": 17528,
+    "hd1_metrics.csv": 216,
+    "hd2_candidate_metrics.csv": 222,
+    "hd3_metrics.csv": 372,
+    "campaign_method_results.csv": 13913,
     "experiment_gates.csv": 103,
     "environment_runs.csv": 5,
     "surface_artifacts.csv": 17,
@@ -86,6 +86,15 @@
     "Specialized metric tables are rebuilt from canonical aggregate artifacts; pointwise/history data remain in the lossless source_records/array exports instead of being mislabeled as metrics.",
     "Every logical table is audited in table_audit.csv/json; empty is never interpreted as zero.",
     "Legacy matched-HD binomial convergence summaries without tau are preserved as source-authentic unspecified-tau rows; no maturity value is invented.",
+    "Nested environment manifests are reconstructed from lossless source_records before environment_runs.csv is finalized.",
+    "Identifier fields such as dimension, seed, batch_size, steps, oom_attempt_count, and points_processed are not exported as scientific metric_name values in HD metric tables.",
+    "Context metadata such as seed, sample_count, scenario_count, and training_seeds are excluded from result metric tables while remaining available in lossless source_records.",
+    "Campaign configuration/specification JSON scalars are excluded from campaign_method_results.csv; only result-like metrics, summaries, decisions, and gate artifacts remain.",
+    "Campaign experiment-run provenance is rebuilt from filtered result evidence rather than configuration artifacts.",
+    "HD experiment run status and diagnostic flags are repaired only from stored final_status.json evidence.",
+    "Compute hardware is filled only when a matching branch environment manifest provides GPU evidence.",
+    "Greek and boundary tables retain per-regime identity for Ruixi Arm C/D rows; matched-HD regime IDs are enriched only from existing price-metric evidence, never hard-coded.",
+    "HD2 physics_score and eligible are candidate-level aggregates in selection_decision.json and therefore retain source-authentic blank dimension; dimension-scoped HD2 metrics still require dimension.",
     "Oversized logical CSV tables are stored losslessly as chunks/<table>/part-*.csv.gz and indexed by table_chunks.csv."
   ],
   "refinement": {
@@ -117,7 +126,51 @@
     "table_audit": "table_audit.csv",
     "dirk_common_reference_metrics_preserved_byte_for_byte": true,
     "binomial_legacy_unspecified_tau_rows": 4,
-    "array_surface_sources_canonicalized_to_real_branches": true
+    "array_surface_sources_canonicalized_to_real_branches": true,
+    "semantic_identifier_metrics_removed": {
+      "hd1_metrics.csv": 40,
+      "hd2_candidate_metrics.csv": 12,
+      "hd3_metrics.csv": 12
+    },
+    "semantic_metadata_metric_rows_removed": {
+      "ruixi_arm_metrics.csv": 1712,
+      "classical_solver_metrics.csv": 861,
+      "campaign_method_results.csv": 954
+    },
+    "campaign_nonresult_rows_removed": 51,
+    "campaign_experiment_runs_rebuilt_from_filtered_results": 8,
+    "environment_rows_rebuilt_from_lossless_source_records": 5,
+    "experiment_runs_repaired_from_final_status": 18,
+    "compute_hardware_rows_enriched_from_environment": 26,
+    "ruixi_greek_rows_rebuilt_with_regime_identity": 1712,
+    "ruixi_boundary_rows_rebuilt_with_regime_identity": 134,
+    "greek_regime_ids_enriched_from_price_evidence": 66,
+    "boundary_regime_ids_enriched_from_price_evidence": 12,
+    "hd2_dimensionless_candidate_aggregate_metrics": [
+      "eligible",
+      "physics_score"
+    ],
+    "semantic_audit_tables": [
+      "boundary_metrics.csv",
+      "campaign_method_results.csv",
+      "classical_solver_metrics.csv",
+      "compute_metrics.csv",
+      "environment_runs.csv",
+      "experiment_runs.csv",
+      "greek_metrics.csv",
+      "hd1_metrics.csv",
+      "hd2_candidate_metrics.csv",
+      "hd3_metrics.csv",
+      "ruixi_arm_metrics.csv"
+    ],
+    "final_schema_extensions": {
+      "greek_metrics.csv": [
+        "regime_id"
+      ],
+      "boundary_metrics.csv": [
+        "regime_id"
+      ]
+    }
   },
   "storage": {
     "large_table_policy": "lossless_chunked_csv_gzip",

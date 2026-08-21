@@ -1,5 +1,4 @@
 repo,branch,source_commit,candidate_id,dimension,seed,metric_name,metric_value,gate_name,gate_pass,selection_status
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,2,101,dimension,2.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,2,101,price_rmse,0.0006956097386675227,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,2,101,price_mae,0.0004514388828041368,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,2,101,price_p95,0.0016008019814542846,,,no_stabilized_candidate
@@ -23,8 +22,6 @@ zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,2,101,peak_cpu_memory_bytes,0.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,2,101,peak_cuda_gib,0.1903667449951172,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,2,101,parameter_count,62401.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,2,101,batch_size,2048.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,5,101,dimension,5.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,5,101,price_rmse,0.00042409402034170187,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,5,101,price_mae,0.00030249838203600776,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,5,101,price_p95,0.0009085529858531694,,,no_stabilized_candidate
@@ -48,8 +45,6 @@ zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,5,101,peak_cpu_memory_bytes,0.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,5,101,peak_cuda_gib,0.1903667449951172,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,5,101,parameter_count,62401.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,SUP-HD2,5,101,batch_size,2048.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,2,101,dimension,2.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,2,101,price_rmse,0.0011630695944916663,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,2,101,price_mae,0.0006764087628898753,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,2,101,price_p95,0.0029231788237332927,,,no_stabilized_candidate
@@ -73,8 +68,6 @@ zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,2,101,peak_cpu_memory_bytes,0.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,2,101,peak_cuda_gib,0.1903667449951172,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,2,101,parameter_count,62401.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,2,101,batch_size,2048.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,5,101,dimension,5.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,5,101,price_rmse,0.0027219889500828295,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,5,101,price_mae,0.0018626577744293102,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,5,101,price_p95,0.005731358802273724,,,no_stabilized_candidate
@@ -98,8 +91,6 @@ zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,5,101,peak_cpu_memory_bytes,0.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,5,101,peak_cuda_gib,0.1903667449951172,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,5,101,parameter_count,62401.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-HD1-anchor,5,101,batch_size,2048.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,2,101,dimension,2.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,2,101,price_rmse,0.0005110457922913098,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,2,101,price_mae,0.0002845669487116495,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,2,101,price_p95,0.000969094274812521,,,no_stabilized_candidate
@@ -123,8 +114,6 @@ zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,2,101,peak_cpu_memory_bytes,0.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,2,101,peak_cuda_gib,0.1903667449951172,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,2,101,parameter_count,62401.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,2,101,batch_size,2048.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,5,101,dimension,5.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,5,101,price_rmse,0.0019344943534505,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,5,101,price_mae,0.0013102246896968311,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,5,101,price_p95,0.003963112673793984,,,no_stabilized_candidate
@@ -148,7 +137,6 @@ zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,5,101,peak_cpu_memory_bytes,0.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,5,101,peak_cuda_gib,0.1903667449951172,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,5,101,parameter_count,62401.0,,,no_stabilized_candidate
-zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-warm-low,5,101,batch_size,2048.0,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-CAGrad,,101,physics_score,0.1620374903247176,,,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-CAGrad,,101,eligible,0,,False,no_stabilized_candidate
 zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,HVI-CAGrad,2,101,price_ratio,1.970867505125335,price_ratio_max,False,no_stabilized_candidate

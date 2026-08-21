@@ -42,11 +42,11 @@
   {
     "table": "experiment_runs.csv",
     "status": "ok",
-    "row_count": 37,
+    "row_count": 36,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
     "key_columns": "experiment_id;method_id",
-    "source_evidence": "refined_unique_git_artifacts",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
@@ -65,18 +65,18 @@
     "row_count": 1820,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
-    "key_columns": "method_id;metric_name",
-    "source_evidence": "refined_unique_git_artifacts",
+    "key_columns": "experiment_id;method_id;metric_name",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
     "table": "boundary_metrics.csv",
     "status": "ok",
-    "row_count": 61,
+    "row_count": 160,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
-    "key_columns": "method_id",
-    "source_evidence": "refined_unique_git_artifacts",
+    "key_columns": "experiment_id;method_id",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
@@ -115,18 +115,18 @@
     "row_count": 26,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
-    "key_columns": "method_id",
-    "source_evidence": "refined_unique_git_artifacts",
+    "key_columns": "method_id;dimension",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
     "table": "classical_solver_metrics.csv",
     "status": "ok",
-    "row_count": 20790,
+    "row_count": 19929,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
     "key_columns": "method_id;metric_name",
-    "source_evidence": "refined_unique_git_artifacts",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
@@ -142,51 +142,51 @@
   {
     "table": "ruixi_arm_metrics.csv",
     "status": "ok",
-    "row_count": 19240,
+    "row_count": 17528,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
-    "key_columns": "arm;regime_id;metric_name",
-    "source_evidence": "refined_unique_git_artifacts",
+    "key_columns": "method_id;regime_id;metric_name",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
     "table": "hd1_metrics.csv",
     "status": "ok",
-    "row_count": 256,
+    "row_count": 216,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
     "key_columns": "model_id;dimension;metric_name",
-    "source_evidence": "refined_unique_git_artifacts",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
     "table": "hd2_candidate_metrics.csv",
     "status": "ok",
-    "row_count": 234,
+    "row_count": 222,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
-    "key_columns": "candidate_id;metric_name",
-    "source_evidence": "refined_unique_git_artifacts",
+    "key_columns": "candidate_id;metric_name;dimension required except candidate-level physics_score/eligible",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
     "table": "hd3_metrics.csv",
     "status": "ok",
-    "row_count": 384,
+    "row_count": 372,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
     "key_columns": "model_id;dimension;metric_name",
-    "source_evidence": "refined_unique_git_artifacts",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
     "table": "campaign_method_results.csv",
     "status": "ok",
-    "row_count": 14918,
+    "row_count": 13913,
     "duplicate_rows": 0,
     "missing_key_rows": 0,
     "key_columns": "method_id;metric_name",
-    "source_evidence": "refined_unique_git_artifacts",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
@@ -206,7 +206,7 @@
     "duplicate_rows": 0,
     "missing_key_rows": 0,
     "key_columns": "experiment_id",
-    "source_evidence": "refined_unique_git_artifacts",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
     "notes": ""
   },
   {
