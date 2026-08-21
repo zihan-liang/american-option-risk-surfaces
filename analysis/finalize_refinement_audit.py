@@ -15,10 +15,12 @@ from analysis.semantic_refinement import (
 )
 
 
+HD2_CANDIDATE_AGGREGATE_METRICS = {"physics_score", "eligible"}
+
 SEMANTIC_KEYS = {
     "environment_runs.csv": ["experiment_id"],
     "hd1_metrics.csv": ["model_id", "dimension", "metric_name"],
-    "hd2_candidate_metrics.csv": ["candidate_id", "dimension", "metric_name"],
+    "hd2_candidate_metrics.csv": ["candidate_id", "metric_name"],
     "hd3_metrics.csv": ["model_id", "dimension", "metric_name"],
     "campaign_method_results.csv": ["method_id", "metric_name"],
     "experiment_runs.csv": ["experiment_id", "method_id"],
@@ -105,8 +107,23 @@ def audit_binomial_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _row_missing_semantic_key(table: str, row: dict[str, Any]) -> bool:
+    if any(row.get(k) in (None, "") for k in SEMANTIC_KEYS[table]):
+        return True
+    if table == "hd2_candidate_metrics.csv":
+        metric_name = str(row.get("metric_name") or "")
+        if metric_name not in HD2_CANDIDATE_AGGREGATE_METRICS and row.get("dimension") in (None, ""):
+            return True
+    return False
+
+
+def _semantic_key_description(table: str) -> str:
+    if table == "hd2_candidate_metrics.csv":
+        return "candidate_id;metric_name;dimension required except candidate-level physics_score/eligible"
+    return ";".join(SEMANTIC_KEYS[table])
+
+
 def audit_semantic_table(table: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
-    keys = SEMANTIC_KEYS[table]
     seen = set()
     duplicates = 0
     missing = 0
@@ -116,7 +133,7 @@ def audit_semantic_table(table: str, rows: list[dict[str, Any]]) -> dict[str, An
             duplicates += 1
         else:
             seen.add(exact)
-        if any(row.get(k) in (None, "") for k in keys):
+        if _row_missing_semantic_key(table, row):
             missing += 1
     semantic = semantic_audit_rows(table, rows)
     issues = []
@@ -138,7 +155,7 @@ def audit_semantic_table(table: str, rows: list[dict[str, Any]]) -> dict[str, An
         "row_count": len(rows),
         "duplicate_rows": duplicates,
         "missing_key_rows": missing,
-        "key_columns": ";".join(keys),
+        "key_columns": _semantic_key_description(table),
         "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
         "notes": "; ".join(issues),
     }
@@ -188,6 +205,7 @@ def finalize(output: Path) -> dict[str, Any]:
     refinement["semantic_identifier_metrics_removed"] = semantic_stats["identifier_metrics_removed"]
     refinement["semantic_metadata_metric_rows_removed"] = semantic_stats["metadata_metric_rows_removed"]
     refinement["campaign_nonresult_rows_removed"] = semantic_stats["campaign_nonresult_rows_removed"]
+    refinement["campaign_experiment_runs_rebuilt_from_filtered_results"] = semantic_stats.get("campaign_experiment_runs_rebuilt", 0)
     refinement["environment_rows_rebuilt_from_lossless_source_records"] = semantic_stats["environment_rows_rebuilt"]
     refinement["experiment_runs_repaired_from_final_status"] = semantic_stats["experiment_runs_repaired"]
     refinement["compute_hardware_rows_enriched_from_environment"] = semantic_stats["compute_hardware_rows_enriched"]
@@ -195,6 +213,7 @@ def finalize(output: Path) -> dict[str, Any]:
     refinement["ruixi_boundary_rows_rebuilt_with_regime_identity"] = semantic_stats["ruixi_boundary_rows_rebuilt"]
     refinement["greek_regime_ids_enriched_from_price_evidence"] = semantic_stats["greek_regime_ids_enriched_from_price_evidence"]
     refinement["boundary_regime_ids_enriched_from_price_evidence"] = semantic_stats["boundary_regime_ids_enriched_from_price_evidence"]
+    refinement["hd2_dimensionless_candidate_aggregate_metrics"] = sorted(HD2_CANDIDATE_AGGREGATE_METRICS)
     refinement["semantic_audit_tables"] = sorted(SEMANTIC_KEYS)
     refinement["final_schema_extensions"] = {
         "greek_metrics.csv": ["regime_id"],
@@ -212,9 +231,11 @@ def finalize(output: Path) -> dict[str, Any]:
         "Identifier fields such as dimension, seed, batch_size, steps, oom_attempt_count, and points_processed are not exported as scientific metric_name values in HD metric tables.",
         "Context metadata such as seed, sample_count, scenario_count, and training_seeds are excluded from result metric tables while remaining available in lossless source_records.",
         "Campaign configuration/specification JSON scalars are excluded from campaign_method_results.csv; only result-like metrics, summaries, decisions, and gate artifacts remain.",
+        "Campaign experiment-run provenance is rebuilt from filtered result evidence rather than configuration artifacts.",
         "HD experiment run status and diagnostic flags are repaired only from stored final_status.json evidence.",
         "Compute hardware is filled only when a matching branch environment manifest provides GPU evidence.",
         "Greek and boundary tables retain per-regime identity for Ruixi Arm C/D rows; matched-HD regime IDs are enriched only from existing price-metric evidence, never hard-coded.",
+        "HD2 physics_score and eligible are candidate-level aggregates in selection_decision.json and therefore retain source-authentic blank dimension; dimension-scoped HD2 metrics still require dimension.",
     ):
         if note not in notes:
             notes.append(note)
