@@ -9,33 +9,18 @@ import csv
 import json
 import math
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Iterable, Iterator, Sequence
 
 SHARED_DOMAIN = (0.5, 1.5, 0.01, 1.0)
 HD_DOMAIN = (0.2, 1.5, 0.01, 1.0)
 
 DIRK_METRIC_COLUMNS = [
-    "method_id",
-    "dimension",
-    "seed",
-    "regime_id",
-    "internal_cnpsor_price_rmse",
-    "dirk_price_rmse_hd_domain",
-    "dirk_price_rmse_shared_domain",
-    "reference_type",
-    "metric_scope",
-    "s_min",
-    "s_max",
-    "tau_min",
-    "tau_max",
-    "grid_points",
-    "interpolation_method",
-    "source_repo",
-    "source_branch",
-    "source_commit",
-    "reference_source",
-    "reference_commit",
-    "reference_artifact_sha256",
+    "method_id", "dimension", "seed", "regime_id",
+    "internal_cnpsor_price_rmse", "dirk_price_rmse_hd_domain",
+    "dirk_price_rmse_shared_domain", "reference_type", "metric_scope",
+    "s_min", "s_max", "tau_min", "tau_max", "grid_points",
+    "interpolation_method", "source_repo", "source_branch", "source_commit",
+    "reference_source", "reference_commit", "reference_artifact_sha256",
 ]
 
 TABLE_HEADERS = {
@@ -77,6 +62,73 @@ def price_rmse(predicted: Sequence[float], reference: Sequence[float]) -> float:
             raise ValueError("RMSE inputs must be finite")
         total += (p - r) ** 2
     return math.sqrt(total / len(predicted))
+
+
+def rectilinear_interpolate(source_s, source_tau, source_values, target_s, target_tau):
+    """Bilinearly interpolate a tau-by-S rectangular surface without extrapolation."""
+    import numpy as np
+
+    s = np.asarray(source_s, dtype=float)
+    tau = np.asarray(source_tau, dtype=float)
+    values = np.asarray(source_values, dtype=float)
+    ts = np.asarray(target_s, dtype=float)
+    tt = np.asarray(target_tau, dtype=float)
+    if s.ndim != 1 or tau.ndim != 1 or ts.ndim != 1 or tt.ndim != 1:
+        raise ValueError("coordinate arrays must be one-dimensional")
+    if values.shape != (tau.size, s.size):
+        raise ValueError("surface must have shape (len(tau), len(S))")
+    if s.size < 2 or tau.size < 2 or not np.all(np.diff(s) > 0) or not np.all(np.diff(tau) > 0):
+        raise ValueError("source coordinates must be strictly increasing")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("surface values must be finite")
+    eps = 1e-12
+    if ts.size and (ts.min() < s[0] - eps or ts.max() > s[-1] + eps):
+        raise ValueError("target S grid requires extrapolation")
+    if tt.size and (tt.min() < tau[0] - eps or tt.max() > tau[-1] + eps):
+        raise ValueError("target tau grid requires extrapolation")
+
+    along_s = np.vstack([np.interp(ts, s, row) for row in values])
+    result = np.empty((tt.size, ts.size), dtype=float)
+    for j in range(ts.size):
+        result[:, j] = np.interp(tt, tau, along_s[:, j])
+    return result
+
+
+def flatten_json_scalars(value, prefix: str = "") -> Iterator[tuple[str, object]]:
+    """Yield every JSON scalar exactly once with a deterministic dotted/list path."""
+    if isinstance(value, dict):
+        for key in sorted(value):
+            child = f"{prefix}.{key}" if prefix else str(key)
+            yield from flatten_json_scalars(value[key], child)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            child = f"{prefix}[{index}]"
+            yield from flatten_json_scalars(item, child)
+    else:
+        yield prefix, value
+
+
+def classify_artifact_path(path: str) -> str:
+    """Return a stable coarse artifact class from a repository path."""
+    lower = path.lower()
+    suffix = Path(lower).suffix
+    if suffix in {".pt", ".pth"}:
+        return "checkpoint"
+    if suffix in {".npz", ".npy"}:
+        return "numeric_array"
+    if suffix == ".csv":
+        if "metric" in lower or "summary" in lower or "diagnostic" in lower:
+            return "metrics_csv"
+        if "boundary" in lower:
+            return "boundary_csv"
+        if "price_slice" in lower:
+            return "price_slice_csv"
+        return "data_csv"
+    if suffix == ".json":
+        return "metadata_json"
+    if suffix in {".txt", ".md"}:
+        return "text_evidence"
+    return "other"
 
 
 def _write_header(path: Path, header: Iterable[str]) -> None:
