@@ -71,6 +71,23 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
             a=[r for r in result["provenance"] if r["path"]=="results/a.json"]
             self.assertEqual(len(a),2); self.assertEqual(len({r["git_blob_sha"] for r in a}),1)
 
+    def test_branch_inventory_excludes_remote_head_symbolic_ref(self):
+        from analysis.consolidated_experiment_data import inventory_repository
+        with tempfile.TemporaryDirectory() as td:
+            repo=Path(td)/"repo"; repo.mkdir()
+            subprocess.run(["git","init","-b","main"],cwd=repo,check=True,stdout=subprocess.DEVNULL)
+            subprocess.run(["git","config","user.email","test@example.com"],cwd=repo,check=True)
+            subprocess.run(["git","config","user.name","Test"],cwd=repo,check=True)
+            (repo/"results").mkdir(); (repo/"results"/"a.json").write_text('{"x":1}\n')
+            subprocess.run(["git","add","."],cwd=repo,check=True); subprocess.run(["git","commit","-m","a"],cwd=repo,check=True,stdout=subprocess.DEVNULL)
+            head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=repo,text=True).strip()
+            subprocess.run(["git","update-ref","refs/remotes/origin/main",head],cwd=repo,check=True)
+            subprocess.run(["git","symbolic-ref","refs/remotes/origin/HEAD","refs/remotes/origin/main"],cwd=repo,check=True)
+            result=inventory_repository(repo,"example/repo")
+            self.assertEqual(result["branches"],["main"])
+            self.assertEqual(result["branch_count"],1)
+            self.assertEqual({row["branch"] for row in result["provenance"]},{"main"})
+
     def test_surface_normalization_orients_value_grid_as_tau_by_s(self):
         import numpy as np
         from analysis.consolidated_experiment_data import normalize_surface_arrays
