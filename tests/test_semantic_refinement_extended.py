@@ -144,6 +144,46 @@ class ExtendedSemanticRefinementContract(unittest.TestCase):
         self.assertEqual(campaign["M09"]["branch"], "campaign/independent-methods")
         self.assertTrue(any(row.get("experiment_family") == "HD3" for row in rebuilt))
 
+    def test_hd2_candidate_aggregate_metrics_may_have_blank_dimension(self):
+        from analysis.finalize_refinement_audit import audit_semantic_table
+        rows = [
+            {
+                "candidate_id": "HVI-warm-low",
+                "dimension": "",
+                "metric_name": "physics_score",
+                "metric_value": "0.23",
+            },
+            {
+                "candidate_id": "HVI-warm-low",
+                "dimension": "",
+                "metric_name": "eligible",
+                "metric_value": "0",
+            },
+            {
+                "candidate_id": "HVI-warm-low",
+                "dimension": "2",
+                "metric_name": "price_ratio",
+                "metric_value": "0.72",
+            },
+        ]
+        audit = audit_semantic_table("hd2_candidate_metrics.csv", rows)
+        self.assertEqual(audit["status"], "ok")
+        self.assertEqual(audit["missing_key_rows"], 0)
+
+    def test_hd2_dimension_scoped_metric_still_requires_dimension(self):
+        from analysis.finalize_refinement_audit import audit_semantic_table
+        rows = [
+            {
+                "candidate_id": "HVI-warm-low",
+                "dimension": "",
+                "metric_name": "price_ratio",
+                "metric_value": "0.72",
+            }
+        ]
+        audit = audit_semantic_table("hd2_candidate_metrics.csv", rows)
+        self.assertEqual(audit["status"], "needs_review")
+        self.assertEqual(audit["missing_key_rows"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
