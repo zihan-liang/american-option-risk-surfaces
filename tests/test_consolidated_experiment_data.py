@@ -26,6 +26,8 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
             required = {
                 "source_artifact_inventory.csv",
                 "provenance.csv",
+                "source_records.csv",
+                "array_artifacts.csv",
                 "experiment_runs.csv",
                 "price_metrics.csv",
                 "greek_metrics.csv",
@@ -49,6 +51,16 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
                 "README.md",
             }
             self.assertTrue(required.issubset({p.name for p in out.iterdir()}))
+
+            with (out / "source_records.csv").open(newline="") as fh:
+                source_header = next(csv.reader(fh))
+            for name in ("repo", "branch", "path", "record_kind", "record_index", "field", "value", "value_type"):
+                self.assertIn(name, source_header)
+
+            with (out / "array_artifacts.csv").open(newline="") as fh:
+                array_header = next(csv.reader(fh))
+            for name in ("repo", "branch", "path", "array_name", "shape", "dtype", "csv_gz_path", "content_sha256"):
+                self.assertIn(name, array_header)
 
             with (out / "dirk_common_reference_metrics.csv").open(newline="") as fh:
                 header = next(csv.reader(fh))
