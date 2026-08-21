@@ -95,6 +95,55 @@ class ExtendedSemanticRefinementContract(unittest.TestCase):
         self.assertEqual(row["coverage"], "0.38")
         self.assertEqual(row["conditional_rmse"], "0.03")
 
+    def test_campaign_experiment_runs_are_rebuilt_from_filtered_result_rows(self):
+        import analysis.semantic_refinement as mod
+        self.assertTrue(hasattr(mod, "rebuild_campaign_experiment_runs"))
+        existing = [
+            {
+                "repo": "zihan-liang/american-option-risk-surfaces",
+                "branch": "campaign/independent-methods",
+                "source_commit": "config-commit",
+                "experiment_family": "CAMPAIGN",
+                "experiment_id": "M10",
+                "method_id": "M10",
+                "status": "recorded",
+            },
+            {
+                "repo": "zihan-liang/american-option-risk-surfaces",
+                "branch": "exp/hd3",
+                "source_commit": "hd3-commit",
+                "experiment_family": "HD3",
+                "experiment_id": "hd3_x",
+                "method_id": "FC_HVI",
+                "status": "completed",
+            },
+        ]
+        filtered_results = [
+            {
+                "repo": "zihan-liang/american-option-risk-surfaces",
+                "branch": "tmp/m10-transfer-20260817",
+                "source_commit": "result-commit",
+                "method_id": "M10",
+                "metric_name": "metrics.csv[0].price_rmse",
+                "metric_value": "0.001",
+            },
+            {
+                "repo": "zihan-liang/american-option-risk-surfaces",
+                "branch": "campaign/independent-methods",
+                "source_commit": "m09-commit",
+                "method_id": "M09",
+                "metric_name": "decision.json.primary_metric_value",
+                "metric_value": "0.1",
+            },
+        ]
+        rebuilt = mod.rebuild_campaign_experiment_runs(existing, filtered_results)
+        campaign = {row["method_id"]: row for row in rebuilt if row.get("experiment_family") == "CAMPAIGN"}
+        self.assertEqual(set(campaign), {"M09", "M10"})
+        self.assertEqual(campaign["M10"]["branch"], "tmp/m10-transfer-20260817")
+        self.assertEqual(campaign["M10"]["source_commit"], "result-commit")
+        self.assertEqual(campaign["M09"]["branch"], "campaign/independent-methods")
+        self.assertTrue(any(row.get("experiment_family") == "HD3" for row in rebuilt))
+
 
 if __name__ == "__main__":
     unittest.main()
