@@ -31,7 +31,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check numpy
 
       - name: Compile builder and refinement layer
-        run: python -m py_compile analysis/consolidated_experiment_data.py analysis/build_consolidated_experiment_data.py analysis/chunk_csv_outputs.py analysis/refine_consolidated_dataset.py
+        run: python -m py_compile analysis/consolidated_experiment_data.py analysis/build_consolidated_experiment_data.py analysis/chunk_csv_outputs.py analysis/refine_consolidated_dataset.py analysis/finalize_refinement_audit.py
 
       - name: Run consolidated-data contract tests
         run: |
@@ -114,9 +114,17 @@ jobs:
             --ruixi-repo _sources/ruixi \
             --output results/consolidated_csv
 
+      - name: Finalize schema-aware audit and canonical provenance
+        run: |
+          python -m analysis.finalize_refinement_audit \
+            --output results/consolidated_csv
+
       - name: Verify refined table audit
         run: |
           python -m analysis.refine_consolidated_dataset \
+            --output results/consolidated_csv \
+            --verify-only
+          python -m analysis.finalize_refinement_audit \
             --output results/consolidated_csv \
             --verify-only
           test -s results/consolidated_csv/table_audit.csv
