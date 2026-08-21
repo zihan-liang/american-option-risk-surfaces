@@ -30,5 +30,87 @@ jobs:
       - name: Install consolidation dependencies
         run: python -m pip install --disable-pip-version-check numpy
 
+      - name: Compile builder
+        run: python -m py_compile analysis/consolidated_experiment_data.py analysis/build_consolidated_experiment_data.py
+
       - name: Run consolidated-data contract tests
         run: python -m unittest tests/test_consolidated_experiment_data.py -v
+
+  build:
+    if: >-
+      github.event_name == 'push' &&
+      github.actor != 'github-actions[bot]' &&
+      contains(github.event.head_commit.message, '[build-data]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out isolated data branch with all Zihan history
+        uses: actions/checkout@v4
+        with:
+          ref: data/consolidated-experiment-csv
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install consolidation dependencies
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Fetch every Zihan branch
+        run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Clone and fetch every Ruixi branch
+        run: |
+          rm -rf _sources/ruixi
+          git clone https://github.com/Ruixixu-hub/2026-surf-american-risk-surfaces.git _sources/ruixi
+          git -C _sources/ruixi fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Download official Arm D result package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rm -rf _sources/releases
+          mkdir -p _sources/releases
+          gh release download arm-d-seed101-pilot-v1 \
+            --repo Ruixixu-hub/2026-surf-american-risk-surfaces \
+            --pattern arm_d_seed101.zip \
+            --dir _sources/releases
+          ls -lh _sources/releases/arm_d_seed101.zip
+
+      - name: Run contract tests before build
+        run: python -m unittest tests/test_consolidated_experiment_data.py -v
+
+      - name: Build all-branch CSV dataset and recompute DIRK RMSE
+        run: |
+          python -m analysis.build_consolidated_experiment_data \
+            --zihan-repo . \
+            --ruixi-repo _sources/ruixi \
+            --arm-d-archive _sources/releases/arm_d_seed101.zip \
+            --output results/consolidated_csv
+
+      - name: Verify generated dataset
+        run: |
+          python -m analysis.build_consolidated_experiment_data \
+            --zihan-repo . \
+            --ruixi-repo _sources/ruixi \
+            --arm-d-archive _sources/releases/arm_d_seed101.zip \
+            --output results/consolidated_csv \
+            --verify-only
+          test -s results/consolidated_csv/source_artifact_inventory.csv
+          test -s results/consolidated_csv/provenance.csv
+          test -s results/consolidated_csv/source_records.csv
+          test -s results/consolidated_csv/dirk_common_reference_metrics.csv
+
+      - name: Commit generated CSV dataset to isolated data branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add results/consolidated_csv
+          if git diff --cached --quiet; then
+            echo 'No generated-data changes to commit.'
+            exit 0
+          fi
+          git commit -m 'data: add consolidated experiment CSVs [skip ci]'
+          git push origin HEAD:data/consolidated-experiment-csv
