@@ -16,6 +16,9 @@ SEMANTIC_KEYS = {
     "hd1_metrics.csv": ["model_id", "dimension", "metric_name"],
     "hd2_candidate_metrics.csv": ["candidate_id", "dimension", "metric_name"],
     "hd3_metrics.csv": ["model_id", "dimension", "metric_name"],
+    "campaign_method_results.csv": ["method_id", "metric_name"],
+    "experiment_runs.csv": ["experiment_id", "method_id"],
+    "compute_metrics.csv": ["method_id", "dimension"],
 }
 
 
@@ -170,7 +173,10 @@ def finalize(output: Path) -> dict[str, Any]:
     refinement["binomial_legacy_unspecified_tau_rows"] = b_audit["legacy_unspecified_tau_rows"]
     refinement["array_surface_sources_canonicalized_to_real_branches"] = True
     refinement["semantic_identifier_metrics_removed"] = semantic_stats["identifier_metrics_removed"]
+    refinement["campaign_nonresult_rows_removed"] = semantic_stats["campaign_nonresult_rows_removed"]
     refinement["environment_rows_rebuilt_from_lossless_source_records"] = semantic_stats["environment_rows_rebuilt"]
+    refinement["experiment_runs_repaired_from_final_status"] = semantic_stats["experiment_runs_repaired"]
+    refinement["compute_hardware_rows_enriched_from_environment"] = semantic_stats["compute_hardware_rows_enriched"]
     refinement["semantic_audit_tables"] = sorted(SEMANTIC_KEYS)
 
     counts = manifest.setdefault("counts", {})
@@ -182,6 +188,9 @@ def finalize(output: Path) -> dict[str, Any]:
         "Legacy matched-HD binomial convergence summaries without tau are preserved as source-authentic unspecified-tau rows; no maturity value is invented.",
         "Nested environment manifests are reconstructed from lossless source_records before environment_runs.csv is finalized.",
         "Identifier fields such as dimension, seed, batch_size, steps, oom_attempt_count, and points_processed are not exported as scientific metric_name values in HD metric tables.",
+        "Campaign configuration/specification JSON scalars are excluded from campaign_method_results.csv; only result-like metrics, summaries, decisions, and gate artifacts remain.",
+        "HD experiment run status and diagnostic flags are repaired only from stored final_status.json evidence.",
+        "Compute hardware is filled only when a matching branch environment manifest provides GPU evidence.",
     ):
         if note not in notes:
             notes.append(note)
