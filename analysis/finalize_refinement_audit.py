@@ -1,4 +1,4 @@
-"""Finalize schema-aware audit after consolidated-table refinement."""
+"""Finalize schema-aware and semantic audit after consolidated-table refinement."""
 from __future__ import annotations
 
 import argparse
@@ -8,6 +8,15 @@ from pathlib import Path
 from typing import Any
 
 from analysis.consolidated_experiment_data import TABLE_HEADERS
+from analysis.semantic_refinement import apply_semantic_refinement, semantic_audit_rows
+
+
+SEMANTIC_KEYS = {
+    "environment_runs.csv": ["experiment_id"],
+    "hd1_metrics.csv": ["model_id", "dimension", "metric_name"],
+    "hd2_candidate_metrics.csv": ["candidate_id", "dimension", "metric_name"],
+    "hd3_metrics.csv": ["model_id", "dimension", "metric_name"],
+}
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -65,8 +74,6 @@ def audit_binomial_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
             if row.get("comparison_metric") in (None, ""):
                 invalid += 1
             elif row.get("tau_over_T") in (None, ""):
-                # The first matched-HD convergence artifact predates per-maturity
-                # convergence reporting. Retain the missing tau exactly as stored.
                 legacy_unspecified_tau += 1
     status = "empty" if not rows else ("needs_review" if duplicates or invalid else "ok")
     return {
@@ -82,6 +89,53 @@ def audit_binomial_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def audit_semantic_table(table: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
+    keys = SEMANTIC_KEYS[table]
+    seen = set()
+    duplicates = 0
+    missing = 0
+    for row in rows:
+        exact = tuple(sorted((k, str(v)) for k, v in row.items()))
+        if exact in seen:
+            duplicates += 1
+        else:
+            seen.add(exact)
+        if any(row.get(k) in (None, "") for k in keys):
+            missing += 1
+    semantic = semantic_audit_rows(table, rows)
+    issues = []
+    if duplicates:
+        issues.append(f"{duplicates} exact duplicate rows")
+    if missing:
+        issues.append(f"{missing} rows miss semantic keys")
+    if semantic["notes"]:
+        issues.append(semantic["notes"])
+    if not rows:
+        status = "empty"
+    elif issues:
+        status = "needs_review"
+    else:
+        status = "ok"
+    return {
+        "table": table,
+        "status": status,
+        "row_count": len(rows),
+        "duplicate_rows": duplicates,
+        "missing_key_rows": missing,
+        "key_columns": ";".join(keys),
+        "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+        "notes": "; ".join(issues),
+    }
+
+
+def _replace_audit(audits: list[dict[str, Any]], replacement: dict[str, Any]) -> None:
+    for idx, row in enumerate(audits):
+        if row.get("table") == replacement["table"]:
+            audits[idx] = replacement
+            return
+    audits.append(replacement)
+
+
 def finalize(output: Path) -> dict[str, Any]:
     output = Path(output)
     provenance = _read(output / "provenance.csv")
@@ -90,18 +144,23 @@ def finalize(output: Path) -> dict[str, Any]:
         rows = canonicalize_blob_sources(_read(path), provenance)
         _write(path, TABLE_HEADERS[name], rows)
 
+    semantic_stats = apply_semantic_refinement(output)
+
     audit_path = output / "table_audit.json"
     audits = json.loads(audit_path.read_text(encoding="utf-8"))
+
     binomial_rows = _read(output / "binomial_convergence.csv")
     b_audit = audit_binomial_rows(binomial_rows)
-    for idx, row in enumerate(audits):
-        if row.get("table") == "binomial_convergence.csv":
-            audits[idx] = {k: v for k, v in b_audit.items() if k != "legacy_unspecified_tau_rows"}
-            break
-    else:
-        audits.append({k: v for k, v in b_audit.items() if k != "legacy_unspecified_tau_rows"})
+    _replace_audit(audits, {k: v for k, v in b_audit.items() if k != "legacy_unspecified_tau_rows"})
+
+    semantic_audits: dict[str, dict[str, Any]] = {}
+    for name in SEMANTIC_KEYS:
+        audit = audit_semantic_table(name, _read(output / name))
+        semantic_audits[name] = audit
+        _replace_audit(audits, audit)
 
     header = ["table", "status", "row_count", "duplicate_rows", "missing_key_rows", "key_columns", "source_evidence", "notes"]
+    audits.sort(key=lambda row: list(TABLE_HEADERS).index(row["table"]) if row.get("table") in TABLE_HEADERS else 10_000)
     _write(output / "table_audit.csv", header, audits)
     audit_path.write_text(json.dumps(audits, indent=2) + "\n", encoding="utf-8")
 
@@ -110,11 +169,30 @@ def finalize(output: Path) -> dict[str, Any]:
     refinement = manifest.setdefault("refinement", {})
     refinement["binomial_legacy_unspecified_tau_rows"] = b_audit["legacy_unspecified_tau_rows"]
     refinement["array_surface_sources_canonicalized_to_real_branches"] = True
-    note = "Legacy matched-HD binomial convergence summaries without tau are preserved as source-authentic unspecified-tau rows; no maturity value is invented."
-    if note not in manifest.setdefault("notes", []):
-        manifest["notes"].append(note)
+    refinement["semantic_identifier_metrics_removed"] = semantic_stats["identifier_metrics_removed"]
+    refinement["environment_rows_rebuilt_from_lossless_source_records"] = semantic_stats["environment_rows_rebuilt"]
+    refinement["semantic_audit_tables"] = sorted(SEMANTIC_KEYS)
+
+    counts = manifest.setdefault("counts", {})
+    for name in SEMANTIC_KEYS:
+        counts[name] = len(_read(output / name))
+
+    notes = manifest.setdefault("notes", [])
+    for note in (
+        "Legacy matched-HD binomial convergence summaries without tau are preserved as source-authentic unspecified-tau rows; no maturity value is invented.",
+        "Nested environment manifests are reconstructed from lossless source_records before environment_runs.csv is finalized.",
+        "Identifier fields such as dimension, seed, batch_size, steps, oom_attempt_count, and points_processed are not exported as scientific metric_name values in HD metric tables.",
+    ):
+        if note not in notes:
+            notes.append(note)
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    return {"legacy_binomial_unspecified_tau_rows": b_audit["legacy_unspecified_tau_rows"], "audit_status": b_audit["status"]}
+
+    return {
+        "legacy_binomial_unspecified_tau_rows": b_audit["legacy_unspecified_tau_rows"],
+        "binomial_audit_status": b_audit["status"],
+        "semantic_stats": semantic_stats,
+        "semantic_audits": {k: v["status"] for k, v in semantic_audits.items()},
+    }
 
 
 def verify(output: Path) -> dict[str, Any]:
@@ -123,15 +201,29 @@ def verify(output: Path) -> dict[str, Any]:
     bad = [r for r in audits if r.get("status") != "ok"]
     if bad:
         raise ValueError(f"unresolved table audit issues: {bad}")
+
     for name in ("array_artifacts.csv", "surface_artifacts.csv"):
         for row in _read(output / name):
             branch = row.get("branch", "")
             if branch == "origin" or branch.endswith("/HEAD"):
                 raise ValueError(f"symbolic/non-branch provenance remains in {name}: {branch}")
+
     b = audit_binomial_rows(_read(output / "binomial_convergence.csv"))
     if b["status"] != "ok":
         raise ValueError(f"binomial audit failed: {b}")
-    return {"all_tables_ok": True, "binomial_legacy_unspecified_tau_rows": b["legacy_unspecified_tau_rows"]}
+
+    semantic_status = {}
+    for name in SEMANTIC_KEYS:
+        audit = audit_semantic_table(name, _read(output / name))
+        semantic_status[name] = audit["status"]
+        if audit["status"] != "ok":
+            raise ValueError(f"semantic audit failed for {name}: {audit}")
+
+    return {
+        "all_tables_ok": True,
+        "binomial_legacy_unspecified_tau_rows": b["legacy_unspecified_tau_rows"],
+        "semantic_audits": semantic_status,
+    }
 
 
 def main() -> None:
