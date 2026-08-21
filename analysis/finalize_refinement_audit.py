@@ -8,7 +8,11 @@ from pathlib import Path
 from typing import Any
 
 from analysis.consolidated_experiment_data import TABLE_HEADERS
-from analysis.semantic_refinement import apply_semantic_refinement, semantic_audit_rows
+from analysis.semantic_refinement import (
+    apply_semantic_refinement,
+    final_table_header,
+    semantic_audit_rows,
+)
 
 
 SEMANTIC_KEYS = {
@@ -19,12 +23,21 @@ SEMANTIC_KEYS = {
     "campaign_method_results.csv": ["method_id", "metric_name"],
     "experiment_runs.csv": ["experiment_id", "method_id"],
     "compute_metrics.csv": ["method_id", "dimension"],
+    "ruixi_arm_metrics.csv": ["method_id", "regime_id", "metric_name"],
+    "classical_solver_metrics.csv": ["method_id", "metric_name"],
+    "greek_metrics.csv": ["experiment_id", "method_id", "metric_name"],
+    "boundary_metrics.csv": ["experiment_id", "method_id"],
 }
 
 
 def _read(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as fh:
         return list(csv.DictReader(fh))
+
+
+def _read_header(path: Path) -> list[str]:
+    with path.open(newline="", encoding="utf-8") as fh:
+        return next(csv.reader(fh), [])
 
 
 def _write(path: Path, header: list[str], rows: list[dict[str, Any]]) -> None:
@@ -173,11 +186,20 @@ def finalize(output: Path) -> dict[str, Any]:
     refinement["binomial_legacy_unspecified_tau_rows"] = b_audit["legacy_unspecified_tau_rows"]
     refinement["array_surface_sources_canonicalized_to_real_branches"] = True
     refinement["semantic_identifier_metrics_removed"] = semantic_stats["identifier_metrics_removed"]
+    refinement["semantic_metadata_metric_rows_removed"] = semantic_stats["metadata_metric_rows_removed"]
     refinement["campaign_nonresult_rows_removed"] = semantic_stats["campaign_nonresult_rows_removed"]
     refinement["environment_rows_rebuilt_from_lossless_source_records"] = semantic_stats["environment_rows_rebuilt"]
     refinement["experiment_runs_repaired_from_final_status"] = semantic_stats["experiment_runs_repaired"]
     refinement["compute_hardware_rows_enriched_from_environment"] = semantic_stats["compute_hardware_rows_enriched"]
+    refinement["ruixi_greek_rows_rebuilt_with_regime_identity"] = semantic_stats["ruixi_greek_rows_rebuilt"]
+    refinement["ruixi_boundary_rows_rebuilt_with_regime_identity"] = semantic_stats["ruixi_boundary_rows_rebuilt"]
+    refinement["greek_regime_ids_enriched_from_price_evidence"] = semantic_stats["greek_regime_ids_enriched_from_price_evidence"]
+    refinement["boundary_regime_ids_enriched_from_price_evidence"] = semantic_stats["boundary_regime_ids_enriched_from_price_evidence"]
     refinement["semantic_audit_tables"] = sorted(SEMANTIC_KEYS)
+    refinement["final_schema_extensions"] = {
+        "greek_metrics.csv": ["regime_id"],
+        "boundary_metrics.csv": ["regime_id"],
+    }
 
     counts = manifest.setdefault("counts", {})
     for name in SEMANTIC_KEYS:
@@ -188,9 +210,11 @@ def finalize(output: Path) -> dict[str, Any]:
         "Legacy matched-HD binomial convergence summaries without tau are preserved as source-authentic unspecified-tau rows; no maturity value is invented.",
         "Nested environment manifests are reconstructed from lossless source_records before environment_runs.csv is finalized.",
         "Identifier fields such as dimension, seed, batch_size, steps, oom_attempt_count, and points_processed are not exported as scientific metric_name values in HD metric tables.",
+        "Context metadata such as seed, sample_count, scenario_count, and training_seeds are excluded from result metric tables while remaining available in lossless source_records.",
         "Campaign configuration/specification JSON scalars are excluded from campaign_method_results.csv; only result-like metrics, summaries, decisions, and gate artifacts remain.",
         "HD experiment run status and diagnostic flags are repaired only from stored final_status.json evidence.",
         "Compute hardware is filled only when a matching branch environment manifest provides GPU evidence.",
+        "Greek and boundary tables retain per-regime identity for Ruixi Arm C/D rows; matched-HD regime IDs are enriched only from existing price-metric evidence, never hard-coded.",
     ):
         if note not in notes:
             notes.append(note)
@@ -216,6 +240,12 @@ def verify(output: Path) -> dict[str, Any]:
             branch = row.get("branch", "")
             if branch == "origin" or branch.endswith("/HEAD"):
                 raise ValueError(f"symbolic/non-branch provenance remains in {name}: {branch}")
+
+    for name in ("greek_metrics.csv", "boundary_metrics.csv"):
+        header = _read_header(output / name)
+        expected = final_table_header(name)
+        if header != expected:
+            raise ValueError(f"final schema mismatch for {name}: got={header}, expected={expected}")
 
     b = audit_binomial_rows(_read(output / "binomial_convergence.csv"))
     if b["status"] != "ok":
