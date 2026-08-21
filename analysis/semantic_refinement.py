@@ -169,6 +169,49 @@ def filter_campaign_nonresult_rows(rows: Iterable[dict[str, Any]]) -> tuple[list
     return kept, removed
 
 
+def rebuild_campaign_experiment_runs(
+    existing_runs: Iterable[dict[str, Any]],
+    campaign_rows: Iterable[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Rebuild CAMPAIGN run provenance only from filtered result evidence."""
+    retained = [dict(row) for row in existing_runs if row.get("experiment_family") != "CAMPAIGN"]
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in campaign_rows:
+        method = str(row.get("method_id") or "").strip()
+        if method:
+            grouped[method].append(dict(row))
+
+    def priority(row: dict[str, Any]) -> tuple[int, str, str]:
+        branch = str(row.get("branch") or "")
+        if branch == "campaign/independent-methods":
+            rank = 0
+        elif branch.startswith("tmp/"):
+            rank = 2
+        else:
+            rank = 1
+        return rank, branch, str(row.get("source_commit") or "")
+
+    for method in sorted(grouped):
+        source = sorted(grouped[method], key=priority)[0]
+        retained.append({
+            "repo": source.get("repo", ""),
+            "branch": source.get("branch", ""),
+            "source_commit": source.get("source_commit", ""),
+            "experiment_family": "CAMPAIGN",
+            "experiment_id": method,
+            "method_id": method,
+            "variant": "",
+            "dimension": "",
+            "seed": "",
+            "status": source.get("run_status") or "recorded",
+            "diagnostic_only": "",
+            "candidate_supported": "",
+            "reference_type": "",
+            "scoring_protocol": "campaign",
+        })
+    return retained
+
+
 def parse_environment_manifest(
     obj: dict[str, Any],
     source: dict[str, Any],
@@ -564,10 +607,12 @@ def apply_semantic_refinement(output: Path) -> dict[str, Any]:
     environment_rows = rebuild_environment_rows_from_source_records(output / "source_records.csv")
     _write(output / "environment_runs.csv", final_table_header("environment_runs.csv"), environment_rows)
 
-    final_status_evidence = collect_final_status_evidence(output / "source_records.csv")
     original_runs = _read(output / "experiment_runs.csv")
-    repaired_runs = repair_experiment_runs(original_runs, final_status_evidence)
-    repaired_count = sum(1 for before, after in zip(original_runs, repaired_runs) if before != after)
+    campaign_rebuilt_runs = rebuild_campaign_experiment_runs(original_runs, campaign_rows)
+    campaign_run_count = sum(1 for row in campaign_rebuilt_runs if row.get("experiment_family") == "CAMPAIGN")
+    final_status_evidence = collect_final_status_evidence(output / "source_records.csv")
+    repaired_runs = repair_experiment_runs(campaign_rebuilt_runs, final_status_evidence)
+    repaired_count = sum(1 for before, after in zip(campaign_rebuilt_runs, repaired_runs) if before != after)
     _write(output / "experiment_runs.csv", final_table_header("experiment_runs.csv"), repaired_runs)
 
     original_compute = _read(output / "compute_metrics.csv")
@@ -579,6 +624,7 @@ def apply_semantic_refinement(output: Path) -> dict[str, Any]:
         "identifier_metrics_removed": removed,
         "metadata_metric_rows_removed": metadata_removed,
         "campaign_nonresult_rows_removed": campaign_config_removed,
+        "campaign_experiment_runs_rebuilt": campaign_run_count,
         "environment_rows_rebuilt": len(environment_rows),
         "experiment_runs_repaired": repaired_count,
         "compute_hardware_rows_enriched": hardware_enriched,
