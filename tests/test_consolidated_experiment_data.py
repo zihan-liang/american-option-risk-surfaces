@@ -76,5 +76,14 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
         ns,nt,nv=normalize_surface_arrays({"S_over_K":s,"tau_over_T":tau,"V":v})
         np.testing.assert_allclose(ns,s); np.testing.assert_allclose(nt,tau); np.testing.assert_allclose(nv,tau[:,None]+s[None,:])
 
+    def test_surface_normalization_reconstructs_flattened_pointwise_mesh(self):
+        import numpy as np
+        from analysis.consolidated_experiment_data import normalize_surface_arrays
+        s_axis=np.array([.2,.5,1.0,1.5]); tau_axis=np.array([.01,.5,1.0])
+        ss,tt=np.meshgrid(s_axis,tau_axis,indexing="xy")
+        vv=2.0*ss+3.0*tt
+        ns,nt,nv=normalize_surface_arrays({"G_over_K":ss.ravel(),"tau_over_T":tt.ravel(),"V":vv.ravel()})
+        np.testing.assert_allclose(ns,s_axis); np.testing.assert_allclose(nt,tau_axis); np.testing.assert_allclose(nv,2.0*s_axis[None,:]+3.0*tau_axis[:,None])
+
 
 if __name__ == "__main__": unittest.main()
