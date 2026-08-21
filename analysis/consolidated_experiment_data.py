@@ -26,6 +26,8 @@ DIRK_METRIC_COLUMNS = [
 TABLE_HEADERS = {
     "source_artifact_inventory.csv": ["repo", "representative_path", "extension", "size_bytes", "git_blob_sha", "content_sha256", "artifact_type", "experiment_family", "method_id", "regime_id", "seed", "dimension", "duplicate_group", "canonical_source"],
     "provenance.csv": ["repo", "branch", "branch_commit", "path", "git_blob_sha", "content_sha256", "duplicate_group"],
+    "source_records.csv": ["repo", "branch", "source_commit", "path", "git_blob_sha", "record_kind", "record_index", "field", "value", "value_type"],
+    "array_artifacts.csv": ["repo", "branch", "source_commit", "path", "git_blob_sha", "array_name", "shape", "dtype", "csv_gz_path", "content_sha256"],
     "experiment_runs.csv": ["repo", "branch", "source_commit", "experiment_family", "experiment_id", "method_id", "variant", "dimension", "seed", "status", "diagnostic_only", "candidate_supported", "reference_type", "scoring_protocol"],
     "price_metrics.csv": ["repo", "branch", "source_commit", "experiment_id", "method_id", "dimension", "seed", "metric_name", "metric_value", "reference_type", "metric_scope", "regime_id"],
     "greek_metrics.csv": ["repo", "branch", "source_commit", "experiment_id", "method_id", "dimension", "seed", "metric_name", "metric_value", "greek_definition", "greek_source", "reference_type"],
