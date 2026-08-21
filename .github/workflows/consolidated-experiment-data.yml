@@ -31,7 +31,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check numpy
 
       - name: Compile builder and refinement layer
-        run: python -m py_compile analysis/consolidated_experiment_data.py analysis/build_consolidated_experiment_data.py analysis/chunk_csv_outputs.py analysis/refine_consolidated_dataset.py analysis/finalize_refinement_audit.py
+        run: python -m py_compile analysis/consolidated_experiment_data.py analysis/build_consolidated_experiment_data.py analysis/chunk_csv_outputs.py analysis/refine_consolidated_dataset.py analysis/semantic_refinement.py analysis/finalize_refinement_audit.py
 
       - name: Run consolidated-data contract tests
         run: |
