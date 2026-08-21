@@ -155,17 +155,35 @@ def normalize_surface_arrays(arrays):
     s=pick(["S_over_K","G_over_K","moneyness_grid","s_over_k","g_over_k","S","G","s","g"])
     tau=pick(["tau_over_T","normalized_time_grid","tau","tau_grid","time_grid"])
     v=pick(["V_over_K","value_over_k","V","value","price","values"])
-    if s.ndim==2:
-        if np.allclose(s,s[0:1,:]): s=s[0,:]
-        elif np.allclose(s,s[:,0:1]): s=s[:,0]
-        else: raise ValueError("cannot reduce S mesh to one dimension")
-    if tau.ndim==2:
-        if np.allclose(tau,tau[:,0:1]): tau=tau[:,0]
-        elif np.allclose(tau,tau[0:1,:]): tau=tau[0,:]
-        else: raise ValueError("cannot reduce tau mesh to one dimension")
-    s=np.ravel(s); tau=np.ravel(tau)
-    if v.shape==(s.size,tau.size): v=v.T
-    elif v.shape!=(tau.size,s.size): raise ValueError(f"value shape {v.shape} incompatible with S={s.size}, tau={tau.size}")
+
+    if s.ndim==1 and tau.ndim==1 and v.ndim==1 and s.size==tau.size==v.size:
+        if not (np.all(np.isfinite(s)) and np.all(np.isfinite(tau)) and np.all(np.isfinite(v))):
+            raise ValueError("flattened surface contains non-finite values")
+        s_axis=np.unique(s); tau_axis=np.unique(tau)
+        if s_axis.size*tau_axis.size!=v.size:
+            raise ValueError("flattened pointwise surface is not a complete rectangular mesh")
+        grid=np.full((tau_axis.size,s_axis.size),np.nan,dtype=float)
+        s_index=np.searchsorted(s_axis,s); tau_index=np.searchsorted(tau_axis,tau)
+        for si,ti,value in zip(s_index,tau_index,v):
+            if not np.isnan(grid[ti,si]):
+                raise ValueError("flattened pointwise surface contains duplicate coordinates")
+            grid[ti,si]=value
+        if np.isnan(grid).any():
+            raise ValueError("flattened pointwise surface has missing grid points")
+        s=s_axis; tau=tau_axis; v=grid
+    else:
+        if s.ndim==2:
+            if np.allclose(s,s[0:1,:]): s=s[0,:]
+            elif np.allclose(s,s[:,0:1]): s=s[:,0]
+            else: raise ValueError("cannot reduce S mesh to one dimension")
+        if tau.ndim==2:
+            if np.allclose(tau,tau[:,0:1]): tau=tau[:,0]
+            elif np.allclose(tau,tau[0:1,:]): tau=tau[0,:]
+            else: raise ValueError("cannot reduce tau mesh to one dimension")
+        s=np.ravel(s); tau=np.ravel(tau)
+        if v.shape==(s.size,tau.size): v=v.T
+        elif v.shape!=(tau.size,s.size): raise ValueError(f"value shape {v.shape} incompatible with S={s.size}, tau={tau.size}")
+
     if s.size>1 and s[0]>s[-1]: s=s[::-1]; v=v[:,::-1]
     if tau.size>1 and tau[0]>tau[-1]: tau=tau[::-1]; v=v[::-1,:]
     if not np.all(np.diff(s)>0) or not np.all(np.diff(tau)>0): raise ValueError("surface coordinates must be strictly increasing")
