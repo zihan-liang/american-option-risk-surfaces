@@ -88,7 +88,7 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
         np.testing.assert_allclose(ns,s_axis); np.testing.assert_allclose(nt,tau_axis); np.testing.assert_allclose(nv,2.0*s_axis[None,:]+3.0*tau_axis[:,None])
 
     def test_oversized_csv_is_losslessly_chunked_and_catalogued(self):
-        from analysis.build_consolidated_experiment_data import _chunk_oversized_csvs
+        from analysis.chunk_csv_outputs import _chunk_oversized_csvs
         with tempfile.TemporaryDirectory() as td:
             out=Path(td)
             source=out/"big.csv"
