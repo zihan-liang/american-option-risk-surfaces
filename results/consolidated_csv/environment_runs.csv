@@ -1,1 +1,6 @@
 repo,branch,source_commit,experiment_id,method_id,seed,os,python,pytorch,cuda,gpu,cpu,ram,device
+zihan-liang/american-option-risk-surfaces,exp/hd1-windows-high-dimensional-pinn-48h,5b536bc22b800af2a6415fc2a0af6e1f0a0d4922,hd1_windows_high_dimensional_pinn_48h,,,Linux-5.15.0-94-generic-x86_64-with-glibc2.35,3.12.3,2.8.0+cu128,12.8,NVIDIA GeForce RTX 4090,,,cuda
+zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,hd2_hvi_objective_stabilization,,,Windows-10-10.0.26200-SP0,3.11.9,2.7.1+cu128,12.8,NVIDIA GeForce RTX 4070 Laptop GPU,,,cuda
+zihan-liang/american-option-risk-surfaces,exp/hd2-hvi-objective-stabilization,85ca6be8e4847f2615435e8d96a5940ca36bef35,hd_pipeline,,,,,,,,,,
+zihan-liang/american-option-risk-surfaces,exp/hd3-matched-american-put-comparison,c111026eafe041b33198a63c15cf5cb7f82a62d7,hd3_matched_american_put_comparison,,,Windows-10-10.0.26200-SP0,3.11.9,2.7.1+cu128,12.8,NVIDIA GeForce RTX 4070 Laptop GPU,,,cuda
+zihan-liang/american-option-risk-surfaces,exp/hd3-matched-american-put-final-boundary-complete,c11c3ec3c22a5304b33f394c0ecdb1f6225cb6e1,hd3_matched_american_put_boundary_complete,,,Windows-10-10.0.26200-SP0,3.11.9,2.7.1+cu128,12.8,NVIDIA GeForce RTX 4070 Laptop GPU,,,cuda
