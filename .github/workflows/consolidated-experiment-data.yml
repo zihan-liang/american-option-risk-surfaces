@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - data/consolidated-experiment-csv
+  pull_request:
+    branches:
+      - campaign/independent-methods
   workflow_dispatch:
 
 permissions:
