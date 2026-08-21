@@ -1,4 +1,6 @@
 import csv
+import gzip
+import hashlib
 import json
 import math
 import subprocess
@@ -84,6 +86,28 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
         vv=2.0*ss+3.0*tt
         ns,nt,nv=normalize_surface_arrays({"G_over_K":ss.ravel(),"tau_over_T":tt.ravel(),"V":vv.ravel()})
         np.testing.assert_allclose(ns,s_axis); np.testing.assert_allclose(nt,tau_axis); np.testing.assert_allclose(nv,2.0*s_axis[None,:]+3.0*tau_axis[:,None])
+
+    def test_oversized_csv_is_losslessly_chunked_and_catalogued(self):
+        from analysis.build_consolidated_experiment_data import _chunk_oversized_csvs
+        with tempfile.TemporaryDirectory() as td:
+            out=Path(td)
+            source=out/"big.csv"
+            original=[{"id":str(i),"payload":"x"*(40+i)} for i in range(7)]
+            with source.open("w",newline="",encoding="utf-8") as fh:
+                writer=csv.DictWriter(fh,fieldnames=["id","payload"]); writer.writeheader(); writer.writerows(original)
+            catalog=_chunk_oversized_csvs(out,max_bytes=100,max_rows_per_chunk=2)
+            self.assertFalse(source.exists())
+            self.assertTrue((out/"table_chunks.csv").is_file())
+            self.assertEqual(sum(int(row["row_count"]) for row in catalog if row["logical_table"]=="big.csv"),len(original))
+            rebuilt=[]
+            for row in catalog:
+                if row["logical_table"]!="big.csv": continue
+                chunk=out/row["chunk_path"]
+                self.assertLess(chunk.stat().st_size,100_000_000)
+                self.assertEqual(hashlib.sha256(chunk.read_bytes()).hexdigest(),row["sha256"])
+                with gzip.open(chunk,"rt",newline="",encoding="utf-8") as fh:
+                    rebuilt.extend(csv.DictReader(fh))
+            self.assertEqual(rebuilt,original)
 
 
 if __name__ == "__main__": unittest.main()
