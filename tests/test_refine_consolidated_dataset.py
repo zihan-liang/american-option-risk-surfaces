@@ -148,6 +148,42 @@ class RefineConsolidatedDatasetContract(unittest.TestCase):
         self.assertEqual(removed, 2)
         self.assertEqual([r["metric_name"] for r in kept], ["normalized_price_rmse", "training_seconds"])
 
+    def test_campaign_config_false_positive_is_removed_but_results_are_kept(self):
+        import analysis.semantic_refinement as mod
+        self.assertTrue(hasattr(mod, "filter_campaign_nonresult_rows"))
+        rows = [
+            {"metric_name": "m10_structured_surrogate.json.model.batch_size", "metric_value": "4096"},
+            {"metric_name": "decision.json.decision_record.optional_metrics.price_rmse", "metric_value": "0.001"},
+            {"metric_name": "metrics.csv[0].price_rmse", "metric_value": "0.002"},
+        ]
+        kept, removed = mod.filter_campaign_nonresult_rows(rows)
+        self.assertEqual(removed, 1)
+        self.assertEqual([r["metric_name"] for r in kept], [
+            "decision.json.decision_record.optional_metrics.price_rmse",
+            "metrics.csv[0].price_rmse",
+        ])
+
+    def test_experiment_runs_are_repaired_from_final_status_evidence(self):
+        import analysis.semantic_refinement as mod
+        self.assertTrue(hasattr(mod, "repair_experiment_runs"))
+        runs = [{
+            "experiment_family": "HD3", "experiment_id": "hd3_x", "method_id": "FC_HVI",
+            "status": "", "diagnostic_only": "", "candidate_supported": "",
+        }]
+        evidence = {"hd3_x": {"status": "completed", "diagnostic_only": "true", "candidate_supported": "false"}}
+        repaired = mod.repair_experiment_runs(runs, evidence)
+        self.assertEqual(repaired[0]["status"], "completed")
+        self.assertEqual(repaired[0]["diagnostic_only"], "true")
+        self.assertEqual(repaired[0]["candidate_supported"], "false")
+
+    def test_compute_hardware_is_filled_from_environment_rows(self):
+        import analysis.semantic_refinement as mod
+        self.assertTrue(hasattr(mod, "enrich_compute_hardware"))
+        compute = [{"branch": "exp/x", "method_id": "FC_HVI", "hardware": ""}]
+        env = [{"branch": "exp/x", "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU", "os": "Windows-10"}]
+        enriched = mod.enrich_compute_hardware(compute, env)
+        self.assertEqual(enriched[0]["hardware"], "NVIDIA GeForce RTX 4070 Laptop GPU")
+
 
 if __name__ == "__main__":
     unittest.main()
