@@ -90,6 +90,42 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
         self.assertEqual(SHARED_DOMAIN, (0.5, 1.5, 0.01, 1.0))
         self.assertEqual(HD_DOMAIN, (0.2, 1.5, 0.01, 1.0))
 
+    def test_rectilinear_interpolation_is_exact_for_affine_surface_and_refuses_extrapolation(self):
+        import numpy as np
+        from analysis.consolidated_experiment_data import rectilinear_interpolate
+
+        s = np.array([0.0, 1.0, 2.0])
+        tau = np.array([0.0, 1.0])
+        values = tau[:, None] * 3.0 + s[None, :] * 2.0 + 5.0
+        target_s = np.array([0.25, 1.5])
+        target_tau = np.array([0.2, 0.8])
+        got = rectilinear_interpolate(s, tau, values, target_s, target_tau)
+        expected = target_tau[:, None] * 3.0 + target_s[None, :] * 2.0 + 5.0
+        np.testing.assert_allclose(got, expected, rtol=0.0, atol=1e-12)
+
+        with self.assertRaises(ValueError):
+            rectilinear_interpolate(s, tau, values, np.array([-0.1]), target_tau)
+        with self.assertRaises(ValueError):
+            rectilinear_interpolate(s, tau, values, target_s, np.array([1.1]))
+
+    def test_json_flattening_and_artifact_classification_are_lossless_for_scalars(self):
+        from analysis.consolidated_experiment_data import (
+            classify_artifact_path,
+            flatten_json_scalars,
+        )
+
+        data = {"a": 1, "b": {"c": True, "d": [2.5, "x"]}, "e": None}
+        flattened = dict(flatten_json_scalars(data))
+        self.assertEqual(flattened["a"], 1)
+        self.assertEqual(flattened["b.c"], True)
+        self.assertEqual(flattened["b.d[0]"], 2.5)
+        self.assertEqual(flattened["b.d[1]"], "x")
+        self.assertIsNone(flattened["e"])
+
+        self.assertEqual(classify_artifact_path("results/x/run_metrics.csv"), "metrics_csv")
+        self.assertEqual(classify_artifact_path("results/x/surface.npz"), "numeric_array")
+        self.assertEqual(classify_artifact_path("results/x/checkpoints/model.pt"), "checkpoint")
+
 
 if __name__ == "__main__":
     unittest.main()
