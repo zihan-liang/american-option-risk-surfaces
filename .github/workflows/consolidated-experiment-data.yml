@@ -27,5 +27,8 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install consolidation dependencies
+        run: python -m pip install --disable-pip-version-check numpy
+
       - name: Run consolidated-data contract tests
         run: python -m unittest tests/test_consolidated_experiment_data.py -v
