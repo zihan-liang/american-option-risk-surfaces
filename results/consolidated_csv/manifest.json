@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "headline_cross_model_metric": "dirk_price_rmse_shared_domain",
+  "headline_hd_scaling_metric": "dirk_price_rmse_hd_domain",
+  "shared_domain": [
+    0.5,
+    1.5,
+    0.01,
+    1.0
+  ],
+  "hd_domain": [
+    0.2,
+    1.5,
+    0.01,
+    1.0
+  ],
+  "repositories": {
+    "zihan-liang/american-option-risk-surfaces": {
+      "branches_scanned": 15,
+      "branches": [
+        "campaign/independent-methods",
+        "data/consolidated-experiment-csv",
+        "exp/hd1-windows-high-dimensional-pinn-48h",
+        "exp/hd2-classical-vs-structured-high-dimensional-pinn",
+        "exp/hd2-hvi-objective-stabilization",
+        "exp/hd3-matched-american-put-comparison",
+        "exp/hd3-matched-american-put-final-boundary-complete",
+        "feature/pinn-inspired-premium",
+        "postprocess/final-stage1-plots",
+        "repair/m02-gamma-boundary-gate",
+        "run/m02-canonical-rerun",
+        "stage-13-future-extensions",
+        "tmp/m08-upload-20260815",
+        "tmp/m08-verify-20260815",
+        "tmp/m10-transfer-20260817"
+      ]
+    },
+    "Ruixixu-hub/2026-surf-american-risk-surfaces": {
+      "branches_scanned": 6,
+      "branches": [
+        "origin",
+        "codex/autodl-pinn-pilots",
+        "codex/poster-unified-solver-comparison",
+        "codex/v1-small-grid-dataset",
+        "main",
+        "viz/american-put-pointwise-export"
+      ]
+    }
+  },
+  "counts": {
+    "source_artifact_inventory.csv": 1251,
+    "provenance.csv": 7170,
+    "source_records.csv": 9791334,
+    "array_artifacts.csv": 161,
+    "experiment_runs.csv": 462,
+    "price_metrics.csv": 508,
+    "greek_metrics.csv": 390,
+    "boundary_metrics.csv": 462,
+    "free_boundary_points.csv": 9534,
+    "price_slices.csv": 63759,
+    "structural_metrics.csv": 234,
+    "compute_metrics.csv": 462,
+    "classical_solver_metrics.csv": 65637,
+    "binomial_convergence.csv": 0,
+    "ruixi_arm_metrics.csv": 1049127,
+    "hd1_metrics.csv": 1536,
+    "hd2_candidate_metrics.csv": 0,
+    "hd3_metrics.csv": 2100,
+    "campaign_method_results.csv": 646484,
+    "experiment_gates.csv": 0,
+    "environment_runs.csv": 0,
+    "surface_artifacts.csv": 17,
+    "dirk_common_reference_metrics.csv": 20
+  },
+  "reference": {
+    "type": "DIRK_policy_sinh_M480_N960",
+    "source": "DIRK + Policy Iteration + sinh grid (M=480,N=960)",
+    "arm_d_archive_sha256": "237d670ccb889564d94a9f553cf9528082f71c2a6891687585c68e56dedcbc5c"
+  },
+  "notes": [
+    "Raw accepted experiment artifacts were not modified.",
+    "Checkpoints are inventoried but never converted to model weights in CSV.",
+    "CSV/JSON scalars are preserved in source_records.csv as a generic lossless fallback.",
+    "NPZ/NPY numeric arrays are registered in array_artifacts.csv and exported to arrays/*.csv.gz when readable.",
+    "Specialized tables may be empty when no supporting source schema was found; empty never means zero.",
+    "Oversized logical CSV tables are stored losslessly as chunks/<table>/part-*.csv.gz and indexed by table_chunks.csv."
+  ],
+  "storage": {
+    "large_table_policy": "lossless_chunked_csv_gzip",
+    "chunk_catalog": "table_chunks.csv",
+    "chunked_tables": [
+      "campaign_method_results.csv",
+      "ruixi_arm_metrics.csv",
+      "source_records.csv"
+    ],
+    "github_safe_file_bytes": 95000000
+  }
+}
