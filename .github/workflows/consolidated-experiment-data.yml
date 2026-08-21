@@ -37,6 +37,7 @@ jobs:
         run: |
           python -m unittest tests/test_consolidated_experiment_data.py -v
           python -m unittest tests/test_refine_consolidated_dataset.py -v
+          python -m unittest tests/test_semantic_refinement_extended.py -v
 
   build:
     if: >-
@@ -85,6 +86,7 @@ jobs:
         run: |
           python -m unittest tests/test_consolidated_experiment_data.py -v
           python -m unittest tests/test_refine_consolidated_dataset.py -v
+          python -m unittest tests/test_semantic_refinement_extended.py -v
 
       - name: Build all-branch CSV dataset and recompute DIRK RMSE
         run: |
