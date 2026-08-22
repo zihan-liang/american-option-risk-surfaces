@@ -6,6 +6,7 @@ on:
       - data/consolidated-experiment-csv
     paths:
       - "analysis/final_matched_comparison/plot_fig01_tau05_from_consolidated.py"
+      - "analysis/final_matched_comparison/fig01_render_trigger.txt"
       - ".github/workflows/render-fig01-tau05.yml"
 
 permissions:
