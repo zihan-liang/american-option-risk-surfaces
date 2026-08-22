@@ -3,6 +3,7 @@
 This script is intentionally post-processing only. It compares the stored
 high-accuracy DIRK reference, Arm C, Arm D, FC-HVI d20, and DeepSets-HVI d20
 on the shared American-put contract at tau/T = 0.5 and S/K in [0.5, 1.5].
+The rendered figure is the poster-specific single-panel Fig01 revision.
 """
 from __future__ import annotations
 
