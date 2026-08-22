@@ -19,6 +19,7 @@ HD_DOMAIN = (0.2, 1.5, 0.01, 1.0)
 DATA_SUFFIXES = {".csv", ".json", ".npz", ".npy", ".txt", ".md", ".pt", ".pth"}
 
 DIRK_METRIC_COLUMNS = ["method_id","dimension","seed","regime_id","internal_cnpsor_price_rmse","dirk_price_rmse_hd_domain","dirk_price_rmse_shared_domain","reference_type","metric_scope","s_min","s_max","tau_min","tau_max","grid_points","interpolation_method","source_repo","source_branch","source_commit","reference_source","reference_commit","reference_artifact_sha256"]
+COMMON_PRICE_METRIC_COLUMNS = ["method_id","dimension","seed","regime_id","domain_scope","metric_name","metric_value","reference_type","s_min","s_max","tau_min","tau_max","grid_points","interpolation_method","source_repo","source_branch","source_commit","reference_commit","reference_artifact_sha256"]
 TABLE_HEADERS = {
     "source_artifact_inventory.csv": ["repo","representative_path","extension","size_bytes","git_blob_sha","content_sha256","artifact_type","experiment_family","method_id","regime_id","seed","dimension","duplicate_group","canonical_source"],
     "provenance.csv": ["repo","branch","branch_commit","path","git_blob_sha","content_sha256","duplicate_group"],
@@ -43,6 +44,7 @@ TABLE_HEADERS = {
     "environment_runs.csv": ["repo","branch","source_commit","experiment_id","method_id","seed","os","python","pytorch","cuda","gpu","cpu","ram","device"],
     "surface_artifacts.csv": ["repo","branch","source_commit","path","method_id","dimension","seed","regime_id","shape","s_min","s_max","tau_min","tau_max","fields","point_count","content_sha256"],
     "dirk_common_reference_metrics.csv": DIRK_METRIC_COLUMNS,
+    "dirk_common_reference_price_metrics.csv": COMMON_PRICE_METRIC_COLUMNS,
 }
 
 
@@ -55,6 +57,37 @@ def price_rmse(predicted: Sequence[float], reference: Sequence[float]) -> float:
         if not (math.isfinite(p) and math.isfinite(r)): raise ValueError("RMSE inputs must be finite")
         total+=(p-r)**2
     return math.sqrt(total/len(predicted))
+
+
+def price_error_metrics(predicted: Sequence[float], reference: Sequence[float]) -> dict[str, float]:
+    """Return a frozen set of pointwise price-error metrics on one common grid.
+
+    P95 is the NumPy linear 0.95 quantile of absolute error. Relative L2 is
+    ||prediction-reference||_2 / ||reference||_2 and is undefined for a zero
+    reference norm, which is rejected rather than silently replaced.
+    """
+    import numpy as np
+
+    pred = np.asarray(predicted, dtype=float).reshape(-1)
+    ref = np.asarray(reference, dtype=float).reshape(-1)
+    if pred.size != ref.size:
+        raise ValueError("predicted and reference lengths differ")
+    if pred.size == 0:
+        raise ValueError("price metrics require at least one point")
+    if not (np.all(np.isfinite(pred)) and np.all(np.isfinite(ref))):
+        raise ValueError("price metric inputs must be finite")
+    ref_norm = float(np.linalg.norm(ref))
+    if ref_norm == 0.0:
+        raise ValueError("relative L2 requires a nonzero reference norm")
+    error = pred - ref
+    abs_error = np.abs(error)
+    return {
+        "rmse": float(np.sqrt(np.mean(error * error))),
+        "mae": float(np.mean(abs_error)),
+        "p95_abs": float(np.quantile(abs_error, 0.95)),
+        "max_abs": float(np.max(abs_error)),
+        "relative_l2": float(np.linalg.norm(error) / ref_norm),
+    }
 
 
 def rectilinear_interpolate(source_s, source_tau, source_values, target_s, target_tau):
