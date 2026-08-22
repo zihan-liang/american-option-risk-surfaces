@@ -1,0 +1,2 @@
+M,N,status,detail
+1920,60,nonconverged,"Z stage, step 49, Policy Iteration reached 10000 iterations at tolerance 1e-12"

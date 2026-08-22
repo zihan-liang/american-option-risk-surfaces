@@ -1,0 +1,33 @@
+{
+  "status": "completed_diagnostic_audit",
+  "spatial_order_status": "verified_second_order_in_overall_RMSE_self_convergence",
+  "spatial_overall_rmse_self_orders": [
+    2.004463269782384,
+    2.006830691980684
+  ],
+  "temporal_order_status": "unresolved_not_verified_second_order",
+  "temporal_frozen_overall_rmse_self_orders": [
+    1.0761152751698817,
+    1.2842628988657108,
+    1.5750699763070575
+  ],
+  "temporal_posthoc_overall_rmse_self_orders": [
+    2.758276447906639,
+    1.5731379810654837
+  ],
+  "nonconverged_frozen_point": {
+    "M": 1920,
+    "N": 60,
+    "stage": "Z",
+    "step": 49,
+    "max_policy_iterations": 10000,
+    "tolerance": 1e-12
+  },
+  "interpretation": {
+    "benchmark_relative_temporal_orders": "not suitable for temporal discretization order once spatial/CRR floors dominate",
+    "self_convergence": "primary diagnostic for discretization order because it does not use CRR50000 as the error denominator",
+    "claim_boundary": "Do not claim stable second-order temporal convergence for this American-obstacle contract from these results."
+  },
+  "posthoc_extension_reason": "Frozen temporal sequence remained non-asymptotic at N=1920; N=3840 and 7680 were added only to test stabilization. They did not stabilize the order estimator.",
+  "no_result_deletion_or_gate_weakening": true
+}

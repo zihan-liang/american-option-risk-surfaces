@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "branch": "exp/dirk-binomial-50k-convergence-audit",
+  "files": [
+    {
+      "name": "spatial_convergence.csv",
+      "bytes": 1043,
+      "sha256": "d4c13debefd7ee584cbc06821eafdac1b5e44504dfc0638b641d55c96634822a"
+    },
+    {
+      "name": "temporal_convergence.csv",
+      "bytes": 1631,
+      "sha256": "755a75c9e852f5c1d6f160d3d2c79cbf92d6470e06d30a14af6aac93b428fa62"
+    },
+    {
+      "name": "observed_orders.csv",
+      "bytes": 21816,
+      "sha256": "847c90d8a5f61078b4f1e01c4831eb310d1afb0ce698008698ba8ce62b9c5258"
+    },
+    {
+      "name": "clean_isolation_summary.csv",
+      "bytes": 1471,
+      "sha256": "5fe1b240b5e8d10a654e17c78dceb0b720aed86fcb64f9d2dc046e95990d5a48"
+    },
+    {
+      "name": "convergence_decision.json",
+      "bytes": 1324,
+      "sha256": "a9123a5864c71901261f43dbd35aa858c52a17d1231af5f965501d95936a939a"
+    },
+    {
+      "name": "self_convergence_orders.csv",
+      "bytes": 11561,
+      "sha256": "75110e2a236da6b6568765fc38e28aabcc37cd0ded4eca72ef1689767fe98cb1"
+    },
+    {
+      "name": "temporal_posthoc_self_orders.csv",
+      "bytes": 324,
+      "sha256": "6bf83fc6853d8e49c78eb8ec012995907cedcc3ecbd36e210e6fe63cdfcb2c25"
+    },
+    {
+      "name": "run_metrics.csv",
+      "bytes": 571,
+      "sha256": "57aa4ba1ecc086271da0c88acfb512cec3765a905c485c858ec19698f26ed6e7"
+    },
+    {
+      "name": "dirk_convergence_upload_summary.csv",
+      "bytes": 1907,
+      "sha256": "f365d8cdab8a3cb88dcb3c413cd7b17b2842204aa7e7d6e734fa4bda66b40f43"
+    }
+  ],
+  "notes": [
+    "These are the convergence-rate and decision artifacts requested for GitHub publication.",
+    "The full pointwise price-error table and CRR50000 cache remain reproducible from the frozen runner and are not required to interpret the convergence-rate claims."
+  ]
+}
