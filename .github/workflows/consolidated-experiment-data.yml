@@ -88,7 +88,7 @@ jobs:
           python -m unittest tests/test_refine_consolidated_dataset.py -v
           python -m unittest tests/test_semantic_refinement_extended.py -v
 
-      - name: Build all-branch CSV dataset and recompute DIRK RMSE
+      - name: Build all-branch CSV dataset and recompute DIRK metrics
         run: |
           python -m analysis.build_consolidated_experiment_data \
             --zihan-repo . \
@@ -108,6 +108,7 @@ jobs:
           test -s results/consolidated_csv/provenance.csv
           test -s results/consolidated_csv/source_records.csv
           test -s results/consolidated_csv/dirk_common_reference_metrics.csv
+          test -s results/consolidated_csv/dirk_common_reference_price_metrics.csv
 
       - name: Refine and audit specialized tables
         run: |
@@ -131,6 +132,7 @@ jobs:
             --verify-only
           test -s results/consolidated_csv/table_audit.csv
           test -s results/consolidated_csv/table_audit.json
+          test -s results/consolidated_csv/dirk_common_reference_price_metrics.csv
 
       - name: Chunk oversized CSV tables losslessly
         run: |
