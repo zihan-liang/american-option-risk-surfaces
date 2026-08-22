@@ -16,11 +16,24 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
         with self.assertRaises(ValueError): price_rmse([1.0], [1.0, 2.0])
         with self.assertRaises(ValueError): price_rmse([], [])
 
+    def test_full_price_error_metric_set_definition(self):
+        from analysis.consolidated_experiment_data import price_error_metrics
+        metrics = price_error_metrics([1.0, 2.0], [1.0, 4.0])
+        self.assertAlmostEqual(metrics["rmse"], math.sqrt(2.0))
+        self.assertAlmostEqual(metrics["mae"], 1.0)
+        self.assertAlmostEqual(metrics["p95_abs"], 1.9)
+        self.assertAlmostEqual(metrics["max_abs"], 2.0)
+        self.assertAlmostEqual(metrics["relative_l2"], 2.0 / math.sqrt(17.0))
+        with self.assertRaises(ValueError): price_error_metrics([1.0], [1.0, 2.0])
+        with self.assertRaises(ValueError): price_error_metrics([], [])
+        with self.assertRaises(ValueError): price_error_metrics([float("nan")], [1.0])
+        with self.assertRaises(ValueError): price_error_metrics([1.0], [0.0])
+
     def test_output_contract_has_required_tables_and_metric_columns(self):
         from analysis.consolidated_experiment_data import write_empty_output_contract
         with tempfile.TemporaryDirectory() as td:
             out = Path(td); write_empty_output_contract(out)
-            required = {"source_artifact_inventory.csv","provenance.csv","source_records.csv","array_artifacts.csv","experiment_runs.csv","price_metrics.csv","greek_metrics.csv","boundary_metrics.csv","free_boundary_points.csv","price_slices.csv","structural_metrics.csv","compute_metrics.csv","classical_solver_metrics.csv","binomial_convergence.csv","ruixi_arm_metrics.csv","hd1_metrics.csv","hd2_candidate_metrics.csv","hd3_metrics.csv","campaign_method_results.csv","experiment_gates.csv","environment_runs.csv","surface_artifacts.csv","dirk_common_reference_metrics.csv","manifest.json","README.md"}
+            required = {"source_artifact_inventory.csv","provenance.csv","source_records.csv","array_artifacts.csv","experiment_runs.csv","price_metrics.csv","greek_metrics.csv","boundary_metrics.csv","free_boundary_points.csv","price_slices.csv","structural_metrics.csv","compute_metrics.csv","classical_solver_metrics.csv","binomial_convergence.csv","ruixi_arm_metrics.csv","hd1_metrics.csv","hd2_candidate_metrics.csv","hd3_metrics.csv","campaign_method_results.csv","experiment_gates.csv","environment_runs.csv","surface_artifacts.csv","dirk_common_reference_metrics.csv","dirk_common_reference_price_metrics.csv","manifest.json","README.md"}
             self.assertTrue(required.issubset({p.name for p in out.iterdir()}))
             with (out / "source_records.csv").open(newline="") as fh: source_header = next(csv.reader(fh))
             for name in ("repo","branch","path","record_kind","record_index","field","value","value_type"): self.assertIn(name, source_header)
@@ -28,6 +41,8 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
             for name in ("repo","branch","path","array_name","shape","dtype","csv_gz_path","content_sha256"): self.assertIn(name, array_header)
             with (out / "dirk_common_reference_metrics.csv").open(newline="") as fh: header = next(csv.reader(fh))
             for name in ("internal_cnpsor_price_rmse","dirk_price_rmse_hd_domain","dirk_price_rmse_shared_domain","reference_type","metric_scope","s_min","s_max","tau_min","tau_max","grid_points","interpolation_method","source_repo","source_branch","source_commit","reference_source","reference_commit","reference_artifact_sha256"): self.assertIn(name, header)
+            with (out / "dirk_common_reference_price_metrics.csv").open(newline="") as fh: common_header = next(csv.reader(fh))
+            for name in ("method_id","dimension","seed","regime_id","domain_scope","metric_name","metric_value","reference_type","s_min","s_max","tau_min","tau_max","grid_points","interpolation_method","source_repo","source_branch","source_commit","reference_commit","reference_artifact_sha256"): self.assertIn(name, common_header)
             manifest = json.loads((out / "manifest.json").read_text())
             self.assertEqual(manifest["schema_version"], 1)
             self.assertEqual(manifest["headline_cross_model_metric"], "dirk_price_rmse_shared_domain")
