@@ -1,6 +1,41 @@
 # Final Poster Result Claims
 
-Source of truth for the numerical claims below: consolidated dataset at commit `ca5e806`, with derived tables under `results/final_poster_summary/`.
+Primary source of truth for matched PINN/HD numerical claims: consolidated dataset at commit `ca5e806`, with derived tables under `results/final_poster_summary/`.
+
+Classical poster-headline claims additionally use Ruixi's frozen unified-poster evidence at commit `3aa2d821b9c92d095658782e7bcaf1322a90a7cb`. These classical timing and accuracy-reference scopes must remain separate from Zihan's independent M01 screen.
+
+## Classical numerical results
+
+### Strict LCP solver timing
+
+Frozen unified-poster protocol: 67 held-out test/stress regimes, the same Mac, one CPU thread, float64, the same frozen 121x121 CN-LCP, five warm-ups, and 30 timed repetitions per arm.
+
+- CN+PSOR pooled median: `0.3097067705 s`.
+- CN+Policy Iteration pooled median: `0.0159997290 s`.
+- CN+Projected LU pooled median: `0.0102586250 s`.
+- CN+Projected LU is therefore `30.18989099416345x` faster than CN+PSOR by pooled median latency, which is poster-safe as `30.2x faster`.
+- Policy Iteration and Projected LU pass strict certification on all 67 regimes. Projected LU's maximum full-trajectory difference from Policy Iteration is approximately `2.62e-14`, with maximum normalized LCP residual approximately `6.30e-16`.
+- Penalty/Newton is not a benchmark: it passed only `40/67` common residual gates and remains `FAILED_CORRECTNESS`.
+
+Important scope distinction: Zihan's independent M01 screen used nine preregistered American-put regimes and found CN+Policy median `0.0073127569 s` versus CN+PSOR `0.1406132638 s` (`94.799%` reduction, about `19.23x`). That is independent supporting evidence and must not be substituted for the synchronized 67-regime poster timing result above.
+
+### High-accuracy reference audit
+
+Gamma comparisons are restricted to the validated stable mask and are not runtime claims.
+
+Temporal discretization:
+
+- CN quadratic median Gamma max error: `1.65742e-6`.
+- L-stable DIRK quadratic median Gamma max error: `6.94696e-7`.
+- Ratio: `2.385820560360215x`; poster-safe wording: `2.39x lower Gamma error` (or `2.4x` when space is tight).
+
+Spatial grid:
+
+- Uniform-grid median Gamma max error: `1.52088e-4`.
+- Sinh strike-concentrated grid median Gamma max error: `2.59175e-5`.
+- Ratio: `5.868158580109965x`; poster-safe wording: `5.87x lower Gamma error` (or `5.9x` when space is tight).
+
+The selected high-accuracy numerical reference remains `DIRK + Policy Iteration + sinh grid`. It is an internal numerical reference, not an analytic American-option theorem and not an online speed competitor.
 
 ## Matched-contract cross-model price comparison
 
@@ -67,6 +102,10 @@ Do not draw or interpolate a synthetic HD free-boundary curve when the primary e
 - d=20 is the predeclared middle dimension for the main poster slices, not a dimension selected after looking for the best result.
 
 ## Recommended poster wording
+
+Classical numerical results:
+
+> CN+Projected LU reduced pooled median solve time by 30.2x relative to CN+PSOR on the synchronized 67-regime benchmark, while passing 67/67 strict certification. In the accuracy-reference audit, L-stable DIRK reduced stable-mask median Gamma max error by 2.39x versus CN, and the sinh grid reduced it by 5.87x versus the uniform grid.
 
 Matched low-dimensional comparison:
 
