@@ -1,0 +1,65 @@
+name: Render revised Fig01 tau05
+
+on:
+  pull_request:
+    branches:
+      - data/consolidated-experiment-csv
+    paths:
+      - "analysis/final_matched_comparison/plot_fig01_tau05_from_consolidated.py"
+      - ".github/workflows/render-fig01-tau05.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install plotting dependencies
+        run: python -m pip install --disable-pip-version-check numpy matplotlib
+
+      - name: Render revised Fig01
+        run: python analysis/final_matched_comparison/plot_fig01_tau05_from_consolidated.py
+
+      - name: Verify rendered outputs
+        run: |
+          test -s figures/final_matched_comparison/poster/fig01_price_slice_tau05.png
+          test -s figures/final_matched_comparison/poster/fig01_price_slice_tau05.pdf
+          python - <<'PY'
+          from pathlib import Path
+          from matplotlib import image as mpimg
+          png = Path("figures/final_matched_comparison/poster/fig01_price_slice_tau05.png")
+          pdf = Path("figures/final_matched_comparison/poster/fig01_price_slice_tau05.pdf")
+          arr = mpimg.imread(png)
+          print(f"PNG shape: {arr.shape}")
+          print(f"PNG bytes: {png.stat().st_size}")
+          print(f"PDF bytes: {pdf.stat().st_size}")
+          if arr.shape[1] <= arr.shape[0]:
+              raise SystemExit("Expected a landscape single-panel Fig01")
+          PY
+
+      - name: Commit rendered figure to PR branch
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            figures/final_matched_comparison/poster/fig01_price_slice_tau05.png \
+            figures/final_matched_comparison/poster/fig01_price_slice_tau05.pdf
+          if git diff --cached --quiet; then
+            echo "Rendered files are unchanged; nothing to commit."
+          else
+            git commit -m "figures: render revised Fig01 tau05"
+            git push origin HEAD:"$HEAD_REF"
+          fi
