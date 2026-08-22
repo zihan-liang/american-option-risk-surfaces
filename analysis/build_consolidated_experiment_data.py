@@ -24,6 +24,7 @@ from analysis.consolidated_experiment_data import (
     flatten_json_scalars,
     inventory_repository,
     normalize_surface_arrays,
+    price_error_metrics,
     price_rmse,
     rectilinear_interpolate,
     write_empty_output_contract,
@@ -346,7 +347,52 @@ def _internal_hd_rmse(zihan: Path) -> dict[tuple[int, str], float]:
     return out
 
 
-def _dirk_metric_rows(zihan: Path, ruixi: Path, arm_d_archive: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def _common_price_metric_rows(
+    predicted,
+    reference,
+    *,
+    method_id: str,
+    dimension,
+    seed: int,
+    regime_id: str,
+    domain_scope: str,
+    s_min: float,
+    s_max: float,
+    tau_min: float,
+    tau_max: float,
+    grid_points: int,
+    interpolation_method: str,
+    source_repo: str,
+    source_branch: str,
+    source_commit: str,
+    reference_commit: str,
+    reference_artifact_sha256: str,
+) -> list[dict[str, Any]]:
+    values = price_error_metrics(predicted, reference)
+    order = ("rmse", "mae", "p95_abs", "max_abs", "relative_l2")
+    base = {
+        "method_id": method_id,
+        "dimension": "" if dimension in (None, "") else dimension,
+        "seed": seed,
+        "regime_id": regime_id,
+        "domain_scope": domain_scope,
+        "reference_type": REFERENCE_TYPE,
+        "s_min": s_min,
+        "s_max": s_max,
+        "tau_min": tau_min,
+        "tau_max": tau_max,
+        "grid_points": grid_points,
+        "interpolation_method": interpolation_method,
+        "source_repo": source_repo,
+        "source_branch": source_branch,
+        "source_commit": source_commit,
+        "reference_commit": reference_commit,
+        "reference_artifact_sha256": reference_artifact_sha256,
+    }
+    return [{**base, "metric_name": name, "metric_value": values[name]} for name in order]
+
+
+def _dirk_metric_rows(zihan: Path, ruixi: Path, arm_d_archive: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     hd_commit = _branch_tip(zihan, HD_BRANCH); ruixi_commit = _branch_tip(ruixi, RUIXI_VIZ_BRANCH)
     compact_ref_path = f"{RUIXI_COMPACT_ROOT}/reference/surface.npz"
     compact_ref_bytes = _show_bytes(ruixi, RUIXI_VIZ_BRANCH, compact_ref_path)
@@ -357,9 +403,18 @@ def _dirk_metric_rows(zihan: Path, ruixi: Path, arm_d_archive: Path) -> tuple[li
     internal = _internal_hd_rmse(zihan)
     metrics: list[dict[str, Any]] = []
     long_price: list[dict[str, Any]] = []
+    common_price: list[dict[str, Any]] = []
 
     def add(method, dimension, seed, scope, internal_rmse="", hd_rmse="", shared_rmse="", s_min="", s_max="", tau_min="", tau_max="", points="", interp="", source_repo=ZIHAN_REPO_NAME, source_branch="exp/hd3-matched-american-put-final-boundary-complete", source_commit=hd_commit, ref_sha=""):
         metrics.append({"method_id": method, "dimension": dimension or "", "seed": seed, "regime_id": REGIME_ID, "internal_cnpsor_price_rmse": internal_rmse, "dirk_price_rmse_hd_domain": hd_rmse, "dirk_price_rmse_shared_domain": shared_rmse, "reference_type": "HD_CN_PSOR_internal" if scope == "internal_diagnostic" else REFERENCE_TYPE, "metric_scope": scope, "s_min": s_min, "s_max": s_max, "tau_min": tau_min, "tau_max": tau_max, "grid_points": points, "interpolation_method": interp, "source_repo": source_repo, "source_branch": source_branch, "source_commit": source_commit, "reference_source": "HD_CN_PSOR_internal" if scope == "internal_diagnostic" else REFERENCE_SOURCE, "reference_commit": "" if scope == "internal_diagnostic" else ruixi_commit, "reference_artifact_sha256": ref_sha})
+
+    common_price.extend(_common_price_metric_rows(
+        shared_ref.ravel(), shared_ref.ravel(), method_id="DIRK_REFERENCE", dimension="", seed=101,
+        regime_id=REGIME_ID, domain_scope="shared_domain", s_min=float(shared_s[0]), s_max=float(shared_s[-1]),
+        tau_min=float(shared_tau[0]), tau_max=float(shared_tau[-1]), grid_points=int(shared_ref.size),
+        interpolation_method="self_reference", source_repo=RUIXI_REPO_NAME, source_branch="viz/american-put-pointwise-export",
+        source_commit=ruixi_commit, reference_commit=ruixi_commit, reference_artifact_sha256=compact_ref_sha,
+    ))
 
     for arm_dir, method in [("arm_c_seed101", "ARM_C"), ("arm_d_seed101", "ARM_D")]:
         s, tau, v, _ = _surface_from_git(ruixi, RUIXI_VIZ_BRANCH, f"{RUIXI_COMPACT_ROOT}/{arm_dir}/surface.npz")
@@ -367,7 +422,15 @@ def _dirk_metric_rows(zihan: Path, ruixi: Path, arm_d_archive: Path) -> tuple[li
         if interpolated:
             v = rectilinear_interpolate(s, tau, v, shared_s, shared_tau)
         rmse = price_rmse(v.ravel().tolist(), shared_ref.ravel().tolist())
-        add(method, "", 101, "cross_model_shared_domain", shared_rmse=rmse, s_min=shared_s[0], s_max=shared_s[-1], tau_min=shared_tau[0], tau_max=shared_tau[-1], points=shared_ref.size, interp="bilinear_rectilinear" if interpolated else "stored_common_grid", source_repo=RUIXI_REPO_NAME, source_branch="viz/american-put-pointwise-export", source_commit=ruixi_commit, ref_sha=compact_ref_sha)
+        interp = "bilinear_rectilinear" if interpolated else "stored_common_grid"
+        add(method, "", 101, "cross_model_shared_domain", shared_rmse=rmse, s_min=shared_s[0], s_max=shared_s[-1], tau_min=shared_tau[0], tau_max=shared_tau[-1], points=shared_ref.size, interp=interp, source_repo=RUIXI_REPO_NAME, source_branch="viz/american-put-pointwise-export", source_commit=ruixi_commit, ref_sha=compact_ref_sha)
+        common_price.extend(_common_price_metric_rows(
+            v.ravel(), shared_ref.ravel(), method_id=method, dimension="", seed=101, regime_id=REGIME_ID,
+            domain_scope="shared_domain", s_min=float(shared_s[0]), s_max=float(shared_s[-1]),
+            tau_min=float(shared_tau[0]), tau_max=float(shared_tau[-1]), grid_points=int(shared_ref.size),
+            interpolation_method=interp, source_repo=RUIXI_REPO_NAME, source_branch="viz/american-put-pointwise-export",
+            source_commit=ruixi_commit, reference_commit=ruixi_commit, reference_artifact_sha256=compact_ref_sha,
+        ))
         long_price.append({"repo": RUIXI_REPO_NAME, "branch": "viz/american-put-pointwise-export", "source_commit": ruixi_commit, "experiment_id": "matched_american_put_common_reference", "method_id": method, "dimension": "", "seed": 101, "metric_name": "dirk_price_rmse_shared_domain", "metric_value": rmse, "reference_type": REFERENCE_TYPE, "metric_scope": "cross_model", "regime_id": REGIME_ID})
 
     for d in (10, 20, 50):
@@ -378,15 +441,30 @@ def _dirk_metric_rows(zihan: Path, ruixi: Path, arm_d_archive: Path) -> tuple[li
                 raise ValueError(f"HD surface domain incomplete for {d} {model}: S={s[[0,-1]]}, tau={tau[[0,-1]]}")
             ref_on_hd = rectilinear_interpolate(full_s, full_tau, full_ref, s, tau)
             hd_rmse = price_rmse(v.ravel().tolist(), ref_on_hd.ravel().tolist())
+            common_price.extend(_common_price_metric_rows(
+                v.ravel(), ref_on_hd.ravel(), method_id=model, dimension=d, seed=101, regime_id=REGIME_ID,
+                domain_scope="hd_domain", s_min=float(s[0]), s_max=float(s[-1]), tau_min=float(tau[0]), tau_max=float(tau[-1]),
+                grid_points=int(v.size), interpolation_method="DIRK_reference_bilinear_to_native_HD_grid",
+                source_repo=ZIHAN_REPO_NAME, source_branch="exp/hd3-matched-american-put-final-boundary-complete",
+                source_commit=hd_commit, reference_commit=ruixi_commit, reference_artifact_sha256=full_ref_sha,
+            ))
             v_shared = rectilinear_interpolate(s, tau, v, shared_s, shared_tau)
             shared_rmse = price_rmse(v_shared.ravel().tolist(), shared_ref.ravel().tolist())
+            common_price.extend(_common_price_metric_rows(
+                v_shared.ravel(), shared_ref.ravel(), method_id=model, dimension=d, seed=101, regime_id=REGIME_ID,
+                domain_scope="shared_domain", s_min=float(shared_s[0]), s_max=float(shared_s[-1]),
+                tau_min=float(shared_tau[0]), tau_max=float(shared_tau[-1]), grid_points=int(shared_ref.size),
+                interpolation_method="HD_bilinear_to_verified_Ruixi_compact_grid",
+                source_repo=ZIHAN_REPO_NAME, source_branch="exp/hd3-matched-american-put-final-boundary-complete",
+                source_commit=hd_commit, reference_commit=ruixi_commit, reference_artifact_sha256=compact_ref_sha,
+            ))
             old = internal[(d, model)]
             add(model, d, 101, "internal_diagnostic", internal_rmse=old, s_min=s[0], s_max=s[-1], tau_min=tau[0], tau_max=tau[-1], points=v.size, interp="none")
             add(model, d, 101, "hd_scaling_hd_domain", hd_rmse=hd_rmse, s_min=s[0], s_max=s[-1], tau_min=tau[0], tau_max=tau[-1], points=v.size, interp="DIRK_reference_bilinear_to_native_HD_grid", ref_sha=full_ref_sha)
             add(model, d, 101, "cross_model_shared_domain", shared_rmse=shared_rmse, s_min=shared_s[0], s_max=shared_s[-1], tau_min=shared_tau[0], tau_max=shared_tau[-1], points=shared_ref.size, interp="HD_bilinear_to_verified_Ruixi_compact_grid", ref_sha=compact_ref_sha)
             for metric_name, metric_value, ref_type, metric_scope in [("internal_cnpsor_price_rmse", old, "HD_CN_PSOR_internal", "internal_diagnostic"), ("dirk_price_rmse_hd_domain", hd_rmse, REFERENCE_TYPE, "hd_scaling"), ("dirk_price_rmse_shared_domain", shared_rmse, REFERENCE_TYPE, "cross_model")]:
                 long_price.append({"repo": ZIHAN_REPO_NAME, "branch": "exp/hd3-matched-american-put-final-boundary-complete", "source_commit": hd_commit, "experiment_id": "hd3_matched_american_put_boundary_complete", "method_id": model, "dimension": d, "seed": 101, "metric_name": metric_name, "metric_value": metric_value, "reference_type": ref_type, "metric_scope": metric_scope, "regime_id": REGIME_ID})
-    return metrics, long_price
+    return metrics, long_price, common_price
 
 
 def _merge_tables(target: dict[str, list[dict[str, Any]]], source: dict[str, list[dict[str, Any]]]) -> None:
@@ -408,8 +486,9 @@ def build_consolidated_dataset(zihan_repo: Path, ruixi_repo: Path, arm_d_archive
     tables = {name: [] for name in TABLE_HEADERS}
     _merge_tables(tables, _specialized_tables(zihan_repo, ZIHAN_REPO_NAME, z_inv))
     _merge_tables(tables, _specialized_tables(ruixi_repo, RUIXI_REPO_NAME, r_inv))
-    dirk_rows, dirk_price_rows = _dirk_metric_rows(zihan_repo, ruixi_repo, arm_d_archive)
+    dirk_rows, dirk_price_rows, common_price_rows = _dirk_metric_rows(zihan_repo, ruixi_repo, arm_d_archive)
     tables["dirk_common_reference_metrics.csv"].extend(dirk_rows)
+    tables["dirk_common_reference_price_metrics.csv"].extend(common_price_rows)
     tables["price_metrics.csv"].extend(dirk_price_rows)
     tables["source_artifact_inventory.csv"] = z_inv["artifacts"] + r_inv["artifacts"]
     tables["provenance.csv"] = z_inv["provenance"] + r_inv["provenance"]
@@ -422,6 +501,7 @@ def build_consolidated_dataset(zihan_repo: Path, ruixi_repo: Path, arm_d_archive
         "schema_version": 1,
         "headline_cross_model_metric": "dirk_price_rmse_shared_domain",
         "headline_hd_scaling_metric": "dirk_price_rmse_hd_domain",
+        "common_reference_price_metric_set": ["rmse", "mae", "p95_abs", "max_abs", "relative_l2"],
         "shared_domain": list(SHARED_DOMAIN),
         "hd_domain": list(HD_DOMAIN),
         "repositories": {ZIHAN_REPO_NAME: {"branches_scanned": z_inv["branch_count"], "branches": z_inv["branches"]}, RUIXI_REPO_NAME: {"branches_scanned": r_inv["branch_count"], "branches": r_inv["branches"]}},
@@ -434,7 +514,7 @@ def build_consolidated_dataset(zihan_repo: Path, ruixi_repo: Path, arm_d_archive
         "# Consolidated experiment CSV data\n\n"
         "This directory is generated from immutable Git/release artifacts across every branch of both SURF project repositories. Identical blobs are deduplicated in `source_artifact_inventory.csv`, while every branch/path occurrence remains in `provenance.csv`.\n\n"
         "## Reference policy\n\n"
-        "HD internal CN/PSOR RMSE is retained only as `internal_cnpsor_price_rmse`. Final cross-model price comparison uses `dirk_price_rmse_shared_domain` on S/K=[0.5,1.5], tau/T=[0.01,1]. HD-only scaling uses `dirk_price_rmse_hd_domain` on S/K=[0.2,1.5], tau/T=[0.01,1], both against Ruixi's stored DIRK + Policy Iteration + sinh-grid M=480,N=960 reference.\n\n"
+        "HD internal CN/PSOR RMSE is retained only as `internal_cnpsor_price_rmse`. Final cross-model price comparison uses `dirk_price_rmse_shared_domain` on S/K=[0.5,1.5], tau/T=[0.01,1]. HD-only scaling uses `dirk_price_rmse_hd_domain` on S/K=[0.2,1.5], tau/T=[0.01,1], both against Ruixi's stored DIRK + Policy Iteration + sinh-grid M=480,N=960 reference. `dirk_common_reference_price_metrics.csv` extends the common-reference scoring to RMSE, MAE, P95 absolute error, maximum absolute error, and relative L2.\n\n"
         "## Generic lossless fallback\n\n"
         "All parseable CSV/JSON scalar fields are preserved in `source_records.csv`. Numeric arrays are indexed in `array_artifacts.csv` and exported under `arrays/` when readable. Checkpoints are inventory-only.\n",
         encoding="utf-8",
@@ -459,7 +539,32 @@ def validate_output(output: Path) -> dict[str, Any]:
         val = _safe_float(row[field])
         if val is None or val < 0:
             raise ValueError(f"invalid {field} for {row['method_id']} d={row['dimension']}: {row[field]}")
-    return {"dirk_rows": len(rows), "zihan_branches": manifest["repositories"][ZIHAN_REPO_NAME]["branches_scanned"], "ruixi_branches": manifest["repositories"][RUIXI_REPO_NAME]["branches_scanned"]}
+
+    common = _parse_csv_text((output / "dirk_common_reference_price_metrics.csv").read_text())
+    expected_metrics = {"rmse", "mae", "p95_abs", "max_abs", "relative_l2"}
+    shared_groups: dict[tuple[str, str], set[str]] = {}
+    hd_groups: dict[tuple[str, str], set[str]] = {}
+    for row in common:
+        value = _safe_float(row.get("metric_value"))
+        if value is None or value < 0:
+            raise ValueError(f"invalid common-reference price metric: {row}")
+        key = (row.get("method_id", ""), row.get("dimension", ""))
+        if row.get("domain_scope") == "shared_domain":
+            shared_groups.setdefault(key, set()).add(row.get("metric_name", ""))
+        elif row.get("domain_scope") == "hd_domain":
+            hd_groups.setdefault(key, set()).add(row.get("metric_name", ""))
+    expected_shared = {("DIRK_REFERENCE", ""), ("ARM_C", ""), ("ARM_D", ""), *( (model, str(d)) for d in (10,20,50) for model in ("FC_HVI","DEEPSETS_HVI") )}
+    expected_hd = {(model, str(d)) for d in (10,20,50) for model in ("FC_HVI","DEEPSETS_HVI")}
+    if set(shared_groups) != expected_shared or set(hd_groups) != expected_hd:
+        raise ValueError(f"unexpected common-reference metric groups: shared={set(shared_groups)}, hd={set(hd_groups)}")
+    if any(names != expected_metrics for names in shared_groups.values()) or any(names != expected_metrics for names in hd_groups.values()):
+        raise ValueError("common-reference price metric set is incomplete")
+    old_shared_rmse = {(r["method_id"], r["dimension"]): float(r["dirk_price_rmse_shared_domain"]) for r in hd_shared + low_shared}
+    new_shared_rmse = {(r["method_id"], r["dimension"]): float(r["metric_value"]) for r in common if r["domain_scope"] == "shared_domain" and r["metric_name"] == "rmse" and r["method_id"] != "DIRK_REFERENCE"}
+    for key, old in old_shared_rmse.items():
+        if not math.isclose(old, new_shared_rmse[key], rel_tol=1e-12, abs_tol=1e-15):
+            raise ValueError(f"RMSE compatibility failure for {key}: old={old}, new={new_shared_rmse[key]}")
+    return {"dirk_rows": len(rows), "common_price_rows": len(common), "zihan_branches": manifest["repositories"][ZIHAN_REPO_NAME]["branches_scanned"], "ruixi_branches": manifest["repositories"][RUIXI_REPO_NAME]["branches_scanned"]}
 
 
 def main() -> None:
