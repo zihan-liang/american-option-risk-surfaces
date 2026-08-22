@@ -17,8 +17,12 @@ on:
       - '.github/workflows/dirk-binomial-50k-convergence.yml'
   workflow_dispatch:
 
+concurrency:
+  group: dirk-crr50k-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   contract:
@@ -56,7 +60,34 @@ jobs:
           MPLCONFIGDIR: /tmp/mplconfig
         run: bash scripts/init_harness.sh
 
-      - name: Focused convergence contracts
+      - name: Focused convergence contracts with persistent evidence
         env:
           PYTHONPATH: ${{ github.workspace }}/_vendor/ruixi/src:${{ github.workspace }}
-        run: python -m pytest -q tests/test_dirk_binomial_50k_convergence.py
+        shell: bash
+        run: |
+          set +e
+          python -m pytest -q tests/test_dirk_binomial_50k_convergence.py 2>&1 | tee /tmp/dirk_crr50k_contract.log
+          status=${PIPESTATUS[0]}
+          set -e
+
+          mkdir -p results/dirk_binomial_50k_convergence
+          {
+            echo "event=${GITHUB_EVENT_NAME}"
+            echo "workflow_sha=${GITHUB_SHA}"
+            echo "ruixi_source_commit=$(git -C _vendor/ruixi rev-parse HEAD)"
+            echo "pytest_exit_code=${status}"
+            echo "--- pytest tail ---"
+            tail -n 80 /tmp/dirk_crr50k_contract.log
+          } > results/dirk_binomial_50k_convergence/ci_contract_status.txt
+
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add results/dirk_binomial_50k_convergence/ci_contract_status.txt
+            if ! git diff --cached --quiet; then
+              git commit -m "ci: record DIRK CRR50k contract status [skip ci]"
+              git push origin HEAD:${GITHUB_REF_NAME}
+            fi
+          fi
+
+          exit "${status}"
