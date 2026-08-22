@@ -1,0 +1,22 @@
+{
+  "boundary": {
+    "completed_jobs": 163,
+    "elapsed_this_invocation_seconds": 1666.4182907090003,
+    "expected_jobs": 163,
+    "found_count": 163,
+    "pending_at_invocation_start": 163,
+    "status": "completed"
+  },
+  "elapsed_this_invocation_seconds": 2231.243412333,
+  "prices": {
+    "completed_jobs": 1203,
+    "elapsed_this_invocation_seconds": 564.823282083,
+    "expected_jobs": 1203,
+    "pending_at_invocation_start": 1203,
+    "status": "completed"
+  },
+  "requested_part": "all",
+  "result_dir": "/Users/liangzihan/Documents/SURF_0159/SURF/binomial tree/results/binomial_benchmark_50000",
+  "status": "completed",
+  "tree_steps": 50000
+}
