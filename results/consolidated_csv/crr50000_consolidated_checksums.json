@@ -1,0 +1,13 @@
+{
+  "crr50000_boundary_summary.csv": "37a621050422b9b56e21c83cb43b1000b7a4fc4c49733cd3c79a72c806381151",
+  "crr50000_convergence_summary.csv": "d5af1b9097bdae2a3d2e648c0814fb28b7e8b59ee5dc54429eaa679bc92e493f",
+  "crr50000_final_status.json": "48c677ce92c6de0b994014ecd323bbd15506806171a03ea6cba2694c41e476ef",
+  "crr50000_input_checksums.json": "4c2cad23c8a04775f6c4316baa8f11b7f50fe35f0d57af81686052b8ec90bbaa",
+  "crr50000_manifest.json": "a778d16ced86c15991b00ce2d8cf17d648f317fdc8fdedd6d19bf94bcffffaa9",
+  "crr50000_price_anchor_points.csv": "8d6aabf168a10a81337abb00c15d1a31e1ae3b4f4dcd3c5b658849191bfe727a",
+  "crr50000_run_summary.csv": "24723f0b369489806f44dc82aa7c994fc79a09f289945fe1536dbc74786a4ed3",
+  "crr50000_three_method_audit_manifest.json": "774eedaf2caac47c1396ab3d2d10697ea3d31c600a5ff31b4030612fe1a8a0cd",
+  "crr50000_three_method_audit_provenance.csv": "11b5fe474e417783044777e92412f203baf55b372127db414d085851d5c48b7b",
+  "crr50000_three_method_error_summary.csv": "d940abac313f89d386abcb9b5d73c87e8160e5bf36bac795a4891d7e09665482",
+  "crr50000_three_method_headline.csv": "9a504b40c5dc2402ffffd0175b4dad6483f39735e097b82027e7f4a054075bee"
+}
