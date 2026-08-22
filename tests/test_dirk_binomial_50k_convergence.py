@@ -26,6 +26,14 @@ from experiments.reference_audits.dirk_binomial_50k_convergence import (
     observed_order,
     solve_dirk_price_slices,
 )
+from experiments.reference_audits.dirk_binomial_50k_clean_isolation import (
+    CLEAN_SPATIAL_FIXED_N,
+    CLEAN_SPATIAL_LEVELS,
+    CLEAN_TEMPORAL_FIXED_M,
+    CLEAN_TEMPORAL_LEVELS,
+    POSTHOC_TEMPORAL_LEVELS,
+    self_convergence_order,
+)
 
 
 def test_frozen_protocol_matches_existing_high_accuracy_reference() -> None:
@@ -52,6 +60,15 @@ def test_refinement_sequences_change_only_one_axis() -> None:
     assert TEMPORAL_LEVELS == (60, 120, 240, 480, 960, 1920)
     assert (480, 960) in {(m, SPATIAL_FIXED_N) for m in SPATIAL_LEVELS}
     assert (480, 960) in {(TEMPORAL_FIXED_M, n) for n in TEMPORAL_LEVELS}
+
+
+def test_clean_isolation_protocol_is_frozen_and_posthoc_is_explicit() -> None:
+    assert CLEAN_SPATIAL_FIXED_N == 3840
+    assert CLEAN_SPATIAL_LEVELS == (120, 240, 480, 960)
+    assert CLEAN_TEMPORAL_FIXED_M == 1920
+    assert CLEAN_TEMPORAL_LEVELS == (60, 120, 240, 480, 960, 1920)
+    assert POSTHOC_TEMPORAL_LEVELS == (3840, 7680)
+    assert set(CLEAN_TEMPORAL_LEVELS).isdisjoint(POSTHOC_TEMPORAL_LEVELS)
 
 
 def test_common_price_grid_is_exactly_the_frozen_matched_grid() -> None:
@@ -92,6 +109,16 @@ def test_observed_order_uses_refinement_ratio() -> None:
         observed_order(0.0, 1e-4)
     with pytest.raises(ValueError):
         observed_order(1e-4, -1e-5)
+
+
+def test_self_convergence_order_uses_successive_solution_differences() -> None:
+    coarse = np.array([0.0, 4.0, 8.0])
+    middle = np.array([0.0, 3.0, 6.0])
+    fine = np.array([0.0, 2.75, 5.5])
+    result = self_convergence_order(coarse, middle, fine, metric="rmse")
+    assert result["coarse_difference"] == pytest.approx(math.sqrt(5.0 / 3.0))
+    assert result["fine_difference"] == pytest.approx(math.sqrt(5.0 / 48.0))
+    assert result["observed_order"] == pytest.approx(2.0)
 
 
 def test_interpolation_matches_ruixi_space_then_time_linear_convention() -> None:
