@@ -1,0 +1,8 @@
+metric,value,unit
+tree_steps,50000,steps
+price_jobs_completed,1203,jobs
+boundary_jobs_completed,163,jobs
+boundary_found_count,163,points
+price_elapsed_seconds,564.82328208299998,seconds
+boundary_elapsed_seconds,1666.4182907090003,seconds
+total_elapsed_seconds,2231.2434123329999,seconds
