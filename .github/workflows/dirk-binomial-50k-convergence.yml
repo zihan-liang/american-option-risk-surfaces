@@ -8,6 +8,13 @@ on:
       - 'experiments/reference_audits/**'
       - 'tests/test_dirk_binomial_50k_convergence.py'
       - '.github/workflows/dirk-binomial-50k-convergence.yml'
+  pull_request:
+    branches:
+      - data/consolidated-experiment-csv
+    paths:
+      - 'experiments/reference_audits/**'
+      - 'tests/test_dirk_binomial_50k_convergence.py'
+      - '.github/workflows/dirk-binomial-50k-convergence.yml'
   workflow_dispatch:
 
 permissions:
