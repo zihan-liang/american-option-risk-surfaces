@@ -29,6 +29,39 @@ class ConsolidatedExperimentDataContract(unittest.TestCase):
         with self.assertRaises(ValueError): price_error_metrics([float("nan")], [1.0])
         with self.assertRaises(ValueError): price_error_metrics([1.0], [0.0])
 
+    def test_common_price_metric_rows_expand_exactly_five_metrics(self):
+        from analysis.build_consolidated_experiment_data import _common_price_metric_rows
+        rows = _common_price_metric_rows(
+            predicted=[1.0, 2.0],
+            reference=[1.0, 4.0],
+            method_id="TEST",
+            dimension=20,
+            seed=101,
+            regime_id="put_test",
+            domain_scope="shared_domain",
+            s_min=0.5,
+            s_max=1.5,
+            tau_min=0.01,
+            tau_max=1.0,
+            grid_points=2,
+            interpolation_method="test_interp",
+            source_repo="repo",
+            source_branch="branch",
+            source_commit="abc",
+            reference_commit="def",
+            reference_artifact_sha256="123",
+        )
+        self.assertEqual([r["metric_name"] for r in rows], ["rmse", "mae", "p95_abs", "max_abs", "relative_l2"])
+        self.assertEqual({r["method_id"] for r in rows}, {"TEST"})
+        self.assertEqual({r["dimension"] for r in rows}, {20})
+        self.assertEqual({r["domain_scope"] for r in rows}, {"shared_domain"})
+        values = {r["metric_name"]: float(r["metric_value"]) for r in rows}
+        self.assertAlmostEqual(values["rmse"], math.sqrt(2.0))
+        self.assertAlmostEqual(values["mae"], 1.0)
+        self.assertAlmostEqual(values["p95_abs"], 1.9)
+        self.assertAlmostEqual(values["max_abs"], 2.0)
+        self.assertAlmostEqual(values["relative_l2"], 2.0 / math.sqrt(17.0))
+
     def test_output_contract_has_required_tables_and_metric_columns(self):
         from analysis.consolidated_experiment_data import write_empty_output_contract
         with tempfile.TemporaryDirectory() as td:
