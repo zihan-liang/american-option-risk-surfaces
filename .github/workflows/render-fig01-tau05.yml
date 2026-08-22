@@ -7,6 +7,12 @@ on:
     paths:
       - "analysis/final_matched_comparison/plot_fig01_tau05_from_consolidated.py"
       - ".github/workflows/render-fig01-tau05.yml"
+  pull_request:
+    branches:
+      - data/consolidated-experiment-csv
+    paths:
+      - "analysis/final_matched_comparison/plot_fig01_tau05_from_consolidated.py"
+      - ".github/workflows/render-fig01-tau05.yml"
   workflow_dispatch:
 
 permissions:
@@ -51,6 +57,7 @@ jobs:
           PY
 
       - name: Commit rendered figure
+        if: github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
