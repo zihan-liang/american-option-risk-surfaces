@@ -6,6 +6,7 @@ on:
       - data/consolidated-experiment-csv
     paths:
       - "analysis/final_matched_comparison/plot_fig01_tau05_from_consolidated.py"
+      - "analysis/final_matched_comparison/render_fig01_tau05_svg.py"
       - "analysis/final_matched_comparison/fig01_render_trigger.txt"
       - ".github/workflows/render-fig01-tau05.yml"
 
@@ -21,78 +22,30 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Render dependency-free Fig01 SVG
+        run: python3 analysis/final_matched_comparison/render_fig01_tau05_svg.py
 
-      - name: Install plotting dependencies
-        run: python -m pip install --disable-pip-version-check numpy matplotlib
-
-      - name: Render revised Fig01 and capture diagnostics
-        id: render
-        shell: bash
+      - name: Verify rendered SVG
         run: |
-          set +e
-          mkdir -p figures/final_matched_comparison/poster
-          python analysis/final_matched_comparison/plot_fig01_tau05_from_consolidated.py > figures/final_matched_comparison/poster/fig01_render.log 2>&1
-          code=$?
+          test -s figures/final_matched_comparison/poster/fig01_price_slice_tau05.svg
+          test -s figures/final_matched_comparison/poster/fig01_render.log
+          grep -q 'Price Slice at τ/T=0.5' figures/final_matched_comparison/poster/fig01_price_slice_tau05.svg
+          grep -q 'points=' figures/final_matched_comparison/poster/fig01_render.log
+          wc -c figures/final_matched_comparison/poster/fig01_price_slice_tau05.svg
           cat figures/final_matched_comparison/poster/fig01_render.log
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit 0
 
-      - name: Verify rendered outputs
-        if: steps.render.outputs.exit_code == '0'
-        run: |
-          test -s figures/final_matched_comparison/poster/fig01_price_slice_tau05.png
-          test -s figures/final_matched_comparison/poster/fig01_price_slice_tau05.pdf
-          python - <<'PY'
-          from pathlib import Path
-          from matplotlib import image as mpimg
-          png = Path("figures/final_matched_comparison/poster/fig01_price_slice_tau05.png")
-          pdf = Path("figures/final_matched_comparison/poster/fig01_price_slice_tau05.pdf")
-          arr = mpimg.imread(png)
-          print(f"PNG shape: {arr.shape}")
-          print(f"PNG bytes: {png.stat().st_size}")
-          print(f"PDF bytes: {pdf.stat().st_size}")
-          if arr.shape[1] <= arr.shape[0]:
-              raise SystemExit("Expected a landscape single-panel Fig01")
-          PY
-
-      - name: Upload Fig01 diagnostics and outputs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: fig01-tau05-render
-          if-no-files-found: warn
-          path: |
-            figures/final_matched_comparison/poster/fig01_render.log
-            figures/final_matched_comparison/poster/fig01_price_slice_tau05.png
-            figures/final_matched_comparison/poster/fig01_price_slice_tau05.pdf
-
-      - name: Commit render log and outputs to PR branch
-        if: always()
+      - name: Commit rendered SVG to PR branch
         env:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f -- figures/final_matched_comparison/poster/fig01_render.log
-          if test -s figures/final_matched_comparison/poster/fig01_price_slice_tau05.png; then
-            git add -f -- figures/final_matched_comparison/poster/fig01_price_slice_tau05.png
-          fi
-          if test -s figures/final_matched_comparison/poster/fig01_price_slice_tau05.pdf; then
-            git add -f -- figures/final_matched_comparison/poster/fig01_price_slice_tau05.pdf
-          fi
+          git add -f -- \
+            figures/final_matched_comparison/poster/fig01_price_slice_tau05.svg \
+            figures/final_matched_comparison/poster/fig01_render.log
           if git diff --cached --quiet; then
-            echo "No render artifacts changed."
+            echo "Rendered files unchanged."
           else
-            git commit -m "figures: record revised Fig01 render"
+            git commit -m "figures: render revised Fig01 tau05"
             git push origin HEAD:"$HEAD_REF"
           fi
-
-      - name: Fail if rendering failed
-        if: steps.render.outputs.exit_code != '0'
-        run: |
-          echo "Fig01 renderer exited with code ${{ steps.render.outputs.exit_code }}"
-          exit 1
