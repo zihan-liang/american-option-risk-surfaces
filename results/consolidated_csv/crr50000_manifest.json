@@ -1,0 +1,53 @@
+{
+  "boundary_grid": {
+    "S_bracket": [
+      0.05,
+      1.0
+    ],
+    "bisection_iterations": 20,
+    "extraction_method": "root_price_premium_threshold_bisection",
+    "premium_threshold": 1e-06,
+    "tau_construction": "sorted unique union of 161 equally spaced points on [0.01,1.0] and exact {0.1,0.5,1.0}",
+    "tau_over_T_max": 1.0,
+    "tau_over_T_min": 0.01,
+    "tau_points": 163
+  },
+  "contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "option_type": "put",
+    "q": 0.1,
+    "r": 0.05,
+    "sigma": 0.6
+  },
+  "dtype": "float64",
+  "environment": {
+    "cpu_count": 10,
+    "machine": "arm64",
+    "numpy": "2.0.2",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "processor": "arm",
+    "python": "3.9.6"
+  },
+  "greeks": {
+    "Delta": "dV/dS",
+    "Gamma": "d2V/dS2",
+    "scaled_Gamma": "K * Gamma",
+    "source": "second-order finite differences on the 401-point CRR price slices"
+  },
+  "ground_truth_claim": false,
+  "method": "converged_high_resolution_CRR_binomial_American_put",
+  "price_grid": {
+    "S_over_K_max": 1.5,
+    "S_over_K_min": 0.5,
+    "S_points": 401,
+    "tau_over_T": [
+      1.0,
+      0.5,
+      0.1
+    ]
+  },
+  "script_sha256": "19a31a152b18d55c17960a779e1feeee4a4ed850f5572693b11354f62b9af075",
+  "tree_steps": 50000,
+  "workers": 4
+}
