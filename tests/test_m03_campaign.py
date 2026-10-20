@@ -155,10 +155,13 @@ def test_smoke_screen_writes_standard_outputs_hashes_and_never_promotes(tmp_path
     assert summary["decision"]["promotion_eligible"] is False
     assert summary["decision"]["reason"] == "smoke_non_evidence"
     costs = summary["costs_seconds"]
-    disjoint_cost = sum(
-        costs[name]
-        for name in ("baseline_selection", "candidate_selection", "label_generation", "preprocessing", "training_total")
-    )
+    # All phases use perf_counter. When an unrolled candidate is selected, training_total is the
+    # unrolled-omega training, which runs inside the candidate_selection window, so it must not
+    # be counted twice; otherwise it is the warm-start training that precedes that window.
+    disjoint_phases = ["baseline_selection", "candidate_selection", "label_generation", "preprocessing"]
+    if not summary["selection"]["candidate_is_unrolled"]:
+        disjoint_phases.append("training_total")
+    disjoint_cost = sum(costs[name] for name in disjoint_phases)
     assert disjoint_cost <= costs["elapsed_before_writes"] + 0.01
 
     with (output_dir / "run_metrics.csv").open(newline="", encoding="utf-8") as handle:
