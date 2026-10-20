@@ -1,6 +1,6 @@
 # Literature Review and Claim Support
 
-This document integrates the raw Deep Research output in `deep-research-report.md` into a project-facing literature review. The raw file is retained as source material, but its internal citation markers are not final citations. The citable bibliography for the manuscript is maintained in `paper/references.bib`.
+This document integrates the raw Deep Research output in `docs/notes/deep-research-report.md` into a project-facing literature review. The raw file is retained as source material, but its internal citation markers are not final citations. The citable bibliography for the manuscript is maintained in `paper/references.bib`.
 
 ## Executive Summary
 

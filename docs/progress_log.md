@@ -152,7 +152,7 @@ Use this file to record dated progress, commands, metrics, and decisions.
 
 - Stage: Literature review integration and citation audit.
 - Inputs:
-  - Raw source material: `deep-research-report.md`.
+  - Raw source material: `docs/notes/deep-research-report.md`.
   - Cleaned project-facing review: `docs/literature_review.md`.
   - Bibliography: `paper/references.bib`.
 - Key conclusions:

@@ -138,7 +138,7 @@ Copy-Item -LiteralPath build\manuscript_outline_stage75.pdf -Destination build\m
 
 Stage 7.5 output contract:
 
-- [x] `deep-research-report.md` is preserved as raw source material.
+- [x] `docs/notes/deep-research-report.md` is preserved as raw source material.
 - [x] `docs/literature_review.md` is English, cleaned, and free of Deep Research citation markers.
 - [x] `paper/references.bib` contains the core classical, ML, constraint-aware, and reproducibility references.
 - [x] `paper/manuscript_outline.tex` includes literature-backed citation anchors and a BibTeX bibliography.
