@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 RESULT_ROOT = REPO_ROOT / "results" / "hd3_matched_american_put_boundary_complete"
 PLOT_OUT = RESULT_ROOT / "plots_stage1"
 SUMMARY_CSV = PLOT_OUT / "hd_stage1_summary.csv"

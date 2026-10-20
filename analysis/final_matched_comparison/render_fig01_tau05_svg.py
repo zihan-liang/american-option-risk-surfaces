@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ARRAYS = ROOT / "results" / "consolidated_csv" / "arrays"
-OUTPUT = ROOT / "figures" / "final_matched_comparison" / "poster"
+OUTPUT = ROOT / "results" / "figures" / "final_matched_comparison" / "poster"
 
 TAU_TARGET = 0.5
 S_MIN = 0.5

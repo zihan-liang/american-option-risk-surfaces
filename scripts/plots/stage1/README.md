@@ -22,39 +22,12 @@ python -m pip install pandas matplotlib
 
 If using the existing CUDA/PINN virtual environment, no GPU is required for plotting.
 
-## Fetch this plotting branch safely
-
-The historical local `origin` on some worktrees may point to a different repository. Prefer the explicit canonical repository URL:
-
-```powershell
-git fetch https://github.com/zihan-liang/american-option-risk-surfaces.git postprocess/final-stage1-plots
-```
-
-Then either create a local plotting branch:
-
-```powershell
-git switch -c postprocess/final-stage1-plots FETCH_HEAD
-```
-
-or, if that local branch already exists:
-
-```powershell
-git switch postprocess/final-stage1-plots
-git merge --ff-only FETCH_HEAD
-```
-
 ## Run every Stage 1 figure
 
 From the repository root:
 
 ```powershell
-python .\plots\stage1\run_stage1_all.py
-```
-
-Using the project's known Python executable explicitly:
-
-```powershell
-& "D:\liangzihan\xuexi\Y2S2\SURF\2026-surf-american-risk-surfaces\.venv-pinn\Scripts\python.exe" .\plots\stage1\run_stage1_all.py
+python .\scripts\plots\stage1\run_stage1_all.py
 ```
 
 ## Output
@@ -82,9 +55,9 @@ The runner also writes normalized plotting tables and calls `verify_stage1_outpu
 ## Run individual steps
 
 ```powershell
-python .\plots\stage1\build_stage1_tables.py
-python .\plots\stage1\plot_hd_scaling.py
-python .\plots\stage1\plot_hd_boundary_and_compute.py
-python .\plots\stage1\plot_binomial_convergence.py
-python .\plots\stage1\verify_stage1_outputs.py
+python .\scripts\plots\stage1\build_stage1_tables.py
+python .\scripts\plots\stage1\plot_hd_scaling.py
+python .\scripts\plots\stage1\plot_hd_boundary_and_compute.py
+python .\scripts\plots\stage1\plot_binomial_convergence.py
+python .\scripts\plots\stage1\verify_stage1_outputs.py
 ```
