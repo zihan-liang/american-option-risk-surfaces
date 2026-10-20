@@ -51,7 +51,7 @@ METRICS = [
 ]
 CSV_OUTPUT = REPO_ROOT / "results/figures/pinn_experiment_report/stage22_stage23_relative_changes.csv"
 COVERAGE_CSV_OUTPUT = REPO_ROOT / "results/figures/pinn_experiment_report/full_method_coverage.csv"
-FIGURE_STEM = REPO_ROOT / "output/figures/pinn_stage22_stage23_relative_changes"
+FIGURE_STEM = REPO_ROOT / "reports/figures/pinn_stage22_stage23_relative_changes"
 
 
 def load_summary(path: Path) -> dict:

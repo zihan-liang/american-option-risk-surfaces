@@ -14,7 +14,7 @@ from matplotlib.patches import FancyBboxPatch
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FIGURE_DIR = REPO_ROOT / "output/figures"
+FIGURE_DIR = REPO_ROOT / "reports/figures"
 DATA_DIR = REPO_ROOT / "results/figures/pinn_experiment_report"
 
 STAGE23_SUMMARY = REPO_ROOT / "results/experiment_23_pinn_strong_terminal/pinn_campaign_summary.json"
@@ -741,8 +741,8 @@ def main() -> None:
         "pinn_stage23_training_curves",
         "pinn_psor_premium_mask_panel",
     ]:
-        print(f"Wrote {Path('output/figures') / (name + '.pdf')}")
-        print(f"Wrote {Path('output/figures') / (name + '.png')}")
+        print(f"Wrote {Path('reports/figures') / (name + '.pdf')}")
+        print(f"Wrote {Path('reports/figures') / (name + '.png')}")
     print("Wrote results/figures/pinn_experiment_report/stage23_metric_tradeoff.csv")
     print("Wrote results/figures/pinn_experiment_report/stage23_training_curves.csv")
 

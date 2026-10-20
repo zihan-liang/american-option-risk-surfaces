@@ -9,7 +9,7 @@ import numpy as np
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FIGURE_DIR = REPO_ROOT / "output/figures"
+FIGURE_DIR = REPO_ROOT / "reports/figures"
 
 
 def apply_style() -> None:

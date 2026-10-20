@@ -12,7 +12,7 @@ from matplotlib.patches import Circle, FancyArrowPatch
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FIGURE_STEM = REPO_ROOT / "output/figures/autodiff_worked_example"
+FIGURE_STEM = REPO_ROOT / "reports/figures/autodiff_worked_example"
 
 NODE_LABELS = {
     "x": r"$x=2$",
