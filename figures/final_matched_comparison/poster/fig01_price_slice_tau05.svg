@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+<rect width="100%" height="100%" fill="white"/>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#202020}.tick{font-size:15px}.label{font-size:19px}.title{font-size:22px;font-weight:600}.legend{font-size:15px}</style>
+<line x1="205.50" y1="55" x2="205.50" y2="615" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="205.50" y="642" text-anchor="middle">0.6</text>
+<line x1="416.50" y1="55" x2="416.50" y2="615" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="416.50" y="642" text-anchor="middle">0.8</text>
+<line x1="627.50" y1="55" x2="627.50" y2="615" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="627.50" y="642" text-anchor="middle">1.0</text>
+<line x1="838.50" y1="55" x2="838.50" y2="615" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="838.50" y="642" text-anchor="middle">1.2</text>
+<line x1="1049.50" y1="55" x2="1049.50" y2="615" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="1049.50" y="642" text-anchor="middle">1.4</text>
+<line x1="100" y1="542.15" x2="1155" y2="542.15" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="86" y="547.15" text-anchor="end">0.1</text>
+<line x1="100" y1="431.53" x2="1155" y2="431.53" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="86" y="436.53" text-anchor="end">0.2</text>
+<line x1="100" y1="320.90" x2="1155" y2="320.90" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="86" y="325.90" text-anchor="end">0.3</text>
+<line x1="100" y1="210.28" x2="1155" y2="210.28" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="86" y="215.28" text-anchor="end">0.4</text>
+<line x1="100" y1="99.65" x2="1155" y2="99.65" stroke="#D8D8D8" stroke-width="1" opacity=".8"/>
+<text class="tick" x="86" y="104.65" text-anchor="end">0.5</text>
+<line x1="100" y1="55" x2="100" y2="615" stroke="#333" stroke-width="1.4"/>
+<line x1="100" y1="615" x2="1155" y2="615" stroke="#333" stroke-width="1.4"/>
+<polyline points="100.00,91.67 152.75,140.51 205.50,187.07 258.25,231.09 311.00,272.38 363.75,310.81 416.50,346.33 469.25,378.93 522.00,408.68 574.75,435.67 585.30,440.75 595.85,445.73 606.40,450.60 616.95,455.38 622.23,457.73 624.86,458.89 627.50,460.05 630.14,461.21 632.77,462.35 635.41,463.50 638.05,464.63 648.60,469.11 659.15,473.50 669.70,477.79 680.25,481.98 733.00,501.64 785.75,519.19 838.50,534.83 891.25,548.72 944.00,561.05 996.75,571.95 1049.50,581.59 1102.25,590.10 1155.00,597.60" fill="none" stroke="#202020" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="100.00,65.77 152.75,111.92 205.50,156.50 258.25,199.11 311.00,239.42 363.75,277.17 416.50,312.22 469.25,344.53 522.00,374.11 574.75,401.04 585.30,406.12 595.85,411.10 606.40,415.98 616.95,420.76 622.23,423.12 624.86,424.29 627.50,425.45 630.14,426.60 632.77,427.75 635.41,428.90 638.05,430.04 648.60,434.53 659.15,438.93 669.70,443.24 680.25,447.46 733.00,467.25 785.75,485.00 838.50,500.90 891.25,515.16 944.00,527.97 996.75,539.48 1049.50,549.83 1102.25,559.14 1155.00,567.51" fill="none" stroke="#A23B72" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="100.00,90.75 152.75,139.58 205.50,186.13 258.25,230.19 311.00,271.56 363.75,310.12 416.50,345.76 469.25,378.48 522.00,408.30 574.75,435.33 585.30,440.41 595.85,445.39 606.40,450.26 616.95,455.03 622.23,457.37 624.86,458.53 627.50,459.69 630.14,460.84 632.77,461.99 635.41,463.12 638.05,464.26 648.60,468.72 659.15,473.09 669.70,477.37 680.25,481.54 733.00,501.07 785.75,518.45 838.50,533.88 891.25,547.55 944.00,559.63 996.75,570.30 1049.50,579.71 1102.25,587.99 1155.00,595.30" fill="none" stroke="#2A9D8F" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="100.00,88.28 152.75,137.22 205.50,183.68 258.25,227.54 311.00,268.48 363.75,306.37 416.50,341.40 469.25,373.74 522.00,403.36 574.75,432.15 585.30,438.56 595.85,445.51 606.40,453.18 616.95,461.85 622.23,466.73 624.86,469.33 627.50,472.04 630.14,472.10 632.77,472.25 635.41,472.50 638.05,472.83 648.60,474.70 659.15,477.16 669.70,480.00 680.25,483.09 733.00,500.12 785.75,516.64 838.50,531.64 891.25,545.27 944.00,557.79 996.75,569.36 1049.50,580.09 1102.25,590.00 1155.00,599.23" fill="none" stroke="#2878B5" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="100.00,92.80 152.75,143.20 205.50,189.96 258.25,233.36 311.00,273.94 363.75,311.76 416.50,346.76 469.25,379.12 522.00,408.94 574.75,436.05 585.30,441.31 595.85,446.74 606.40,452.66 616.95,459.54 622.23,463.55 624.86,465.74 627.50,468.06 630.14,467.77 632.77,467.62 635.41,467.62 638.05,467.76 648.60,469.46 659.15,472.24 669.70,475.49 680.25,479.05 733.00,498.31 785.75,515.92 838.50,531.84 891.25,546.33 944.00,559.60 996.75,571.84 1049.50,583.27 1102.25,594.03 1155.00,604.23" fill="none" stroke="#E68A2E" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/>
+<text class="title" x="600.0" y="31" text-anchor="middle">Price Slice at τ/T=0.5</text>
+<text class="label" x="627.5" y="676" text-anchor="middle">S/K</text>
+<text class="label" x="28" y="335.0" text-anchor="middle" transform="rotate(-90 28 335.0)">V/K</text>
+<rect x="841" y="69" width="300" height="151" rx="5" fill="white" stroke="#BBBBBB" opacity=".95"/>
+<line x1="856" y1="94" x2="896" y2="94" stroke="#202020" stroke-width="3.0"/>
+<text class="legend" x="906" y="99">High-Accuracy DIRK Reference</text>
+<line x1="856" y1="120" x2="896" y2="120" stroke="#A23B72" stroke-width="2.1"/>
+<text class="legend" x="906" y="125">Arm C (seed 101)</text>
+<line x1="856" y1="146" x2="896" y2="146" stroke="#2A9D8F" stroke-width="2.1"/>
+<text class="legend" x="906" y="151">Arm D (seed 101)</text>
+<line x1="856" y1="172" x2="896" y2="172" stroke="#2878B5" stroke-width="2.1"/>
+<text class="legend" x="906" y="177">FC-HVI d20</text>
+<line x1="856" y1="198" x2="896" y2="198" stroke="#E68A2E" stroke-width="2.1"/>
+<text class="legend" x="906" y="203">DeepSets-HVI d20</text>
+</svg>
