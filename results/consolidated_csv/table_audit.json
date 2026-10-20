@@ -1,0 +1,232 @@
+[
+  {
+    "table": "source_artifact_inventory.csv",
+    "status": "ok",
+    "row_count": 1251,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "repo;git_blob_sha",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "provenance.csv",
+    "status": "ok",
+    "row_count": 6398,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "repo;branch;path",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "source_records.csv",
+    "status": "ok",
+    "row_count": 2599013,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "git_blob_sha;record_kind;record_index;field",
+    "source_evidence": "one_parse_per_unique_git_blob",
+    "notes": "lossless CSV/JSON scalar fallback"
+  },
+  {
+    "table": "array_artifacts.csv",
+    "status": "ok",
+    "row_count": 161,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "content_sha256;array_name",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "experiment_runs.csv",
+    "status": "ok",
+    "row_count": 36,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "experiment_id;method_id",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "price_metrics.csv",
+    "status": "ok",
+    "row_count": 3556,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;metric_name",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "greek_metrics.csv",
+    "status": "ok",
+    "row_count": 1820,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "experiment_id;method_id;metric_name",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "boundary_metrics.csv",
+    "status": "ok",
+    "row_count": 160,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "experiment_id;method_id",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "free_boundary_points.csv",
+    "status": "ok",
+    "row_count": 1293,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;tau_over_T",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "price_slices.csv",
+    "status": "ok",
+    "row_count": 22794,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;S_over_K;tau_over_T",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "structural_metrics.csv",
+    "status": "ok",
+    "row_count": 44,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;metric_name",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "compute_metrics.csv",
+    "status": "ok",
+    "row_count": 26,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;dimension",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "classical_solver_metrics.csv",
+    "status": "ok",
+    "row_count": 19929,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;metric_name",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "binomial_convergence.csv",
+    "status": "ok",
+    "row_count": 2422,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "steps; pointwise rows additionally require S_over_K and tau_over_T",
+    "source_evidence": "two unique binomial_convergence.json artifacts plus canonical binomial price slices",
+    "notes": "4 legacy convergence-summary rows have tau unspecified in the original source and are intentionally retained blank"
+  },
+  {
+    "table": "ruixi_arm_metrics.csv",
+    "status": "ok",
+    "row_count": 17528,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;regime_id;metric_name",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "hd1_metrics.csv",
+    "status": "ok",
+    "row_count": 216,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "model_id;dimension;metric_name",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "hd2_candidate_metrics.csv",
+    "status": "ok",
+    "row_count": 222,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "candidate_id;metric_name;dimension required except candidate-level physics_score/eligible",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "hd3_metrics.csv",
+    "status": "ok",
+    "row_count": 372,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "model_id;dimension;metric_name",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "campaign_method_results.csv",
+    "status": "ok",
+    "row_count": 13913,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;metric_name",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "experiment_gates.csv",
+    "status": "ok",
+    "row_count": 103,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "gate",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "environment_runs.csv",
+    "status": "ok",
+    "row_count": 5,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "experiment_id",
+    "source_evidence": "semantic_refinement_from_canonical_tables_and_lossless_source_records",
+    "notes": ""
+  },
+  {
+    "table": "surface_artifacts.csv",
+    "status": "ok",
+    "row_count": 17,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "content_sha256",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  },
+  {
+    "table": "dirk_common_reference_metrics.csv",
+    "status": "ok",
+    "row_count": 20,
+    "duplicate_rows": 0,
+    "missing_key_rows": 0,
+    "key_columns": "method_id;metric_scope",
+    "source_evidence": "refined_unique_git_artifacts",
+    "notes": ""
+  }
+]

@@ -1,0 +1,94 @@
+{
+  "audit_id": "matched_american_put_crr50000_three_method_cross_check",
+  "boundary_audit": {
+    "CN_PSOR": "native spatial-grid linear threshold crossing; linear time interpolation",
+    "CRR50000": "root-price premium-threshold bisection",
+    "DIRK_POLICY": "native spatial-grid linear threshold crossing; linear time interpolation",
+    "common_tau_points": 163,
+    "interpretation": "independent cross-check with extraction-convention caveat",
+    "threshold": 1e-06
+  },
+  "contract": {
+    "K": 1.0,
+    "T": 1.0,
+    "option_type": "put",
+    "q": 0.1,
+    "r": 0.05,
+    "sigma": 0.6
+  },
+  "files": {
+    "boundary_summary": "crr50000_boundary_summary.csv",
+    "convergence_summary": "crr50000_convergence_summary.csv",
+    "crr_final_status": "crr50000_final_status.json",
+    "crr_input_checksums": "crr50000_input_checksums.json",
+    "crr_manifest": "crr50000_manifest.json",
+    "error_summary": "crr50000_three_method_error_summary.csv",
+    "headline": "crr50000_three_method_headline.csv",
+    "price_anchor_points": "crr50000_price_anchor_points.csv",
+    "provenance": "crr50000_three_method_audit_provenance.csv",
+    "run_summary": "crr50000_run_summary.csv"
+  },
+  "greek_audit": {
+    "CN_PSOR": "native uniform-grid central finite differences then interpolation to common grid",
+    "CRR50000": "second-order finite differences on 401-point CRR price slices",
+    "DIRK_POLICY": "native nonuniform-grid three-point finite differences then interpolation to common grid",
+    "comparison_grid": {
+      "S_over_K": [0.5,1.5,401],
+      "tau_over_T": [1.0,0.5,0.1]
+    },
+    "interpretation": "diagnostic_only; CRR scaled-Gamma is lattice-sensitive and is not ground truth"
+  },
+  "headline_metric_policy": {
+    "crr50000_role": "independent_classical_cross_check",
+    "do_not_replace": "dirk_price_rmse_shared_domain",
+    "existing_project_headline_reference_remains": "DIRK_policy_sinh_M480_N960"
+  },
+  "methods": {
+    "CN_PSOR": {
+      "M": 120,
+      "N": 120,
+      "Smax": 4.0,
+      "compact_export_commit": "63ce7cf6ffe04a778dc2f3b0ce691a26a1aca5c6",
+      "omega": 1.2,
+      "role": "coarse_classical_baseline",
+      "source_branch": "viz/american-put-pointwise-export",
+      "source_repo": "Ruixixu-hub/2026-surf-american-risk-surfaces",
+      "stored_validation": {
+        "normalized_lcp_residual_max": 9.987893216482913e-13,
+        "total_lcp_iterations": 9364
+      },
+      "tolerance": 1e-12
+    },
+    "CRR50000": {
+      "ground_truth_claim": false,
+      "input_manifest_sha256": "a778d16ced86c15991b00ce2d8cf17d648f317fdc8fdedd6d19bf94bcffffaa9",
+      "role": "independent_classical_benchmark",
+      "steps": 50000
+    },
+    "DIRK_POLICY": {
+      "M": 480,
+      "N": 960,
+      "Smax": 4.0,
+      "compact_export_commit": "63ce7cf6ffe04a778dc2f3b0ce691a26a1aca5c6",
+      "damping_steps": 2,
+      "reference_type": "DIRK_policy_sinh_M480_N960",
+      "role": "existing_high_accuracy_project_reference",
+      "source_branch": "viz/american-put-pointwise-export",
+      "source_repo": "Ruixixu-hub/2026-surf-american-risk-surfaces",
+      "spot_grid": "sinh_strike_concentrated",
+      "time_grid": "quadratic",
+      "tolerance": 1e-12
+    }
+  },
+  "price_audit": {
+    "CN_PSOR": "linear interpolation in S from native M=120 grid; tau levels exact",
+    "DIRK_POLICY": "same bilinear-in-(S,tau) interpolation convention used by reference export",
+    "common_grid": {
+      "S_over_K": [0.5,1.5,401],
+      "tau_over_T": [1.0,0.5,0.1]
+    },
+    "primary_use": "independent cross-check of project reference hierarchy"
+  },
+  "schema_version": 1,
+  "storage_note": "Consolidated root stores compact audit/result tables. Full 1203-point price/Greek and 163-point boundary source artifacts were checksum-verified from the user-run archive; their source hashes are preserved in crr50000_input_checksums.json."
+}

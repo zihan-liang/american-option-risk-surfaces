@@ -1,0 +1,4 @@
+method,role,price_rmse_vs_crr50000,price_mae_vs_crr50000,price_max_abs_vs_crr50000,delta_rmse_vs_crr50000,scaled_gamma_rmse_vs_crr50000,boundary_rmse_vs_crr50000,boundary_mae_vs_crr50000,price_rank_vs_crr50000,notes
+CRR50000,independent_benchmark,0,0,0,0,0,0,0,0,Converged high-resolution CRR independent benchmark; not analytic ground truth.
+DIRK_POLICY,method_under_independent_cross_check,2.7008527961745088e-06,2.0211026928169265e-06,1.0128117825317084e-05,0.00011178236723061265,0.22749377331185858,0.0023944605339170444,0.002039499623839652,1,Greek RMSEs are diagnostic; CRR scaled-Gamma is lattice-sensitive. Boundary extraction conventions differ.
+CN_PSOR,method_under_independent_cross_check,5.0081098019283259e-05,3.6225039610320035e-05,0.00027055831536659802,0.00047841718280423206,0.22750113039636061,0.0094037319980343238,0.0079214799309091193,2,Greek RMSEs are diagnostic; CRR scaled-Gamma is lattice-sensitive. Boundary extraction conventions differ.

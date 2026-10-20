@@ -1,0 +1,56 @@
+% Copy-ready RESULTS content only.
+% No document class, packages, colors, or figure paths are assumed here.
+% Numerical sources:
+%   results/final_poster_summary/classical_headline_metrics.csv
+%   results/final_poster_summary/cross_model_price_rmse.csv
+%   results/final_poster_summary/hd_architecture_diagnostics.csv
+%   docs/final_poster_result_claims.md
+
+% ---------- A. Classical Numerical Results ----------
+\textbf{A. Classical Numerical Results}
+
+\begin{center}
+\begin{tabular}{llll}
+\hline
+Role & Baseline & Selected method & Result \\
+\hline
+LCP solver & CN+PSOR & CN+Projected LU & $30.2\times$ faster; 67/67 \\
+Time discretization & CN & L-stable DIRK & $2.39\times$ lower Gamma error \\
+Spatial grid & uniform & sinh & $5.87\times$ lower Gamma error \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Selected high-accuracy reference:} DIRK + Policy Iteration + sinh grid.
+
+\noindent\footnotesize
+Solver timing uses the synchronized 67-regime, same-Mac, single-thread, float64 comparison on the same frozen CN-LCP. Gamma ratios use the validated stable-mask accuracy-reference audit and are not runtime claims.
+\normalsize
+
+% ---------- B. Matched American-Put Price Slices ----------
+\textbf{B. Matched American-Put Price Slices}
+
+\noindent
+Matched contract: $K=1$, $T=1$, $r=0.05$, $q=0.10$, $\sigma=0.60$; seed 101. The high-accuracy DIRK reference and converged binomial tree provide classical checks. The existing three-maturity price-slice figure may be retained unchanged.
+
+% ---------- C. Signed Price Error ----------
+\textbf{C. Signed Price Error}
+
+\noindent
+On the common domain $S/K\in[0.5,1.5]$, $\tau/T\in[0.01,1]$, Arm D reduced shared-domain DIRK price RMSE by \textbf{96.3\%} relative to Arm C ($0.00105$ vs. $0.02788$). At the predeclared middle dimension $d=20$, FC--HVI and DeepSets--HVI gave RMSE $0.00251$ and $0.00332$, respectively.
+
+% ---------- D. Free Boundary ----------
+\textbf{D. Free Boundary}
+
+\noindent
+Arm D recovered substantially more of the matched low-dimensional stopping boundary than Arm C. In the final high-dimensional runs, however, FC--HVI and DeepSets--HVI at $d=10,20,50$ all had \textbf{0\% primary free-boundary coverage} at threshold $10^{-6}$ (0 predicted points on a 201-point reference grid). No synthetic HD boundary curve should be drawn.
+
+% ---------- E. High-Dimensional Architecture Diagnostics ----------
+\textbf{E. High-Dimensional Architecture Diagnostics}
+
+\noindent
+DeepSets used \textbf{26--30\% fewer parameters} and achieved near-exact permutation consistency ($\approx2.3$--$2.6\times10^{-8}$ RMSE), whereas FC--HVI permutation inconsistency was $\approx4.5\times10^{-4}$ to $1.1\times10^{-3}$. FC--HVI nevertheless achieved lower shared-domain DIRK price RMSE at all tested dimensions, and DeepSets showed no runtime advantage in this implementation.
+
+\noindent\footnotesize
+The HD comparison is post-hoc matched-contract, single-seed (101), diagnostic-only. Low-dimensional Arm C/D are physics-only held-out PINNs, whereas the HD runs are oracle-assisted supervised+HVI; cross-protocol runtime ratios are therefore not reported as speedups.
+\normalsize
