@@ -14,6 +14,9 @@ Frozen unified-poster protocol: 67 held-out test/stress regimes, the same Mac, o
 - CN+Policy Iteration pooled median: `0.0159997290 s`.
 - CN+Projected LU pooled median: `0.0102586250 s`.
 - CN+Projected LU is therefore `30.18989099416345x` faster than CN+PSOR by pooled median latency, which is poster-safe as `30.2x faster`.
+
+  > Note (2026-10-20): the final poster reports a 26.0x median speedup (2.44e-1 s → 9.38e-3 s, same CN–LCP discretisation, 1e-12 residual tolerance). This document predates the final poster.
+
 - Policy Iteration and Projected LU pass strict certification on all 67 regimes. Projected LU's maximum full-trajectory difference from Policy Iteration is approximately `2.62e-14`, with maximum normalized LCP residual approximately `6.30e-16`.
 - Penalty/Newton is not a benchmark: it passed only `40/67` common residual gates and remains `FAILED_CORRECTNESS`.
 
