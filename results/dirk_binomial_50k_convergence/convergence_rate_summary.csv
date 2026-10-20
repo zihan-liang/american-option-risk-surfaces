@@ -1,0 +1,8 @@
+axis,order_type,coarse_level,middle_level,fine_level,observed_order_rmse,status
+spatial,self_convergence,120,240,480,2.004463269782384,verified_second_order
+spatial,self_convergence,240,480,960,2.006830691980684,verified_second_order
+temporal,self_convergence,120,240,480,1.0761152751698817,not_stable_second_order
+temporal,self_convergence,240,480,960,1.2842628988657108,not_stable_second_order
+temporal,self_convergence,480,960,1920,1.5750699763070575,not_stable_second_order
+temporal,posthoc_self_convergence,960,1920,3840,2.758276447906639,posthoc_unstable
+temporal,posthoc_self_convergence,1920,3840,7680,1.5731379810654837,posthoc_unstable

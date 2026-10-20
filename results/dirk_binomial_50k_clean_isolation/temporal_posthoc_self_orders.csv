@@ -1,0 +1,3 @@
+coarse_level,middle_level,fine_level,coarse_difference_rmse,fine_difference_rmse,observed_order_rmse,role
+960,1920,3840,2.164625798799188e-08,3.1993288557706283e-09,2.758276447906639,posthoc_asymptotic_extension
+1920,3840,7680,3.1993288557706283e-09,1.0752195776811085e-09,1.5731379810654837,posthoc_asymptotic_extension
