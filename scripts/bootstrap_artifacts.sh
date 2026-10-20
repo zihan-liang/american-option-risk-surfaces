@@ -25,8 +25,6 @@ done
 
 if [[ -n "${PY:-}" ]]; then
   PYTHON="$PY"
-elif [[ -x "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-pilot/bin/python" ]]; then
-  PYTHON="/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-pilot/bin/python"
 else
   PYTHON="python3"
 fi

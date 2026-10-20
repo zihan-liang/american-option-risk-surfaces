@@ -6,6 +6,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+# The DIRK-Policy-sinh solver lives in the companion repository
+# Ruixixu-hub/2026-surf-american-risk-surfaces (pinned commit 5f63fa7).
+# Put its src/ directory on PYTHONPATH to run these contracts.
+pytest.importorskip(
+    "american_risk_surfaces",
+    reason="companion solver package american_risk_surfaces is not installed",
+)
+
 from experiments.reference_audits.crr50000_core import crr_american_put
 from experiments.reference_audits.dirk_binomial_50k_convergence import (
     BENCHMARK_STEPS,

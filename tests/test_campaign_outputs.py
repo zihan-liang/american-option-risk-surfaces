@@ -2,6 +2,7 @@ import csv
 import hashlib
 import json
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -235,7 +236,7 @@ class CampaignCliTests(unittest.TestCase):
     @staticmethod
     def run_cli(*arguments: str, check: bool = True) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            ["/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-pilot/bin/python", str(CAMPAIGN_SCRIPT), *arguments],
+            [sys.executable, str(CAMPAIGN_SCRIPT), *arguments],
             cwd=REPOSITORY_ROOT,
             text=True,
             capture_output=True,

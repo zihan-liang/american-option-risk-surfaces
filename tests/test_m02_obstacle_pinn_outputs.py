@@ -302,7 +302,7 @@ class M02ObstaclePinnOutputTests(unittest.TestCase):
 
         result = subprocess.run(
             [
-                "/Users/liangzihan/Documents/SURF_0159/SURF/.worktrees/american-option-risk-surfaces/.venv-campaign/bin/python",
+                sys.executable,
                 "experiments/26_independent_method_campaign.py",
                 "--method", "M02", "--phase", "screen", "--smoke", "--config", str(config_path), "--output-root", str(output_root),
             ],
