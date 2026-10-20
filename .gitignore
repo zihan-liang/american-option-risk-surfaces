@@ -47,6 +47,10 @@ reports/*.fls
 reports/*.log
 reports/*.out
 reports/*.pdf
+# Compiled reports that are intentionally published
+!reports/pinn_experiment_report.pdf
+!reports/stage01_math_notes.pdf
+!reports/report_template.pdf
 reports/*.synctex.gz
 reports/*.toc
 reports/*.xdv
@@ -55,3 +59,41 @@ results/test_m02_obstacle_pinn/
 results/hd1_windows_high_dimensional_pinn_48h/status/
 results/hd3_matched_american_put_comparison/runtime/
 results/hd3_matched_american_put_boundary_complete/runtime/
+
+# Virtual environments and tool caches
+.venv*/
+venv/
+env/
+.ruff_cache/
+.ipynb_checkpoints/
+.idea/
+.vscode/
+.claude/
+.codex/
+
+# LaTeX intermediates anywhere in the tree
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.nav
+*.snm
+*.synctex.gz
+*.toc
+*.xdv
+*.bcf
+*.run.xml
+
+# Checkouts used by CI and local consolidation runs
+_vendor/
+_sources/
+
+# Large raw experiment outputs and model checkpoints
+results/**/runtime/
+results/**/checkpoints/
+*.ckpt
+*.pth
+*.h5
